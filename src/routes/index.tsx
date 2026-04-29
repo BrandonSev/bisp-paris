@@ -201,37 +201,6 @@ function Index() {
   );
 }
 
-function NiveauPreview({
-  title,
-  subtitle,
-  tone,
-}: {
-  title: string;
-  subtitle: string;
-  tone: "primary" | "teal" | "rouge";
-}) {
-  const colors = {
-    primary: { bar: "bg-primary", grad: "from-primary/10 to-transparent", text: "text-primary" },
-    teal: { bar: "bg-[var(--teal)]", grad: "from-[var(--teal)]/15 to-transparent", text: "text-[var(--teal-deep)]" },
-    rouge: { bar: "bg-[var(--rouge)]", grad: "from-[var(--rouge)]/15 to-transparent", text: "text-[var(--rouge)]" },
-  }[tone];
-  return (
-    <Link
-      to="/boutique"
-      className={`group relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br ${colors.grad} p-7 transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)]`}
-    >
-      <div className={`absolute inset-y-0 left-0 w-1.5 ${colors.bar}`} />
-      <div className="relative">
-        <div className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${colors.text}`}>{subtitle}</div>
-        <h3 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{title}</h3>
-        <div className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-foreground/70 group-hover:gap-2 transition-all">
-          Découvrir <ArrowRight className="h-4 w-4" />
-        </div>
-      </div>
-    </Link>
-  );
-}
-
 function TrustItem({ icon, title, text, sub }: { icon: React.ReactNode; title: string; text: string; sub: string }) {
   return (
     <div className="flex gap-4">
