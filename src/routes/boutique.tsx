@@ -3,13 +3,11 @@ import { useState } from "react";
 import { Heart, ShieldCheck, ShoppingBag, Sparkles } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
-import poloFront from "@/assets/polo-bisp-blanc.svg";
-import poloBack from "@/assets/polo-bisp-marine.svg";
-import pull from "@/assets/pull-bisp.jpg";
-import chemise from "@/assets/chemise-bisp.jpg";
-import chemiseFille from "@/assets/chemise-bisp-fille.png";
-import tshirt from "@/assets/tshirt-bisp.jpg";
-import trousses from "@/assets/trousses-bisp.png";
+import poloFront from "@/assets/polo-bisp-marine.svg";
+import poloBack from "@/assets/polo-bisp-blanc.svg";
+import hoodieFront from "@/assets/hoodie-bisp-front.svg";
+import hoodieBack from "@/assets/hoodie-bisp-back.svg";
+import trousse from "@/assets/trousse-bisp.svg";
 
 export const Route = createFileRoute("/boutique")({
   head: () => ({
@@ -51,14 +49,11 @@ const adultSizes = ["XS", "S", "M", "L", "XL"];
 
 const products: Product[] = [
   { id: "polo-officiel", name: "Polo officiel BISP", nameEn: "Official BISP polo", price: "28,00 €", images: [poloFront, poloBack], sizes: kidsSizes, badge: "Best-seller", category: "Polos" },
-  { id: "pull-marine", name: "Pull marine brodé", nameEn: "Embroidered navy jumper", price: "52,00 €", images: [pull], sizes: kidsSizes, badge: "Hiver", category: "Pulls" },
-  { id: "chemise-garcon", name: "Chemise officielle", nameEn: "Official shirt", price: "34,00 €", images: [chemise], sizes: kidsSizes, category: "Chemises" },
-  { id: "chemise-fille", name: "Chemisier officiel", nameEn: "Official blouse", price: "34,00 €", images: [chemiseFille], sizes: kidsSizes, category: "Chemises" },
-  { id: "tshirt-sport", name: "T-shirt sport", nameEn: "Sports t-shirt", price: "22,00 €", images: [tshirt], sizes: kidsSizes, category: "T-shirts" },
-  { id: "trousses", name: "Trousses brodées", nameEn: "Embroidered pencil case", price: "18,00 €", images: [trousses], sizes: ["Unique"], badge: "Nouveau", category: "Accessoires" },
+  { id: "hoodie-jean-eudes", name: "Hoodie zippé Jean-Eudes", nameEn: "Jean-Eudes zip hoodie", price: "62,00 €", images: [hoodieFront, hoodieBack], sizes: kidsSizes, badge: "Hiver", category: "Pulls" },
+  { id: "trousse", name: "Trousse brodée", nameEn: "Embroidered pencil case", price: "18,00 €", images: [trousse], sizes: ["Unique"], badge: "Nouveau", category: "Accessoires" },
 ];
 
-const categories = ["Tous", "Polos", "Pulls", "Chemises", "T-shirts", "Accessoires"] as const;
+const categories = ["Tous", "Polos", "Pulls", "Accessoires"] as const;
 
 function BoutiquePage() {
   const [active, setActive] = useState<(typeof categories)[number]>("Tous");
