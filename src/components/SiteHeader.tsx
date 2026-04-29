@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ShoppingBag, User } from "lucide-react";
 import logo from "@/assets/bisp-logo.png";
 import { SchoolIdentityBar } from "@/components/SchoolMotif";
+import { useStore } from "@/lib/store";
 
 interface SiteHeaderProps {
   schoolName?: string;
@@ -9,7 +10,9 @@ interface SiteHeaderProps {
   showAccount?: boolean;
 }
 
-export function SiteHeader({ schoolName, cartCount = 0, showAccount = true }: SiteHeaderProps) {
+export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHeaderProps) {
+  const { cartCount: storeCount } = useStore();
+  const count = cartCount ?? storeCount;
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b border-border bg-background/90 backdrop-blur-md">
@@ -56,9 +59,9 @@ export function SiteHeader({ schoolName, cartCount = 0, showAccount = true }: Si
             >
               <ShoppingBag className="h-4 w-4" />
               <span className="hidden sm:inline">Panier</span>
-              {cartCount > 0 && (
+              {count > 0 && (
                 <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--rouge)] px-1.5 text-[11px] font-semibold text-white">
-                  {cartCount}
+                  {count}
                 </span>
               )}
             </Link>
