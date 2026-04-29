@@ -43,7 +43,6 @@ type Product = {
 };
 
 const kidsSizes = ["4 ans", "6 ans", "8 ans", "10 ans", "12 ans", "14 ans"];
-const adultSizes = ["XS", "S", "M", "L", "XL"];
 
 const products: Product[] = [
   { id: "polo-officiel", name: "Polo officiel BISP", nameEn: "Official BISP polo", price: 28, images: [poloFront, poloBack], sizes: kidsSizes, category: "Polos" },
