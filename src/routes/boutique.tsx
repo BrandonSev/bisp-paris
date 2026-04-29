@@ -1,8 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ShieldCheck, ShoppingBag, Sparkles } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
+import { useStore } from "@/lib/store";
+import { toast } from "sonner";
 import poloFront from "@/assets/polo-bisp-marine.svg";
 import poloBack from "@/assets/polo-bisp-blanc.svg";
 import hoodieFront from "@/assets/hoodie-bisp-front.svg";
@@ -34,25 +36,19 @@ type Product = {
   id: string;
   name: string;
   nameEn: string;
-  price: string;
+  price: number;
   images: string[];
   sizes: string[];
   category: "Polos" | "Pulls" | "Chemises" | "T-shirts" | "Accessoires";
 };
 
-const children = [
-  { id: "emma", name: "Emma Dubois", classe: "CE2", initials: "ED", color: "bg-[var(--teal)]/15 text-[var(--teal-deep)]" },
-  { id: "thomas", name: "Thomas Dubois", classe: "6ᵉ B", initials: "TD", color: "bg-primary/15 text-primary" },
-];
-
 const kidsSizes = ["4 ans", "6 ans", "8 ans", "10 ans", "12 ans", "14 ans"];
-const adultSizes = ["XS", "S", "M", "L", "XL"];
 
 const products: Product[] = [
-  { id: "polo-officiel", name: "Polo officiel BISP", nameEn: "Official BISP polo", price: "28,00 €", images: [poloFront, poloBack], sizes: kidsSizes, category: "Polos" },
-  { id: "hoodie-jean-eudes", name: "Hoodie zippé Jean-Eudes", nameEn: "Jean-Eudes zip hoodie", price: "62,00 €", images: [hoodieFront, hoodieBack], sizes: kidsSizes, category: "Pulls" },
-  { id: "teddy-charlie", name: "Teddy boutonné Charlie", nameEn: "Charlie button teddy jacket", price: "78,00 €", images: [teddyFront, teddyBack], sizes: kidsSizes, category: "Pulls" },
-  { id: "trousse", name: "Trousse brodée", nameEn: "Embroidered pencil case", price: "18,00 €", images: [trousse], sizes: ["Unique"], category: "Accessoires" },
+  { id: "polo-officiel", name: "Polo officiel BISP", nameEn: "Official BISP polo", price: 28, images: [poloFront, poloBack], sizes: kidsSizes, category: "Polos" },
+  { id: "hoodie-jean-eudes", name: "Hoodie zippé Jean-Eudes", nameEn: "Jean-Eudes zip hoodie", price: 62, images: [hoodieFront, hoodieBack], sizes: kidsSizes, category: "Pulls" },
+  { id: "teddy-charlie", name: "Teddy boutonné Charlie", nameEn: "Charlie button teddy jacket", price: 78, images: [teddyFront, teddyBack], sizes: kidsSizes, category: "Pulls" },
+  { id: "trousse", name: "Trousse brodée", nameEn: "Embroidered pencil case", price: 18, images: [trousse], sizes: ["Unique"], category: "Accessoires" },
 ];
 
 const categories = ["Tous", "Polos", "Pulls", "Accessoires"] as const;
@@ -63,7 +59,7 @@ function BoutiquePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader schoolName="BISP" cartCount={0} />
+      <SiteHeader schoolName="BISP" />
 
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border" style={{ background: "var(--gradient-soft)" }}>
@@ -124,10 +120,30 @@ function BoutiquePage() {
 }
 
 function ProductCard({ product }: { product: Product }) {
+  const { children: kids, addToCart } = useStore();
   const [view, setView] = useState(0);
-  const [child, setChild] = useState(children[0].id);
+  const [child, setChild] = useState<string>(kids[0]?.id ?? "");
   const [size, setSize] = useState<string>("");
   const hasMultipleViews = product.images.length > 1;
+
+  const canAdd = !!size && !!child;
+  const handleAdd = () => {
+    if (!canAdd) return;
+    const selected = kids.find((k) => k.id === child);
+    addToCart({
+      productId: product.id,
+      name: product.name,
+      ref: `BISP-${product.id.toUpperCase()}`,
+      price: product.price,
+      size,
+      qty: 1,
+      image: product.images[0],
+      childId: child,
+    });
+    toast.success(`Ajouté · ${product.name}`, {
+      description: `Taille ${size}${selected ? ` · pour ${selected.prenom}` : ""}`,
+    });
+  };
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-elegant)]">
@@ -163,7 +179,7 @@ function ProductCard({ product }: { product: Product }) {
         <h3 className="mt-1 text-base font-semibold text-foreground">{product.name}</h3>
         <p className="text-xs italic text-muted-foreground">{product.nameEn}</p>
         <div className="mt-3 flex items-center justify-between">
-          <span className="text-lg font-semibold text-foreground">{product.price}</span>
+          <span className="text-lg font-semibold text-foreground">{product.price.toFixed(2)} €</span>
           <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
             <ShieldCheck className="h-3 w-3 text-[var(--teal-deep)]" /> Brodé
           </span>
@@ -175,7 +191,7 @@ function ProductCard({ product }: { product: Product }) {
             Pour · For
           </label>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {children.map((c) => (
+            {kids.map((c) => (
               <button
                 key={c.id}
                 onClick={() => setChild(c.id)}
@@ -183,13 +199,16 @@ function ProductCard({ product }: { product: Product }) {
                   child === c.id ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-primary/40"
                 }`}
               >
-                <span className={`flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${c.color}`}>
+                <span className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold bg-primary/15 text-primary">
                   {c.initials}
                 </span>
-                <span className="font-medium">{c.name.split(" ")[0]}</span>
+                <span className="font-medium">{c.prenom}</span>
                 <span className="text-[10px] text-muted-foreground">{c.classe}</span>
               </button>
             ))}
+            {kids.length === 0 && (
+              <span className="text-xs text-muted-foreground">Ajoutez d'abord un enfant.</span>
+            )}
           </div>
         </div>
 
@@ -215,18 +234,19 @@ function ProductCard({ product }: { product: Product }) {
           </div>
         </div>
 
-        <Link
-          to="/panier"
-          aria-disabled={!size}
+        <button
+          type="button"
+          onClick={handleAdd}
+          disabled={!canAdd}
           className={`mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-colors ${
-            size
+            canAdd
               ? "bg-primary text-primary-foreground hover:bg-primary/90"
-              : "pointer-events-none bg-muted text-muted-foreground"
+              : "cursor-not-allowed bg-muted text-muted-foreground"
           }`}
         >
           <ShoppingBag className="h-4 w-4" />
-          {size ? `Ajouter · Add — ${size}` : "Choisir une taille · Pick a size"}
-        </Link>
+          {canAdd ? `Ajouter · Add — ${size}` : "Choisir une taille · Pick a size"}
+        </button>
       </div>
     </article>
   );

@@ -1,11 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Lock, Minus, Plus, Trash2 } from "lucide-react";
+import { Lock, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
-import polo from "@/assets/polo-bisp.jpg";
-import pull from "@/assets/pull-bisp.jpg";
-import tshirt from "@/assets/tshirt-bisp.jpg";
-import trousses from "@/assets/trousses-bisp.png";
+import { useStore, type CartItem, type Child } from "@/lib/store";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/panier")({
   head: () => ({
@@ -14,42 +12,34 @@ export const Route = createFileRoute("/panier")({
   component: PanierPage,
 });
 
-const cart = [
-  {
-    enfant: "Emma Dubois",
-    classe: "CE2 · Élémentaire",
-    initials: "ED",
-    color: "bg-[var(--teal)]/15 text-[var(--teal-deep)]",
-    items: [
-      { name: "Polo blanc officiel", ref: "BISP-POLO-001", size: "8 ans", qty: 3, price: 28.0, image: polo },
-      { name: "Trousse écussonnée bleu marine", ref: "BISP-TROUSSE-01", size: "Unique", qty: 1, price: 18.0, image: trousses },
-    ],
-  },
-  {
-    enfant: "Thomas Dubois",
-    classe: "6ᵉ B · Collège",
-    initials: "TD",
-    color: "bg-primary/15 text-primary",
-    items: [
-      { name: "Polo blanc officiel", ref: "BISP-POLO-001", size: "M", qty: 3, price: 28.0, image: polo },
-      { name: "Pull col V bleu marine", ref: "BISP-PULL-002", size: "M", qty: 1, price: 48.0, image: pull },
-      { name: "T-shirt sport BISP", ref: "BISP-TSHIRT-EPS", size: "M", qty: 2, price: 22.0, image: tshirt },
-    ],
-  },
-];
-
 function PanierPage() {
-  const totalArticles = cart.reduce((s, e) => s + e.items.reduce((a, i) => a + i.qty, 0), 0);
-  const subtotal = cart.reduce(
-    (s, e) => s + e.items.reduce((a, i) => a + i.qty * i.price, 0),
-    0,
-  );
+  const { cart, children: kids, updateQty, removeFromCart, clearCart } = useStore();
+
+  const groups = kids
+    .map((child) => ({
+      child,
+      items: cart.filter((i) => i.childId === child.id),
+    }))
+    .filter((g) => g.items.length > 0);
+
+  const orphans = cart.filter((i) => !kids.find((k) => k.id === i.childId));
+
+  const totalArticles = cart.reduce((s, i) => s + i.qty, 0);
+  const subtotal = cart.reduce((s, i) => s + i.qty * i.price, 0);
   const delivery = 0;
   const total = subtotal + delivery;
 
+  const handleCheckout = () => {
+    if (cart.length === 0) return;
+    clearCart();
+    toast.success("Commande confirmée", {
+      description: `Total ${total.toFixed(2)} € · livraison à BISP sous 5–7 jours.`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader schoolName="BISP" cartCount={totalArticles} />
+      <SiteHeader schoolName="BISP" />
 
       <section className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="pointer-events-none absolute -top-10 left-0 -z-0 h-80 w-80 text-primary">
@@ -63,7 +53,7 @@ function PanierPage() {
             <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Mon panier</h1>
             <p className="mt-1 text-sm italic text-muted-foreground">My cart</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              {totalArticles} articles · répartis pour {cart.length} enfants
+              {totalArticles} article{totalArticles > 1 ? "s" : ""} · {groups.length} enfant{groups.length > 1 ? "s" : ""}
             </p>
           </div>
           <Link to="/boutique" className="hidden text-sm text-[var(--teal-deep)] hover:underline sm:inline">
@@ -71,11 +61,23 @@ function PanierPage() {
           </Link>
         </div>
 
+        {cart.length === 0 ? (
+          <EmptyCart />
+        ) : (
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
           <div className="space-y-6">
-            {cart.map((group) => (
-              <ChildGroup key={group.enfant} group={group} />
+            {groups.map((group) => (
+              <ChildGroup
+                key={group.child.id}
+                child={group.child}
+                items={group.items}
+                onQty={updateQty}
+                onRemove={removeFromCart}
+              />
             ))}
+            {orphans.length > 0 && (
+              <UnassignedGroup items={orphans} onQty={updateQty} onRemove={removeFromCart} />
+            )}
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:self-start">
@@ -91,7 +93,11 @@ function PanierPage() {
                 <span className="text-base font-semibold text-foreground">Total</span>
                 <span className="text-2xl font-semibold text-foreground">{total.toFixed(2)} €</span>
               </div>
-              <button className="mt-6 inline-flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] hover:bg-primary/90">
+              <button
+                type="button"
+                onClick={handleCheckout}
+                className="mt-6 inline-flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] hover:bg-primary/90"
+              >
                 <Lock className="h-4 w-4" />
                 Passer au paiement · Checkout
               </button>
@@ -107,6 +113,7 @@ function PanierPage() {
             </div>
           </aside>
         </div>
+        )}
       </section>
 
       <SiteFooter />
@@ -114,27 +121,55 @@ function PanierPage() {
   );
 }
 
-function ChildGroup({ group }: { group: (typeof cart)[number] }) {
+function EmptyCart() {
+  return (
+    <div className="mt-12 flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-card px-6 py-16 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary text-muted-foreground">
+        <ShoppingBag className="h-6 w-6" />
+      </div>
+      <h2 className="mt-4 text-lg font-semibold text-foreground">Votre panier est vide</h2>
+      <p className="mt-1 text-sm text-muted-foreground">Your cart is empty</p>
+      <Link
+        to="/boutique"
+        className="mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+      >
+        Aller à la boutique · Go to shop
+      </Link>
+    </div>
+  );
+}
+
+function ChildGroup({
+  child,
+  items,
+  onQty,
+  onRemove,
+}: {
+  child: Child;
+  items: CartItem[];
+  onQty: (id: string, qty: number) => void;
+  onRemove: (id: string) => void;
+}) {
   return (
     <section className="overflow-hidden rounded-3xl border border-border bg-card">
       <header className="flex items-center justify-between border-b border-border bg-secondary/60 px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${group.color}`}>
-            {group.initials}
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary">
+            {child.initials}
           </div>
           <div>
-            <h3 className="text-base font-semibold tracking-tight text-foreground">Pour {group.enfant}</h3>
-            <p className="text-xs text-muted-foreground">{group.classe}</p>
+            <h3 className="text-base font-semibold tracking-tight text-foreground">Pour {child.prenom} {child.nom}</h3>
+            <p className="text-xs text-muted-foreground">{child.classe} · {child.section}</p>
           </div>
         </div>
         <span className="rounded-full bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
-          {group.items.reduce((a, i) => a + i.qty, 0)} articles
+          {items.reduce((a, i) => a + i.qty, 0)} article{items.reduce((a, i) => a + i.qty, 0) > 1 ? "s" : ""}
         </span>
       </header>
 
       <ul className="divide-y divide-border">
-        {group.items.map((item, idx) => (
-          <li key={`${item.ref}-${idx}`} className="flex items-center gap-4 px-6 py-5">
+        {items.map((item) => (
+          <li key={item.id} className="flex items-center gap-4 px-6 py-5">
             <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-border bg-secondary">
               <img src={item.image} alt={item.name} className="h-full w-full object-contain p-1" loading="lazy" />
             </div>
@@ -156,15 +191,55 @@ function ChildGroup({ group }: { group: (typeof cart)[number] }) {
               </div>
               <div className="mt-3 flex items-center justify-between">
                 <div className="inline-flex h-9 items-center rounded-lg border border-border bg-background">
-                  <button className="px-3 text-muted-foreground hover:text-foreground"><Minus className="h-3.5 w-3.5" /></button>
+                  <button onClick={() => onQty(item.id, item.qty - 1)} className="px-3 text-muted-foreground hover:text-foreground"><Minus className="h-3.5 w-3.5" /></button>
                   <span className="w-7 text-center text-sm font-semibold">{item.qty}</span>
-                  <button className="px-3 text-muted-foreground hover:text-foreground"><Plus className="h-3.5 w-3.5" /></button>
+                  <button onClick={() => onQty(item.id, item.qty + 1)} className="px-3 text-muted-foreground hover:text-foreground"><Plus className="h-3.5 w-3.5" /></button>
                 </div>
-                <button className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-[var(--rouge)]">
+                <button onClick={() => onRemove(item.id)} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-[var(--rouge)]">
                   <Trash2 className="h-3.5 w-3.5" /> Retirer · Remove
                 </button>
               </div>
             </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function UnassignedGroup({
+  items,
+  onQty,
+  onRemove,
+}: {
+  items: CartItem[];
+  onQty: (id: string, qty: number) => void;
+  onRemove: (id: string) => void;
+}) {
+  return (
+    <section className="overflow-hidden rounded-3xl border border-dashed border-border bg-card">
+      <header className="border-b border-border bg-secondary/60 px-6 py-4">
+        <h3 className="text-sm font-semibold text-foreground">Articles sans enfant assigné</h3>
+        <p className="text-xs text-muted-foreground">Réassignez ou retirez ces articles.</p>
+      </header>
+      <ul className="divide-y divide-border">
+        {items.map((item) => (
+          <li key={item.id} className="flex items-center gap-4 px-6 py-5">
+            <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-border bg-secondary">
+              <img src={item.image} alt={item.name} className="h-full w-full object-contain p-1" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h4 className="truncate text-sm font-semibold text-foreground">{item.name}</h4>
+              <p className="text-xs text-muted-foreground">Taille {item.size} · {item.qty} × {item.price.toFixed(2)} €</p>
+            </div>
+            <div className="inline-flex h-9 items-center rounded-lg border border-border bg-background">
+              <button onClick={() => onQty(item.id, item.qty - 1)} className="px-3 text-muted-foreground hover:text-foreground"><Minus className="h-3.5 w-3.5" /></button>
+              <span className="w-7 text-center text-sm font-semibold">{item.qty}</span>
+              <button onClick={() => onQty(item.id, item.qty + 1)} className="px-3 text-muted-foreground hover:text-foreground"><Plus className="h-3.5 w-3.5" /></button>
+            </div>
+            <button onClick={() => onRemove(item.id)} className="text-muted-foreground hover:text-[var(--rouge)]">
+              <Trash2 className="h-4 w-4" />
+            </button>
           </li>
         ))}
       </ul>
