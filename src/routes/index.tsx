@@ -72,7 +72,10 @@ function Index() {
           <ShellMotif className="absolute -right-48 -bottom-48 h-[700px] w-[700px]" opacity={0.06} />
         </div>
 
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8" style={{ background: "var(--chart-1)" }}>
+        <div
+          className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8"
+          style={{ background: "var(--background)" }}
+        >
           <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
             <div className="text-center lg:text-left">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.18em] text-white backdrop-blur">
