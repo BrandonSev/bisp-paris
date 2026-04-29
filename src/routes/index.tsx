@@ -145,24 +145,24 @@ function Index() {
         </div>
       </section>
 
-      {/* Niveaux preview */}
+      {/* CTA boutique */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="text-center">
           <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--teal)]">
-            <span className="h-px w-8 bg-[var(--teal)]" /> Étiquettes · Categories
+            <span className="h-px w-8 bg-[var(--teal)]" /> Boutique · Shop
           </span>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            Trois niveaux · Three school levels
+            Tous les uniformes officiels
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Chaque tranche d'âge dispose d'une sélection d'uniformes adaptée et brodée de l'écusson BISP.
+            Polos, pulls, chemises, t-shirts et accessoires brodés de l'écusson BISP.
           </p>
-        </div>
-
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
-          <NiveauPreview title="Maternelle" subtitle="PS · MS · GS" tone="primary" />
-          <NiveauPreview title="Élémentaire" subtitle="CP → CM2" tone="teal" />
-          <NiveauPreview title="Collège" subtitle="6ᵉ → 4ᵉ" tone="rouge" />
+          <Link
+            to="/boutique"
+            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-xl transition-all hover:gap-3 hover:bg-primary/90"
+          >
+            Découvrir la boutique <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
 
