@@ -36,19 +36,78 @@ type Product = {
   id: string;
   name: string;
   nameEn: string;
-  price: number;
+  /** prix par taille — la plage est calculée min/max */
+  pricing: Record<string, number>;
   images: string[];
   sizes: string[];
+  /** options de personnalisation (ex: couleur du zip) */
+  options?: ProductOption[];
   category: "Polos" | "Pulls" | "Chemises" | "T-shirts" | "Accessoires";
+};
+
+type ProductOption = {
+  id: string;
+  label: string;
+  choices: { value: string; label: string; swatch: string }[];
 };
 
 const kidsSizes = ["4 ans", "6 ans", "8 ans", "10 ans", "12 ans", "14 ans"];
 
+/** Génère une grille de prix croissante par taille */
+function ageBased(start: number, step = 1): Record<string, number> {
+  return Object.fromEntries(kidsSizes.map((s, i) => [s, start + i * step]));
+}
+
+const trousseColors: ProductOption = {
+  id: "zip",
+  label: "Couleur du zip",
+  choices: [
+    { value: "marine", label: "Marine", swatch: "var(--primary)" },
+    { value: "rouge", label: "Rouge", swatch: "var(--rouge)" },
+    { value: "teal", label: "Teal", swatch: "var(--teal)" },
+    { value: "blanc", label: "Blanc", swatch: "#ffffff" },
+    { value: "noir", label: "Noir", swatch: "#111111" },
+  ],
+};
+
 const products: Product[] = [
-  { id: "polo-officiel", name: "Polo officiel BISP", nameEn: "Official BISP polo", price: 28, images: [poloFront, poloBack], sizes: kidsSizes, category: "Polos" },
-  { id: "hoodie-jean-eudes", name: "Hoodie zippé Jean-Eudes", nameEn: "Jean-Eudes zip hoodie", price: 62, images: [hoodieFront, hoodieBack], sizes: kidsSizes, category: "Pulls" },
-  { id: "teddy-charlie", name: "Teddy boutonné Charlie", nameEn: "Charlie button teddy jacket", price: 78, images: [teddyFront, teddyBack], sizes: kidsSizes, category: "Pulls" },
-  { id: "trousse", name: "Trousse brodée", nameEn: "Embroidered pencil case", price: 18, images: [trousse], sizes: ["Unique"], category: "Accessoires" },
+  {
+    id: "polo-officiel",
+    name: "Polo officiel BISP",
+    nameEn: "Official BISP polo",
+    pricing: ageBased(28, 1), // 28 → 33
+    images: [poloFront, poloBack],
+    sizes: kidsSizes,
+    category: "Polos",
+  },
+  {
+    id: "hoodie-jean-eudes",
+    name: "Hoodie zippé Jean-Eudes",
+    nameEn: "Jean-Eudes zip hoodie",
+    pricing: ageBased(62, 3), // 62 → 77
+    images: [hoodieFront, hoodieBack],
+    sizes: kidsSizes,
+    category: "Pulls",
+  },
+  {
+    id: "teddy-charlie",
+    name: "Teddy boutonné Charlie",
+    nameEn: "Charlie button teddy jacket",
+    pricing: ageBased(78, 4), // 78 → 98
+    images: [teddyFront, teddyBack],
+    sizes: kidsSizes,
+    category: "Pulls",
+  },
+  {
+    id: "trousse",
+    name: "Trousse brodée",
+    nameEn: "Embroidered pencil case",
+    pricing: { Unique: 18 },
+    images: [trousse],
+    sizes: ["Unique"],
+    options: [trousseColors],
+    category: "Accessoires",
+  },
 ];
 
 const categories = ["Tous", "Polos", "Pulls", "Accessoires"] as const;
@@ -124,24 +183,45 @@ function ProductCard({ product }: { product: Product }) {
   const [view, setView] = useState(0);
   const [child, setChild] = useState<string>(kids[0]?.id ?? "");
   const [size, setSize] = useState<string>("");
+  const [opts, setOpts] = useState<Record<string, string>>(() =>
+    Object.fromEntries((product.options ?? []).map((o) => [o.id, o.choices[0].value])),
+  );
   const hasMultipleViews = product.images.length > 1;
+
+  const prices = Object.values(product.pricing);
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+  const priceLabel =
+    minPrice === maxPrice
+      ? `${minPrice.toFixed(2)} €`
+      : `${minPrice.toFixed(2)} – ${maxPrice.toFixed(2)} €`;
+  const currentPrice = size ? product.pricing[size] : undefined;
 
   const canAdd = !!size && !!child;
   const handleAdd = () => {
-    if (!canAdd) return;
+    if (!canAdd || currentPrice === undefined) return;
     const selected = kids.find((k) => k.id === child);
+    const optionLabels = (product.options ?? [])
+      .map((o) => {
+        const choice = o.choices.find((c) => c.value === opts[o.id]);
+        return choice ? `${o.label}: ${choice.label}` : null;
+      })
+      .filter(Boolean) as string[];
+    const nameWithOpts = optionLabels.length
+      ? `${product.name} (${optionLabels.join(", ")})`
+      : product.name;
     addToCart({
       productId: product.id,
-      name: product.name,
+      name: nameWithOpts,
       ref: `BISP-${product.id.toUpperCase()}`,
-      price: product.price,
+      price: currentPrice,
       size,
       qty: 1,
       image: product.images[0],
       childId: child,
     });
     toast.success(`Ajouté · ${product.name}`, {
-      description: `Taille ${size}${selected ? ` · pour ${selected.prenom}` : ""}`,
+      description: `Taille ${size} · ${currentPrice.toFixed(2)} €${selected ? ` · pour ${selected.prenom}` : ""}`,
     });
   };
 
@@ -179,7 +259,14 @@ function ProductCard({ product }: { product: Product }) {
         <h3 className="mt-1 text-base font-semibold text-foreground">{product.name}</h3>
         <p className="text-xs italic text-muted-foreground">{product.nameEn}</p>
         <div className="mt-3 flex items-center justify-between">
-          <span className="text-lg font-semibold text-foreground">{product.price.toFixed(2)} €</span>
+          <span className="text-lg font-semibold text-foreground">
+            {currentPrice !== undefined ? `${currentPrice.toFixed(2)} €` : priceLabel}
+            {currentPrice === undefined && minPrice !== maxPrice && (
+              <span className="ml-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                selon taille
+              </span>
+            )}
+          </span>
           <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
             <ShieldCheck className="h-3 w-3 text-[var(--teal-deep)]" /> Brodé
           </span>
@@ -234,6 +321,39 @@ function ProductCard({ product }: { product: Product }) {
           </div>
         </div>
 
+        {/* Options (couleur, etc.) */}
+        {product.options?.map((opt) => (
+          <div key={opt.id} className="mt-3">
+            <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {opt.label}
+            </label>
+            <div className="mt-1.5 flex flex-wrap items-center gap-2">
+              {opt.choices.map((c) => {
+                const selected = opts[opt.id] === c.value;
+                return (
+                  <button
+                    key={c.value}
+                    type="button"
+                    onClick={() => setOpts((p) => ({ ...p, [opt.id]: c.value }))}
+                    title={c.label}
+                    aria-label={c.label}
+                    aria-pressed={selected}
+                    className={`relative h-7 w-7 rounded-full border transition-all ${
+                      selected
+                        ? "border-primary ring-2 ring-primary/30 ring-offset-1 ring-offset-card"
+                        : "border-border hover:border-primary/40"
+                    }`}
+                    style={{ background: c.swatch }}
+                  />
+                );
+              })}
+              <span className="ml-1 text-[11px] text-muted-foreground">
+                {opt.choices.find((c) => c.value === opts[opt.id])?.label}
+              </span>
+            </div>
+          </div>
+        ))}
+
         <button
           type="button"
           onClick={handleAdd}
@@ -245,7 +365,9 @@ function ProductCard({ product }: { product: Product }) {
           }`}
         >
           <ShoppingBag className="h-4 w-4" />
-          {canAdd ? `Ajouter · Add — ${size}` : "Choisir une taille · Pick a size"}
+          {canAdd && currentPrice !== undefined
+            ? `Ajouter · ${currentPrice.toFixed(2)} €`
+            : "Choisir une taille · Pick a size"}
         </button>
       </div>
     </article>
