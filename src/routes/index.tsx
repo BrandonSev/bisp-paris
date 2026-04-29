@@ -101,7 +101,7 @@ function Index() {
                   Accéder à la boutique <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
-                  to="/niveau"
+                  to="/boutique"
                   className="inline-flex h-12 items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 text-sm font-medium text-white backdrop-blur transition-colors hover:bg-white/20"
                 >
                   Voir les uniformes
@@ -217,7 +217,7 @@ function NiveauPreview({
   }[tone];
   return (
     <Link
-      to="/niveau"
+      to="/boutique"
       className={`group relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br ${colors.grad} p-7 transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)]`}
     >
       <div className={`absolute inset-y-0 left-0 w-1.5 ${colors.bar}`} />

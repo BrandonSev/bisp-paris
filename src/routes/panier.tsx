@@ -66,7 +66,7 @@ function PanierPage() {
               {totalArticles} articles · répartis pour {cart.length} enfants
             </p>
           </div>
-          <Link to="/niveau" className="hidden text-sm text-[var(--teal-deep)] hover:underline sm:inline">
+          <Link to="/boutique" className="hidden text-sm text-[var(--teal-deep)] hover:underline sm:inline">
             ← Continuer · Continue
           </Link>
         </div>
