@@ -101,7 +101,7 @@ function Index() {
                   Accéder à la boutique <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
-                  to="/niveau"
+                  to="/boutique"
                   className="inline-flex h-12 items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 text-sm font-medium text-white backdrop-blur transition-colors hover:bg-white/20"
                 >
                   Voir les uniformes
@@ -145,24 +145,24 @@ function Index() {
         </div>
       </section>
 
-      {/* Niveaux preview */}
+      {/* CTA boutique */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="text-center">
           <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--teal)]">
-            <span className="h-px w-8 bg-[var(--teal)]" /> Étiquettes · Categories
+            <span className="h-px w-8 bg-[var(--teal)]" /> Boutique · Shop
           </span>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            Trois niveaux · Three school levels
+            Tous les uniformes officiels
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Chaque tranche d'âge dispose d'une sélection d'uniformes adaptée et brodée de l'écusson BISP.
+            Polos, pulls, chemises, t-shirts et accessoires brodés de l'écusson BISP.
           </p>
-        </div>
-
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
-          <NiveauPreview title="Maternelle" subtitle="PS · MS · GS" tone="primary" />
-          <NiveauPreview title="Élémentaire" subtitle="CP → CM2" tone="teal" />
-          <NiveauPreview title="Collège" subtitle="6ᵉ → 4ᵉ" tone="rouge" />
+          <Link
+            to="/boutique"
+            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-xl transition-all hover:gap-3 hover:bg-primary/90"
+          >
+            Découvrir la boutique <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
 
@@ -198,37 +198,6 @@ function Index() {
         </div>
       </footer>
     </div>
-  );
-}
-
-function NiveauPreview({
-  title,
-  subtitle,
-  tone,
-}: {
-  title: string;
-  subtitle: string;
-  tone: "primary" | "teal" | "rouge";
-}) {
-  const colors = {
-    primary: { bar: "bg-primary", grad: "from-primary/10 to-transparent", text: "text-primary" },
-    teal: { bar: "bg-[var(--teal)]", grad: "from-[var(--teal)]/15 to-transparent", text: "text-[var(--teal-deep)]" },
-    rouge: { bar: "bg-[var(--rouge)]", grad: "from-[var(--rouge)]/15 to-transparent", text: "text-[var(--rouge)]" },
-  }[tone];
-  return (
-    <Link
-      to="/niveau"
-      className={`group relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br ${colors.grad} p-7 transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)]`}
-    >
-      <div className={`absolute inset-y-0 left-0 w-1.5 ${colors.bar}`} />
-      <div className="relative">
-        <div className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${colors.text}`}>{subtitle}</div>
-        <h3 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{title}</h3>
-        <div className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-foreground/70 group-hover:gap-2 transition-all">
-          Découvrir <ArrowRight className="h-4 w-4" />
-        </div>
-      </div>
-    </Link>
   );
 }
 

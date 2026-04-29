@@ -10,32 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PanierRouteImport } from './routes/panier'
-import { Route as NiveauRouteImport } from './routes/niveau'
-import { Route as MaternelleRouteImport } from './routes/maternelle'
-import { Route as LyceeRouteImport } from './routes/lycee'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as EnfantsRouteImport } from './routes/enfants'
-import { Route as CollegeRouteImport } from './routes/college'
+import { Route as BoutiqueRouteImport } from './routes/boutique'
 import { Route as IndexRouteImport } from './routes/index'
 
 const PanierRoute = PanierRouteImport.update({
   id: '/panier',
   path: '/panier',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NiveauRoute = NiveauRouteImport.update({
-  id: '/niveau',
-  path: '/niveau',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MaternelleRoute = MaternelleRouteImport.update({
-  id: '/maternelle',
-  path: '/maternelle',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LyceeRoute = LyceeRouteImport.update({
-  id: '/lycee',
-  path: '/lycee',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -48,9 +30,9 @@ const EnfantsRoute = EnfantsRouteImport.update({
   path: '/enfants',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CollegeRoute = CollegeRouteImport.update({
-  id: '/college',
-  path: '/college',
+const BoutiqueRoute = BoutiqueRouteImport.update({
+  id: '/boutique',
+  path: '/boutique',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -61,76 +43,39 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/college': typeof CollegeRoute
+  '/boutique': typeof BoutiqueRoute
   '/enfants': typeof EnfantsRoute
   '/login': typeof LoginRoute
-  '/lycee': typeof LyceeRoute
-  '/maternelle': typeof MaternelleRoute
-  '/niveau': typeof NiveauRoute
   '/panier': typeof PanierRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/college': typeof CollegeRoute
+  '/boutique': typeof BoutiqueRoute
   '/enfants': typeof EnfantsRoute
   '/login': typeof LoginRoute
-  '/lycee': typeof LyceeRoute
-  '/maternelle': typeof MaternelleRoute
-  '/niveau': typeof NiveauRoute
   '/panier': typeof PanierRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/college': typeof CollegeRoute
+  '/boutique': typeof BoutiqueRoute
   '/enfants': typeof EnfantsRoute
   '/login': typeof LoginRoute
-  '/lycee': typeof LyceeRoute
-  '/maternelle': typeof MaternelleRoute
-  '/niveau': typeof NiveauRoute
   '/panier': typeof PanierRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/college'
-    | '/enfants'
-    | '/login'
-    | '/lycee'
-    | '/maternelle'
-    | '/niveau'
-    | '/panier'
+  fullPaths: '/' | '/boutique' | '/enfants' | '/login' | '/panier'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/college'
-    | '/enfants'
-    | '/login'
-    | '/lycee'
-    | '/maternelle'
-    | '/niveau'
-    | '/panier'
-  id:
-    | '__root__'
-    | '/'
-    | '/college'
-    | '/enfants'
-    | '/login'
-    | '/lycee'
-    | '/maternelle'
-    | '/niveau'
-    | '/panier'
+  to: '/' | '/boutique' | '/enfants' | '/login' | '/panier'
+  id: '__root__' | '/' | '/boutique' | '/enfants' | '/login' | '/panier'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CollegeRoute: typeof CollegeRoute
+  BoutiqueRoute: typeof BoutiqueRoute
   EnfantsRoute: typeof EnfantsRoute
   LoginRoute: typeof LoginRoute
-  LyceeRoute: typeof LyceeRoute
-  MaternelleRoute: typeof MaternelleRoute
-  NiveauRoute: typeof NiveauRoute
   PanierRoute: typeof PanierRoute
 }
 
@@ -141,27 +86,6 @@ declare module '@tanstack/react-router' {
       path: '/panier'
       fullPath: '/panier'
       preLoaderRoute: typeof PanierRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/niveau': {
-      id: '/niveau'
-      path: '/niveau'
-      fullPath: '/niveau'
-      preLoaderRoute: typeof NiveauRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/maternelle': {
-      id: '/maternelle'
-      path: '/maternelle'
-      fullPath: '/maternelle'
-      preLoaderRoute: typeof MaternelleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lycee': {
-      id: '/lycee'
-      path: '/lycee'
-      fullPath: '/lycee'
-      preLoaderRoute: typeof LyceeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -178,11 +102,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnfantsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/college': {
-      id: '/college'
-      path: '/college'
-      fullPath: '/college'
-      preLoaderRoute: typeof CollegeRouteImport
+    '/boutique': {
+      id: '/boutique'
+      path: '/boutique'
+      fullPath: '/boutique'
+      preLoaderRoute: typeof BoutiqueRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -197,12 +121,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CollegeRoute: CollegeRoute,
+  BoutiqueRoute: BoutiqueRoute,
   EnfantsRoute: EnfantsRoute,
   LoginRoute: LoginRoute,
-  LyceeRoute: LyceeRoute,
-  MaternelleRoute: MaternelleRoute,
-  NiveauRoute: NiveauRoute,
   PanierRoute: PanierRoute,
 }
 export const routeTree = rootRouteImport

@@ -87,7 +87,7 @@ function LoginPage() {
               </div>
 
               <Link
-                to="/niveau"
+                to="/boutique"
                 className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-primary text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] transition-all hover:bg-primary/90"
               >
                 Accéder à la boutique · Sign in

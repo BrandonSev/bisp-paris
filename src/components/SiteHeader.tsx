@@ -28,7 +28,7 @@ export function SiteHeader({ schoolName, cartCount = 0, showAccount = true }: Si
 
           {schoolName && (
             <nav className="hidden items-center gap-7 text-sm font-medium text-muted-foreground md:flex">
-              <Link to="/niveau" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
+              <Link to="/boutique" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
                 Boutique · Shop
               </Link>
               <Link to="/enfants" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
