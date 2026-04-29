@@ -113,7 +113,10 @@ function BoutiquePage() {
       <SiteHeader schoolName="BISP" cartCount={0} />
 
       {/* Hero */}
-      {/* <section className="relative overflow-hidden border-b border-border" style={{ background: "var(--gradient-soft)" }}>
+      <section
+        className="relative overflow-hidden border-b border-border"
+        style={{ background: "var(--gradient-soft)" }}
+      >
         <div className="pointer-events-none absolute inset-0 text-primary">
           <ShellMotif className="absolute -left-32 -top-20 h-[500px] w-[500px]" opacity={0.04} />
           <ShellMotif className="absolute -right-40 -bottom-40 h-[600px] w-[600px]" opacity={0.03} />
@@ -131,7 +134,7 @@ function BoutiquePage() {
             Tous les uniformes brodés de l'écusson officiel, confectionnés pour le quotidien des élèves.
           </p>
         </div>
-      </section> */}
+      </section>
 
       {/* Filters */}
       <section className="sticky top-16 z-30 border-b border-border bg-background/95 backdrop-blur">
