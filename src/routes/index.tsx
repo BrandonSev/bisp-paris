@@ -14,7 +14,10 @@ export const Route = createFileRoute("/")({
           "Espace familles BISP. Commandez les uniformes officiels du Bilingual International School of Paris (15ᵉ) — polos, pulls, chemises, trousses brodés à l'écusson de l'école.",
       },
       { property: "og:title", content: "BISP — Boutique officielle des uniformes" },
-      { property: "og:description", content: "Family portal · Commandez les uniformes officiels brodés de l'écusson BISP." },
+      {
+        property: "og:description",
+        content: "Family portal · Commandez les uniformes officiels brodés de l'écusson BISP.",
+      },
     ],
   }),
   component: Index,
@@ -26,9 +29,7 @@ function Index() {
       {/* Top utility bar */}
       <div className="border-b border-border bg-card">
         <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4 text-xs text-muted-foreground sm:px-6 lg:px-8">
-          <span className="hidden sm:inline">
-            Simply exceptional · Brodé sur mesure pour BISP
-          </span>
+          <span className="hidden sm:inline">Simply exceptional · Brodé sur mesure pour BISP</span>
           <div className="flex items-center gap-4">
             <span>FR</span>
             <span className="text-border">·</span>
@@ -43,9 +44,7 @@ function Index() {
           <div className="flex items-center gap-3">
             <img src={logo} alt="BISP" className="h-12 w-12 object-contain" />
             <div className="leading-tight">
-              <div className="text-base font-semibold tracking-tight text-primary">
-                Bilingual School of Paris
-              </div>
+              <div className="text-base font-semibold tracking-tight text-primary">Bilingual School of Paris</div>
               <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                 Boutique officielle · Official shop
               </div>
@@ -73,7 +72,7 @@ function Index() {
           <ShellMotif className="absolute -right-48 -bottom-48 h-[700px] w-[700px]" opacity={0.06} />
         </div>
 
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8" style="background: var(--chart-1);">
           <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
             <div className="text-center lg:text-left">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.18em] text-white backdrop-blur">
@@ -86,12 +85,12 @@ function Index() {
               </h1>
               <div className="mt-5 h-1 w-20 rounded-full bg-[var(--rouge)] mx-auto lg:mx-0" />
               <p className="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg mx-auto lg:mx-0">
-                Bilingual International School of Paris · 15ᵉ. Commandez les tenues officielles
-                brodées de l'écusson BISP pour la maternelle, l'élémentaire et le collège.
+                Bilingual International School of Paris · 15ᵉ. Commandez les tenues officielles brodées de l'écusson
+                BISP pour la maternelle, l'élémentaire et le collège.
               </p>
               <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/65 italic mx-auto lg:mx-0">
-                Order your official BISP school uniforms — embroidered crest, quality fabrics,
-                ready for the new school year.
+                Order your official BISP school uniforms — embroidered crest, quality fabrics, ready for the new school
+                year.
               </p>
 
               <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
@@ -130,9 +129,7 @@ function Index() {
                     <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-white/75">
                       Écusson officiel · Official crest
                     </div>
-                    <div className="mt-2 font-display text-2xl font-semibold text-white italic">
-                      Simply exceptional
-                    </div>
+                    <div className="mt-2 font-display text-2xl font-semibold text-white italic">Simply exceptional</div>
                   </div>
                 </div>
               </div>
@@ -158,8 +155,7 @@ function Index() {
             Trois niveaux · Three school levels
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Chaque tranche d'âge dispose d'une sélection d'uniformes adaptée et brodée
-            de l'écusson BISP.
+            Chaque tranche d'âge dispose d'une sélection d'uniformes adaptée et brodée de l'écusson BISP.
           </p>
         </div>
 
@@ -205,7 +201,15 @@ function Index() {
   );
 }
 
-function NiveauPreview({ title, subtitle, tone }: { title: string; subtitle: string; tone: "primary" | "teal" | "rouge" }) {
+function NiveauPreview({
+  title,
+  subtitle,
+  tone,
+}: {
+  title: string;
+  subtitle: string;
+  tone: "primary" | "teal" | "rouge";
+}) {
   const colors = {
     primary: { bar: "bg-primary", grad: "from-primary/10 to-transparent", text: "text-primary" },
     teal: { bar: "bg-[var(--teal)]", grad: "from-[var(--teal)]/15 to-transparent", text: "text-[var(--teal-deep)]" },
