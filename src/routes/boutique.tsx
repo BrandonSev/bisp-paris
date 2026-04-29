@@ -3,8 +3,8 @@ import { useState } from "react";
 import { Heart, ShieldCheck, ShoppingBag, Sparkles } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
-import polo from "@/assets/polo-bisp.jpg";
-import poloMockup from "@/assets/polo-bisp-mockup.jpeg";
+import poloBlanc from "@/assets/polo-bisp-blanc.svg";
+import poloMarine from "@/assets/polo-bisp-marine.svg";
 import pull from "@/assets/pull-bisp.jpg";
 import chemise from "@/assets/chemise-bisp.jpg";
 import chemiseFille from "@/assets/chemise-bisp-fille.png";
@@ -41,8 +41,8 @@ type Product = {
 };
 
 const products: Product[] = [
-  { id: "polo-blanc", name: "Polo officiel blanc", nameEn: "Official white polo", price: "28,00 €", image: poloMockup, badge: "Best-seller", category: "Polos" },
-  { id: "polo-marine", name: "Polo officiel marine", nameEn: "Official navy polo", price: "28,00 €", image: polo, category: "Polos" },
+  { id: "polo-blanc", name: "Polo officiel blanc", nameEn: "Official white polo", price: "28,00 €", image: poloBlanc, badge: "Best-seller", category: "Polos" },
+  { id: "polo-marine", name: "Polo officiel marine", nameEn: "Official navy polo", price: "28,00 €", image: poloMarine, category: "Polos" },
   { id: "pull-marine", name: "Pull marine brodé", nameEn: "Embroidered navy jumper", price: "52,00 €", image: pull, badge: "Hiver", category: "Pulls" },
   { id: "chemise-garcon", name: "Chemise officielle", nameEn: "Official shirt", price: "34,00 €", image: chemise, category: "Chemises" },
   { id: "chemise-fille", name: "Chemisier officiel", nameEn: "Official blouse", price: "34,00 €", image: chemiseFille, category: "Chemises" },
