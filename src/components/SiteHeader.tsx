@@ -1,0 +1,121 @@
+import { Link } from "@tanstack/react-router";
+import { ShoppingBag, User } from "lucide-react";
+import logo from "@/assets/bisp-logo.png";
+import { SchoolIdentityBar } from "@/components/SchoolMotif";
+
+interface SiteHeaderProps {
+  schoolName?: string;
+  cartCount?: number;
+  showAccount?: boolean;
+}
+
+export function SiteHeader({ schoolName, cartCount = 0, showAccount = true }: SiteHeaderProps) {
+  return (
+    <>
+      <header className="sticky top-0 z-40 w-full border-b border-border bg-background/90 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link to="/" className="flex items-center gap-3">
+            <img src={logo} alt="BISP" className="h-11 w-11 object-contain" />
+            <div className="hidden flex-col leading-tight sm:flex">
+              <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                Family portal · Espace familles
+              </span>
+              <span className="text-sm font-semibold tracking-tight text-primary">
+                Bilingual School of Paris
+              </span>
+            </div>
+          </Link>
+
+          {schoolName && (
+            <nav className="hidden items-center gap-7 text-sm font-medium text-muted-foreground md:flex">
+              <Link to="/niveau" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
+                Boutique · Shop
+              </Link>
+              <Link to="/enfants" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
+                Mes enfants
+              </Link>
+              <Link to="/panier" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
+                Commandes
+              </Link>
+            </nav>
+          )}
+
+          <div className="flex items-center gap-2">
+            {showAccount && (
+              <button
+                type="button"
+                className="hidden h-10 items-center gap-2 rounded-full border border-border bg-card px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted sm:inline-flex"
+              >
+                <User className="h-4 w-4" />
+                <span>Famille Dubois</span>
+              </button>
+            )}
+            <Link
+              to="/panier"
+              className="relative inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground shadow-[var(--shadow-card)] transition-colors hover:bg-primary/90"
+            >
+              <ShoppingBag className="h-4 w-4" />
+              <span className="hidden sm:inline">Panier</span>
+              {cartCount > 0 && (
+                <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--rouge)] px-1.5 text-[11px] font-semibold text-white">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          </div>
+        </div>
+      </header>
+      {schoolName && <SchoolIdentityBar />}
+    </>
+  );
+}
+
+export function SiteFooter() {
+  return (
+    <footer className="mt-24 border-t border-border" style={{ background: "var(--gradient-hero)" }}>
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 text-white sm:px-6 lg:grid-cols-4 lg:px-8">
+        <div className="lg:col-span-2">
+          <div className="flex items-center gap-4">
+            <img src={logo} alt="BISP" className="h-16 w-16 object-contain drop-shadow" />
+            <div>
+              <div className="text-base font-semibold">Bilingual International School of Paris</div>
+              <div className="text-xs text-white/70 mt-0.5">Simply exceptional · Paris 15ᵉ</div>
+            </div>
+          </div>
+          <p className="mt-5 max-w-md text-sm leading-relaxed text-white/80">
+            Boutique officielle des uniformes BISP. Tenues brodées de l'écusson de l'école,
+            confectionnées avec soin pour le quotidien des élèves de la maternelle au collège.
+          </p>
+          <p className="mt-3 max-w-md text-xs leading-relaxed text-white/65 italic">
+            Official BISP uniform shop. Quality embroidered uniforms for our students,
+            from kindergarten to middle school.
+          </p>
+        </div>
+        <div>
+          <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Famille · Family</h4>
+          <ul className="mt-4 space-y-2 text-sm text-white/85">
+            <li>Mon espace · My account</li>
+            <li>Mes enfants · My children</li>
+            <li>Mes commandes · Orders</li>
+            <li>Guide des tailles · Size guide</li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Aide · Help</h4>
+          <ul className="mt-4 space-y-2 text-sm text-white/85">
+            <li>operations@bisparis.com</li>
+            <li>Livraison & retours</li>
+            <li>Conditions générales</li>
+            <li>Mentions légales</li>
+          </ul>
+        </div>
+      </div>
+      <div className="border-t border-white/15">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-white/70 sm:flex-row sm:px-6 lg:px-8">
+          <span>© {new Date().getFullYear()} Bilingual International School of Paris</span>
+          <span>Paiement sécurisé · Secure payment</span>
+        </div>
+      </div>
+    </footer>
+  );
+}

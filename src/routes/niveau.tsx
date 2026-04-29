@@ -1,0 +1,127 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
+import { ShellMotif } from "@/components/SchoolMotif";
+import maternelle from "@/assets/maternelle-bisp.jpg";
+import college from "@/assets/college-bisp.jpg";
+import lycee from "@/assets/lycee-bisp.jpg";
+
+export const Route = createFileRoute("/niveau")({
+  head: () => ({
+    meta: [
+      { title: "Choisir le niveau · Choose level — Boutique BISP" },
+      {
+        name: "description",
+        content:
+          "Sélectionnez le niveau scolaire de votre enfant pour découvrir la sélection d'uniformes BISP adaptée.",
+      },
+    ],
+  }),
+  component: NiveauPage,
+});
+
+const levels = [
+  {
+    id: "maternelle",
+    title: "Maternelle & Élémentaire",
+    titleEn: "Kindergarten & Primary",
+    range: "PS · MS · GS · CP → CM2",
+    image: maternelle,
+    href: "/maternelle" as const,
+    accent: "Polos brodés, trousses, sweats",
+  },
+  {
+    id: "college",
+    title: "Collège",
+    titleEn: "Middle school",
+    range: "6ᵉ · 5ᵉ · 4ᵉ",
+    image: college,
+    href: "/college" as const,
+    accent: "Polos, pulls, chemises, t-shirts",
+  },
+  {
+    id: "lycee",
+    title: "Lycée",
+    titleEn: "High school",
+    range: "3ᵉ · 2nde · 1re · Tle",
+    image: lycee,
+    href: "/lycee" as const,
+    accent: "Bientôt disponible · Coming soon",
+  },
+];
+
+function NiveauPage() {
+  return (
+    <div className="min-h-screen bg-background">
+      <SiteHeader schoolName="BISP" cartCount={0} />
+
+      <section className="relative overflow-hidden border-b border-border" style={{ background: "var(--gradient-soft)" }}>
+        <div className="pointer-events-none absolute inset-0 text-primary">
+          <ShellMotif className="absolute -left-32 -top-20 h-[500px] w-[500px]" opacity={0.04} />
+          <ShellMotif className="absolute -right-40 -bottom-40 h-[600px] w-[600px]" opacity={0.03} />
+        </div>
+        <div className="relative mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 lg:px-8">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--teal)]/30 bg-white px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--teal-deep)] shadow-sm">
+            <Sparkles className="h-3 w-3" /> Rentrée 2026-2027 · Back to school
+          </span>
+          <h1 className="mt-5 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+            Choisissez le niveau de votre enfant
+          </h1>
+          <p className="mt-2 text-sm italic text-muted-foreground">Choose your child's school level</p>
+          <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-[var(--rouge)]" />
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
+            Chaque niveau dispose d'une sélection d'uniformes validée par BISP.
+            Cliquez sur la carte correspondante pour découvrir les produits disponibles.
+          </p>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {levels.map((level, idx) => (
+            <LevelCard key={level.id} level={level} priority={idx === 0} />
+          ))}
+        </div>
+
+        <p className="mt-12 text-center text-xs text-muted-foreground">
+          Besoin d'aide ? Need help ? — <span className="text-foreground font-medium">operations@bisparis.com</span>
+        </p>
+      </section>
+
+      <SiteFooter />
+    </div>
+  );
+}
+
+function LevelCard({ level, priority }: { level: (typeof levels)[number]; priority: boolean }) {
+  return (
+    <Link
+      to={level.href}
+      className="group relative flex h-[460px] flex-col justify-end overflow-hidden rounded-3xl border border-border shadow-[var(--shadow-card)] transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)]"
+    >
+      <img
+        src={level.image}
+        alt={level.title}
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+        loading={priority ? "eager" : "lazy"}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-primary-deep via-primary-deep/60 to-primary-deep/0" />
+
+      <div className="absolute left-6 top-6">
+        <span className="inline-flex items-center rounded-full bg-white/95 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-primary backdrop-blur">
+          {level.titleEn}
+        </span>
+      </div>
+
+      <div className="relative p-7 text-white">
+        <p className="text-xs uppercase tracking-wider text-white/75">{level.range}</p>
+        <h3 className="mt-2 text-2xl font-semibold tracking-tight">{level.title}</h3>
+        <p className="mt-1 text-sm text-white/85">{level.accent}</p>
+
+        <div className="mt-5 inline-flex h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-semibold text-primary shadow-md transition-all group-hover:gap-3">
+          Accéder · Enter <ArrowRight className="h-4 w-4" />
+        </div>
+      </div>
+    </Link>
+  );
+}
