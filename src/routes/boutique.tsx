@@ -60,7 +60,7 @@ function BoutiquePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader schoolName="BISP" cartCount={0} />
+      <SiteHeader schoolName="BISP" />
 
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border" style={{ background: "var(--gradient-soft)" }}>
