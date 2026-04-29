@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ShoppingBag, User } from "lucide-react";
 import logo from "@/assets/bisp-logo.png";
 import { SchoolIdentityBar } from "@/components/SchoolMotif";
+import { useStore } from "@/lib/store";
 
 interface SiteHeaderProps {
   schoolName?: string;
@@ -9,7 +10,9 @@ interface SiteHeaderProps {
   showAccount?: boolean;
 }
 
-export function SiteHeader({ schoolName, cartCount = 0, showAccount = true }: SiteHeaderProps) {
+export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHeaderProps) {
+  const { cartCount: storeCount } = useStore();
+  const count = cartCount ?? storeCount;
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b border-border bg-background/90 backdrop-blur-md">
@@ -20,31 +23,21 @@ export function SiteHeader({ schoolName, cartCount = 0, showAccount = true }: Si
               <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
                 Family portal · Espace familles
               </span>
-              <span className="text-sm font-semibold tracking-tight text-primary">Bilingual School of Paris</span>
+              <span className="text-sm font-semibold tracking-tight text-primary">
+                Bilingual School of Paris
+              </span>
             </div>
           </Link>
 
           {schoolName && (
             <nav className="hidden items-center gap-7 text-sm font-medium text-muted-foreground md:flex">
-              <Link
-                to="/boutique"
-                className="transition-colors hover:text-primary"
-                activeProps={{ className: "text-primary" }}
-              >
+              <Link to="/boutique" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
                 Boutique · Shop
               </Link>
-              <Link
-                to="/enfants"
-                className="transition-colors hover:text-primary"
-                activeProps={{ className: "text-primary" }}
-              >
+              <Link to="/enfants" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
                 Mes enfants
               </Link>
-              <Link
-                to="/panier"
-                className="transition-colors hover:text-primary"
-                activeProps={{ className: "text-primary" }}
-              >
+              <Link to="/panier" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
                 Commandes
               </Link>
             </nav>
@@ -66,15 +59,16 @@ export function SiteHeader({ schoolName, cartCount = 0, showAccount = true }: Si
             >
               <ShoppingBag className="h-4 w-4" />
               <span className="hidden sm:inline">Panier</span>
-              {cartCount > 0 && (
+              {count > 0 && (
                 <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--rouge)] px-1.5 text-[11px] font-semibold text-white">
-                  {cartCount}
+                  {count}
                 </span>
               )}
             </Link>
           </div>
         </div>
       </header>
+      {schoolName && <SchoolIdentityBar />}
     </>
   );
 }
@@ -92,12 +86,12 @@ export function SiteFooter() {
             </div>
           </div>
           <p className="mt-5 max-w-md text-sm leading-relaxed text-white/80">
-            Boutique officielle des uniformes BISP. Tenues brodées de l'écusson de l'école, confectionnées avec soin
-            pour le quotidien des élèves de la maternelle au collège.
+            Boutique officielle des uniformes BISP. Tenues brodées de l'écusson de l'école,
+            confectionnées avec soin pour le quotidien des élèves de la maternelle au collège.
           </p>
           <p className="mt-3 max-w-md text-xs leading-relaxed text-white/65 italic">
-            Official BISP uniform shop. Quality embroidered uniforms for our students, from kindergarten to middle
-            school.
+            Official BISP uniform shop. Quality embroidered uniforms for our students,
+            from kindergarten to middle school.
           </p>
         </div>
         <div>
