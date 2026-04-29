@@ -7,6 +7,8 @@ import poloFront from "@/assets/polo-bisp-marine.svg";
 import poloBack from "@/assets/polo-bisp-blanc.svg";
 import hoodieFront from "@/assets/hoodie-bisp-front.svg";
 import hoodieBack from "@/assets/hoodie-bisp-back.svg";
+import teddyFront from "@/assets/teddy-bisp-front.svg";
+import teddyBack from "@/assets/teddy-bisp-back.svg";
 import trousse from "@/assets/trousse-bisp.svg";
 
 export const Route = createFileRoute("/boutique")({
@@ -50,6 +52,7 @@ const adultSizes = ["XS", "S", "M", "L", "XL"];
 const products: Product[] = [
   { id: "polo-officiel", name: "Polo officiel BISP", nameEn: "Official BISP polo", price: "28,00 €", images: [poloFront, poloBack], sizes: kidsSizes, badge: "Best-seller", category: "Polos" },
   { id: "hoodie-jean-eudes", name: "Hoodie zippé Jean-Eudes", nameEn: "Jean-Eudes zip hoodie", price: "62,00 €", images: [hoodieFront, hoodieBack], sizes: kidsSizes, badge: "Hiver", category: "Pulls" },
+  { id: "teddy-charlie", name: "Teddy boutonné Charlie", nameEn: "Charlie button teddy jacket", price: "78,00 €", images: [teddyFront, teddyBack], sizes: kidsSizes, badge: "2 poches intérieures", category: "Pulls" },
   { id: "trousse", name: "Trousse brodée", nameEn: "Embroidered pencil case", price: "18,00 €", images: [trousse], sizes: ["Unique"], badge: "Nouveau", category: "Accessoires" },
 ];
 
