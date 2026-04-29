@@ -1,15 +1,18 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Heart, ShieldCheck, ShoppingBag, Sparkles } from "lucide-react";
+import { ShieldCheck, ShoppingBag, Sparkles } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
-import polo from "@/assets/polo-bisp.jpg";
-import poloMockup from "@/assets/polo-bisp-mockup.jpeg";
-import pull from "@/assets/pull-bisp.jpg";
-import chemise from "@/assets/chemise-bisp.jpg";
-import chemiseFille from "@/assets/chemise-bisp-fille.png";
-import tshirt from "@/assets/tshirt-bisp.jpg";
-import trousses from "@/assets/trousses-bisp.png";
+import { useStore } from "@/lib/store";
+import { toast } from "sonner";
+import poloFront from "@/assets/polo-bisp-marine.svg";
+import poloBack from "@/assets/polo-bisp-blanc.svg";
+import hoodieFront from "@/assets/hoodie-bisp-front.svg";
+import hoodieBack from "@/assets/hoodie-bisp-back.svg";
+import teddyFront from "@/assets/teddy-bisp-front.svg";
+import teddyBack from "@/assets/teddy-bisp-back.svg";
+import trousse from "@/assets/trousse-bisp.svg";
+import { TrousseSvg } from "@/components/TrousseSvg";
 
 export const Route = createFileRoute("/boutique")({
   head: () => ({
@@ -34,75 +37,81 @@ type Product = {
   id: string;
   name: string;
   nameEn: string;
-  price: string;
-  image: string;
-  badge?: string;
+  /** prix par taille — la plage est calculée min/max */
+  pricing: Record<string, number>;
+  images: string[];
+  sizes: string[];
+  /** options de personnalisation (ex: couleur du zip) */
+  options?: ProductOption[];
   category: "Polos" | "Pulls" | "Chemises" | "T-shirts" | "Accessoires";
+};
+
+type ProductOption = {
+  id: string;
+  label: string;
+  choices: { value: string; label: string; swatch: string }[];
+};
+
+const kidsSizes = ["4 ans", "6 ans", "8 ans", "10 ans", "12 ans", "14 ans"];
+
+/** Génère une grille de prix croissante par taille */
+function ageBased(start: number, step = 1): Record<string, number> {
+  return Object.fromEntries(kidsSizes.map((s, i) => [s, start + i * step]));
+}
+
+const trousseColors: ProductOption = {
+  id: "zip",
+  label: "Couleur du zip",
+  choices: [
+    { value: "#1F2E59", label: "Marine", swatch: "#1F2E59" },
+    { value: "#ED3122", label: "Rouge", swatch: "#ED3122" },
+    { value: "#348397", label: "Teal", swatch: "#348397" },
+    { value: "#FFFFFF", label: "Blanc", swatch: "#FFFFFF" },
+    { value: "#111111", label: "Noir", swatch: "#111111" },
+  ],
 };
 
 const products: Product[] = [
   {
-    id: "polo-blanc",
-    name: "Polo officiel blanc",
-    nameEn: "Official white polo",
-    price: "28,00 €",
-    image: poloMockup,
-    badge: "Best-seller",
+    id: "polo-officiel",
+    name: "Polo officiel BISP",
+    nameEn: "Official BISP polo",
+    pricing: ageBased(28, 1), // 28 → 33
+    images: [poloFront, poloBack],
+    sizes: kidsSizes,
     category: "Polos",
   },
   {
-    id: "polo-marine",
-    name: "Polo officiel marine",
-    nameEn: "Official navy polo",
-    price: "28,00 €",
-    image: polo,
-    category: "Polos",
-  },
-  {
-    id: "pull-marine",
-    name: "Pull marine brodé",
-    nameEn: "Embroidered navy jumper",
-    price: "52,00 €",
-    image: pull,
-    badge: "Hiver",
+    id: "hoodie-jean-eudes",
+    name: "Hoodie zippé Jean-Eudes",
+    nameEn: "Jean-Eudes zip hoodie",
+    pricing: ageBased(62, 3), // 62 → 77
+    images: [hoodieFront, hoodieBack],
+    sizes: kidsSizes,
     category: "Pulls",
   },
   {
-    id: "chemise-garcon",
-    name: "Chemise officielle",
-    nameEn: "Official shirt",
-    price: "34,00 €",
-    image: chemise,
-    category: "Chemises",
+    id: "teddy-charlie",
+    name: "Teddy boutonné Charlie",
+    nameEn: "Charlie button teddy jacket",
+    pricing: ageBased(78, 4), // 78 → 98
+    images: [teddyFront, teddyBack],
+    sizes: kidsSizes,
+    category: "Pulls",
   },
   {
-    id: "chemise-fille",
-    name: "Chemisier officiel",
-    nameEn: "Official blouse",
-    price: "34,00 €",
-    image: chemiseFille,
-    category: "Chemises",
-  },
-  {
-    id: "tshirt-sport",
-    name: "T-shirt sport",
-    nameEn: "Sports t-shirt",
-    price: "22,00 €",
-    image: tshirt,
-    category: "T-shirts",
-  },
-  {
-    id: "trousses",
-    name: "Trousses brodées",
+    id: "trousse",
+    name: "Trousse brodée",
     nameEn: "Embroidered pencil case",
-    price: "18,00 €",
-    image: trousses,
-    badge: "Nouveau",
+    pricing: { Unique: 18 },
+    images: [trousse],
+    sizes: ["Unique"],
+    options: [trousseColors],
     category: "Accessoires",
   },
 ];
 
-const categories = ["Tous", "Polos", "Pulls", "Chemises", "T-shirts", "Accessoires"] as const;
+const categories = ["Tous", "Polos", "Pulls", "Accessoires"] as const;
 
 function BoutiquePage() {
   const [active, setActive] = useState<(typeof categories)[number]>("Tous");
@@ -110,13 +119,10 @@ function BoutiquePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader schoolName="BISP" cartCount={0} />
+      <SiteHeader schoolName="BISP" />
 
       {/* Hero */}
-      <section
-        className="relative overflow-hidden border-b border-border"
-        style={{ background: "var(--gradient-soft)" }}
-      >
+      <section className="relative overflow-hidden border-b border-border" style={{ background: "var(--gradient-soft)" }}>
         <div className="pointer-events-none absolute inset-0 text-primary">
           <ShellMotif className="absolute -left-32 -top-20 h-[500px] w-[500px]" opacity={0.04} />
           <ShellMotif className="absolute -right-40 -bottom-40 h-[600px] w-[600px]" opacity={0.03} />
@@ -174,23 +180,87 @@ function BoutiquePage() {
 }
 
 function ProductCard({ product }: { product: Product }) {
+  const { children: kids, addToCart } = useStore();
+  const [view, setView] = useState(0);
+  const [child, setChild] = useState<string>(kids[0]?.id ?? "");
+  const [size, setSize] = useState<string>("");
+  const [opts, setOpts] = useState<Record<string, string>>(() =>
+    Object.fromEntries((product.options ?? []).map((o) => [o.id, o.choices[0].value])),
+  );
+  const hasMultipleViews = product.images.length > 1;
+  const isTrousse = product.id === "trousse";
+  const zipColor = opts["zip"];
+
+  const prices = Object.values(product.pricing);
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+  const priceLabel =
+    minPrice === maxPrice
+      ? `${minPrice.toFixed(2)} €`
+      : `${minPrice.toFixed(2)} – ${maxPrice.toFixed(2)} €`;
+  const currentPrice = size ? product.pricing[size] : undefined;
+
+  const canAdd = !!size && !!child;
+  const handleAdd = () => {
+    if (!canAdd || currentPrice === undefined) return;
+    const selected = kids.find((k) => k.id === child);
+    const optionLabels = (product.options ?? [])
+      .map((o) => {
+        const choice = o.choices.find((c) => c.value === opts[o.id]);
+        return choice ? `${o.label}: ${choice.label}` : null;
+      })
+      .filter(Boolean) as string[];
+    const nameWithOpts = optionLabels.length
+      ? `${product.name} (${optionLabels.join(", ")})`
+      : product.name;
+    addToCart({
+      productId: product.id,
+      name: nameWithOpts,
+      ref: `BISP-${product.id.toUpperCase()}`,
+      price: currentPrice,
+      size,
+      qty: 1,
+      image: product.images[0],
+      childId: child,
+    });
+    toast.success(`Ajouté · ${product.name}`, {
+      description: `Taille ${size} · ${currentPrice.toFixed(2)} €${selected ? ` · pour ${selected.prenom}` : ""}`,
+    });
+  };
+
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-elegant)]">
       <div className="relative aspect-square overflow-hidden bg-secondary">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
-        />
-        {product.badge && (
-          <span className="absolute left-3 top-3 rounded-full bg-[var(--rouge)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
-            {product.badge}
-          </span>
+        {isTrousse && zipColor ? (
+          <TrousseSvg
+            zipColor={zipColor}
+            className="flex h-full w-full items-center justify-center p-8 transition-transform duration-500 group-hover:scale-105 [&>svg]:h-full [&>svg]:w-full"
+          />
+        ) : (
+          <img
+            src={product.images[view]}
+            alt={product.name}
+            className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${
+              product.images[view].endsWith(".svg") ? "object-contain p-8" : "object-cover"
+            }`}
+            loading="lazy"
+          />
         )}
-        <button className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-muted-foreground shadow-sm transition-colors hover:text-[var(--rouge)]">
-          <Heart className="h-4 w-4" />
-        </button>
+        {hasMultipleViews && (
+          <div className="absolute bottom-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full border border-border bg-white/95 p-1 shadow-sm backdrop-blur">
+            {["Avant · Front", "Arrière · Back"].map((label, i) => (
+              <button
+                key={label}
+                onClick={() => setView(i)}
+                className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-wider transition-colors ${
+                  view === i ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       <div className="flex flex-1 flex-col p-5">
         <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--teal-deep)]">
@@ -198,18 +268,117 @@ function ProductCard({ product }: { product: Product }) {
         </div>
         <h3 className="mt-1 text-base font-semibold text-foreground">{product.name}</h3>
         <p className="text-xs italic text-muted-foreground">{product.nameEn}</p>
-        <div className="mt-4 flex items-center justify-between">
-          <span className="text-lg font-semibold text-foreground">{product.price}</span>
+        <div className="mt-3 flex items-center justify-between">
+          <span className="text-lg font-semibold text-foreground">
+            {currentPrice !== undefined ? `${currentPrice.toFixed(2)} €` : priceLabel}
+            {currentPrice === undefined && minPrice !== maxPrice && (
+              <span className="ml-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                selon taille
+              </span>
+            )}
+          </span>
           <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
             <ShieldCheck className="h-3 w-3 text-[var(--teal-deep)]" /> Brodé
           </span>
         </div>
-        <Link
-          to="/panier"
-          className="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+
+        {/* Pour quel enfant */}
+        <div className="mt-4">
+          <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Pour · For
+          </label>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {kids.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => setChild(c.id)}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                  child === c.id ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-primary/40"
+                }`}
+              >
+                <span className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold bg-primary/15 text-primary">
+                  {c.initials}
+                </span>
+                <span className="font-medium">{c.prenom}</span>
+                <span className="text-[10px] text-muted-foreground">{c.classe}</span>
+              </button>
+            ))}
+            {kids.length === 0 && (
+              <span className="text-xs text-muted-foreground">Ajoutez d'abord un enfant.</span>
+            )}
+          </div>
+        </div>
+
+        {/* Taille */}
+        <div className="mt-3">
+          <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Taille · Size
+          </label>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {product.sizes.map((s) => (
+              <button
+                key={s}
+                onClick={() => setSize(s)}
+                className={`min-w-[2.5rem] rounded-md border px-2 py-1 text-xs font-medium transition-colors ${
+                  size === s
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-foreground hover:border-primary/40"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Options (couleur, etc.) */}
+        {product.options?.map((opt) => (
+          <div key={opt.id} className="mt-3">
+            <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {opt.label}
+            </label>
+            <div className="mt-1.5 flex flex-wrap items-center gap-2">
+              {opt.choices.map((c) => {
+                const selected = opts[opt.id] === c.value;
+                return (
+                  <button
+                    key={c.value}
+                    type="button"
+                    onClick={() => setOpts((p) => ({ ...p, [opt.id]: c.value }))}
+                    title={c.label}
+                    aria-label={c.label}
+                    aria-pressed={selected}
+                    className={`relative h-7 w-7 rounded-full border transition-all ${
+                      selected
+                        ? "border-primary ring-2 ring-primary/30 ring-offset-1 ring-offset-card"
+                        : "border-border hover:border-primary/40"
+                    }`}
+                    style={{ background: c.swatch }}
+                  />
+                );
+              })}
+              <span className="ml-1 text-[11px] text-muted-foreground">
+                {opt.choices.find((c) => c.value === opts[opt.id])?.label}
+              </span>
+            </div>
+          </div>
+        ))}
+
+        <button
+          type="button"
+          onClick={handleAdd}
+          disabled={!canAdd}
+          className={`mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-colors ${
+            canAdd
+              ? "bg-primary text-primary-foreground hover:bg-primary/90"
+              : "cursor-not-allowed bg-muted text-muted-foreground"
+          }`}
         >
-          <ShoppingBag className="h-4 w-4" /> Ajouter · Add
-        </Link>
+          <ShoppingBag className="h-4 w-4" />
+          {canAdd && currentPrice !== undefined
+            ? `Ajouter · ${currentPrice.toFixed(2)} €`
+            : "Choisir une taille · Pick a size"}
+        </button>
       </div>
     </article>
   );
