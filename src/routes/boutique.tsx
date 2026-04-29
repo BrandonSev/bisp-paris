@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Heart, ShieldCheck, ShoppingBag, Sparkles } from "lucide-react";
+import { ShieldCheck, ShoppingBag, Sparkles } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
 import poloFront from "@/assets/polo-bisp-marine.svg";
@@ -37,7 +37,6 @@ type Product = {
   price: string;
   images: string[];
   sizes: string[];
-  badge?: string;
   category: "Polos" | "Pulls" | "Chemises" | "T-shirts" | "Accessoires";
 };
 
@@ -50,10 +49,10 @@ const kidsSizes = ["4 ans", "6 ans", "8 ans", "10 ans", "12 ans", "14 ans"];
 const adultSizes = ["XS", "S", "M", "L", "XL"];
 
 const products: Product[] = [
-  { id: "polo-officiel", name: "Polo officiel BISP", nameEn: "Official BISP polo", price: "28,00 €", images: [poloFront, poloBack], sizes: kidsSizes, badge: "Best-seller", category: "Polos" },
-  { id: "hoodie-jean-eudes", name: "Hoodie zippé Jean-Eudes", nameEn: "Jean-Eudes zip hoodie", price: "62,00 €", images: [hoodieFront, hoodieBack], sizes: kidsSizes, badge: "Hiver", category: "Pulls" },
-  { id: "teddy-charlie", name: "Teddy boutonné Charlie", nameEn: "Charlie button teddy jacket", price: "78,00 €", images: [teddyFront, teddyBack], sizes: kidsSizes, badge: "2 poches intérieures", category: "Pulls" },
-  { id: "trousse", name: "Trousse brodée", nameEn: "Embroidered pencil case", price: "18,00 €", images: [trousse], sizes: ["Unique"], badge: "Nouveau", category: "Accessoires" },
+  { id: "polo-officiel", name: "Polo officiel BISP", nameEn: "Official BISP polo", price: "28,00 €", images: [poloFront, poloBack], sizes: kidsSizes, category: "Polos" },
+  { id: "hoodie-jean-eudes", name: "Hoodie zippé Jean-Eudes", nameEn: "Jean-Eudes zip hoodie", price: "62,00 €", images: [hoodieFront, hoodieBack], sizes: kidsSizes, category: "Pulls" },
+  { id: "teddy-charlie", name: "Teddy boutonné Charlie", nameEn: "Charlie button teddy jacket", price: "78,00 €", images: [teddyFront, teddyBack], sizes: kidsSizes, category: "Pulls" },
+  { id: "trousse", name: "Trousse brodée", nameEn: "Embroidered pencil case", price: "18,00 €", images: [trousse], sizes: ["Unique"], category: "Accessoires" },
 ];
 
 const categories = ["Tous", "Polos", "Pulls", "Accessoires"] as const;
@@ -141,14 +140,6 @@ function ProductCard({ product }: { product: Product }) {
           }`}
           loading="lazy"
         />
-        {product.badge && (
-          <span className="absolute left-3 top-3 rounded-full bg-[var(--rouge)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
-            {product.badge}
-          </span>
-        )}
-        <button className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-muted-foreground shadow-sm transition-colors hover:text-[var(--rouge)]">
-          <Heart className="h-4 w-4" />
-        </button>
         {hasMultipleViews && (
           <div className="absolute bottom-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full border border-border bg-white/95 p-1 shadow-sm backdrop-blur">
             {["Avant · Front", "Arrière · Back"].map((label, i) => (
