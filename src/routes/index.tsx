@@ -109,7 +109,7 @@ function Index() {
               </div>
 
               <div className="mt-10 grid grid-cols-3 gap-4 max-w-xl mx-auto lg:mx-0">
-                <HeroStat icon={<GraduationCap className="h-4 w-4" />} value="PS → 4ᵉ" label="Niveaux" />
+                <HeroStat icon={<GraduationCap className="h-4 w-4" />} value="PS → Terminal" label="Niveaux" />
                 <HeroStat icon={<Globe2 className="h-4 w-4" />} value="FR / EN" label="Bilingue" />
                 <HeroStat icon={<Sparkles className="h-4 w-4" />} value="2026" label="Rentrée" />
               </div>
