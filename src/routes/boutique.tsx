@@ -3,8 +3,8 @@ import { useState } from "react";
 import { Heart, ShieldCheck, ShoppingBag, Sparkles } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
-import poloBlanc from "@/assets/polo-bisp-blanc.svg";
-import poloMarine from "@/assets/polo-bisp-marine.svg";
+import poloFront from "@/assets/polo-bisp-blanc.svg";
+import poloBack from "@/assets/polo-bisp-marine.svg";
 import pull from "@/assets/pull-bisp.jpg";
 import chemise from "@/assets/chemise-bisp.jpg";
 import chemiseFille from "@/assets/chemise-bisp-fille.png";
@@ -35,19 +35,27 @@ type Product = {
   name: string;
   nameEn: string;
   price: string;
-  image: string;
+  images: string[];
+  sizes: string[];
   badge?: string;
   category: "Polos" | "Pulls" | "Chemises" | "T-shirts" | "Accessoires";
 };
 
+const children = [
+  { id: "emma", name: "Emma Dubois", classe: "CE2", initials: "ED", color: "bg-[var(--teal)]/15 text-[var(--teal-deep)]" },
+  { id: "thomas", name: "Thomas Dubois", classe: "6ᵉ B", initials: "TD", color: "bg-primary/15 text-primary" },
+];
+
+const kidsSizes = ["4 ans", "6 ans", "8 ans", "10 ans", "12 ans", "14 ans"];
+const adultSizes = ["XS", "S", "M", "L", "XL"];
+
 const products: Product[] = [
-  { id: "polo-blanc", name: "Polo officiel blanc", nameEn: "Official white polo", price: "28,00 €", image: poloBlanc, badge: "Best-seller", category: "Polos" },
-  { id: "polo-marine", name: "Polo officiel marine", nameEn: "Official navy polo", price: "28,00 €", image: poloMarine, category: "Polos" },
-  { id: "pull-marine", name: "Pull marine brodé", nameEn: "Embroidered navy jumper", price: "52,00 €", image: pull, badge: "Hiver", category: "Pulls" },
-  { id: "chemise-garcon", name: "Chemise officielle", nameEn: "Official shirt", price: "34,00 €", image: chemise, category: "Chemises" },
-  { id: "chemise-fille", name: "Chemisier officiel", nameEn: "Official blouse", price: "34,00 €", image: chemiseFille, category: "Chemises" },
-  { id: "tshirt-sport", name: "T-shirt sport", nameEn: "Sports t-shirt", price: "22,00 €", image: tshirt, category: "T-shirts" },
-  { id: "trousses", name: "Trousses brodées", nameEn: "Embroidered pencil case", price: "18,00 €", image: trousses, badge: "Nouveau", category: "Accessoires" },
+  { id: "polo-officiel", name: "Polo officiel BISP", nameEn: "Official BISP polo", price: "28,00 €", images: [poloFront, poloBack], sizes: kidsSizes, badge: "Best-seller", category: "Polos" },
+  { id: "pull-marine", name: "Pull marine brodé", nameEn: "Embroidered navy jumper", price: "52,00 €", images: [pull], sizes: kidsSizes, badge: "Hiver", category: "Pulls" },
+  { id: "chemise-garcon", name: "Chemise officielle", nameEn: "Official shirt", price: "34,00 €", images: [chemise], sizes: kidsSizes, category: "Chemises" },
+  { id: "chemise-fille", name: "Chemisier officiel", nameEn: "Official blouse", price: "34,00 €", images: [chemiseFille], sizes: kidsSizes, category: "Chemises" },
+  { id: "tshirt-sport", name: "T-shirt sport", nameEn: "Sports t-shirt", price: "22,00 €", images: [tshirt], sizes: kidsSizes, category: "T-shirts" },
+  { id: "trousses", name: "Trousses brodées", nameEn: "Embroidered pencil case", price: "18,00 €", images: [trousses], sizes: ["Unique"], badge: "Nouveau", category: "Accessoires" },
 ];
 
 const categories = ["Tous", "Polos", "Pulls", "Chemises", "T-shirts", "Accessoires"] as const;
@@ -119,14 +127,19 @@ function BoutiquePage() {
 }
 
 function ProductCard({ product }: { product: Product }) {
+  const [view, setView] = useState(0);
+  const [child, setChild] = useState(children[0].id);
+  const [size, setSize] = useState<string>("");
+  const hasMultipleViews = product.images.length > 1;
+
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-elegant)]">
       <div className="relative aspect-square overflow-hidden bg-secondary">
         <img
-          src={product.image}
+          src={product.images[view]}
           alt={product.name}
           className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${
-            product.image.endsWith(".svg") ? "object-contain p-8" : "object-cover"
+            product.images[view].endsWith(".svg") ? "object-contain p-8" : "object-cover"
           }`}
           loading="lazy"
         />
@@ -138,6 +151,21 @@ function ProductCard({ product }: { product: Product }) {
         <button className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-muted-foreground shadow-sm transition-colors hover:text-[var(--rouge)]">
           <Heart className="h-4 w-4" />
         </button>
+        {hasMultipleViews && (
+          <div className="absolute bottom-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full border border-border bg-white/95 p-1 shadow-sm backdrop-blur">
+            {["Avant · Front", "Arrière · Back"].map((label, i) => (
+              <button
+                key={label}
+                onClick={() => setView(i)}
+                className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-wider transition-colors ${
+                  view === i ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       <div className="flex flex-1 flex-col p-5">
         <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--teal-deep)]">
@@ -145,17 +173,70 @@ function ProductCard({ product }: { product: Product }) {
         </div>
         <h3 className="mt-1 text-base font-semibold text-foreground">{product.name}</h3>
         <p className="text-xs italic text-muted-foreground">{product.nameEn}</p>
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-3 flex items-center justify-between">
           <span className="text-lg font-semibold text-foreground">{product.price}</span>
           <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
             <ShieldCheck className="h-3 w-3 text-[var(--teal-deep)]" /> Brodé
           </span>
         </div>
+
+        {/* Pour quel enfant */}
+        <div className="mt-4">
+          <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Pour · For
+          </label>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {children.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => setChild(c.id)}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                  child === c.id ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-primary/40"
+                }`}
+              >
+                <span className={`flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold ${c.color}`}>
+                  {c.initials}
+                </span>
+                <span className="font-medium">{c.name.split(" ")[0]}</span>
+                <span className="text-[10px] text-muted-foreground">{c.classe}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Taille */}
+        <div className="mt-3">
+          <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Taille · Size
+          </label>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {product.sizes.map((s) => (
+              <button
+                key={s}
+                onClick={() => setSize(s)}
+                className={`min-w-[2.5rem] rounded-md border px-2 py-1 text-xs font-medium transition-colors ${
+                  size === s
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-foreground hover:border-primary/40"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <Link
           to="/panier"
-          className="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+          aria-disabled={!size}
+          className={`mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-colors ${
+            size
+              ? "bg-primary text-primary-foreground hover:bg-primary/90"
+              : "pointer-events-none bg-muted text-muted-foreground"
+          }`}
         >
-          <ShoppingBag className="h-4 w-4" /> Ajouter · Add
+          <ShoppingBag className="h-4 w-4" />
+          {size ? `Ajouter · Add — ${size}` : "Choisir une taille · Pick a size"}
         </Link>
       </div>
     </article>
