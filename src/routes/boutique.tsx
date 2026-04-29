@@ -12,7 +12,6 @@ import hoodieBack from "@/assets/hoodie-bisp-back.svg";
 import teddyFront from "@/assets/teddy-bisp-front.svg";
 import teddyBack from "@/assets/teddy-bisp-back.svg";
 import trousse from "@/assets/trousse-bisp.svg";
-import { TrousseSvg } from "@/components/TrousseSvg";
 
 export const Route = createFileRoute("/boutique")({
   head: () => ({
@@ -63,11 +62,11 @@ const trousseColors: ProductOption = {
   id: "zip",
   label: "Couleur du zip",
   choices: [
-    { value: "#1F2E59", label: "Marine", swatch: "#1F2E59" },
-    { value: "#ED3122", label: "Rouge", swatch: "#ED3122" },
-    { value: "#348397", label: "Teal", swatch: "#348397" },
-    { value: "#FFFFFF", label: "Blanc", swatch: "#FFFFFF" },
-    { value: "#111111", label: "Noir", swatch: "#111111" },
+    { value: "marine", label: "Marine", swatch: "var(--primary)" },
+    { value: "rouge", label: "Rouge", swatch: "var(--rouge)" },
+    { value: "teal", label: "Teal", swatch: "var(--teal)" },
+    { value: "blanc", label: "Blanc", swatch: "#ffffff" },
+    { value: "noir", label: "Noir", swatch: "#111111" },
   ],
 };
 
@@ -188,8 +187,6 @@ function ProductCard({ product }: { product: Product }) {
     Object.fromEntries((product.options ?? []).map((o) => [o.id, o.choices[0].value])),
   );
   const hasMultipleViews = product.images.length > 1;
-  const isTrousse = product.id === "trousse";
-  const zipColor = opts["zip"];
 
   const prices = Object.values(product.pricing);
   const minPrice = Math.min(...prices);
@@ -231,21 +228,14 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-elegant)]">
       <div className="relative aspect-square overflow-hidden bg-secondary">
-        {isTrousse && zipColor ? (
-          <TrousseSvg
-            zipColor={zipColor}
-            className="flex h-full w-full items-center justify-center p-8 transition-transform duration-500 group-hover:scale-105 [&>svg]:h-full [&>svg]:w-full"
-          />
-        ) : (
-          <img
-            src={product.images[view]}
-            alt={product.name}
-            className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${
-              product.images[view].endsWith(".svg") ? "object-contain p-8" : "object-cover"
-            }`}
-            loading="lazy"
-          />
-        )}
+        <img
+          src={product.images[view]}
+          alt={product.name}
+          className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${
+            product.images[view].endsWith(".svg") ? "object-contain p-8" : "object-cover"
+          }`}
+          loading="lazy"
+        />
         {hasMultipleViews && (
           <div className="absolute bottom-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full border border-border bg-white/95 p-1 shadow-sm backdrop-blur">
             {["Avant · Front", "Arrière · Back"].map((label, i) => (
