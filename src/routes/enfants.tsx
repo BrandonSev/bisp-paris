@@ -186,6 +186,26 @@ function Field({ label, value }: { label: string; value: string }) {
 
 type ChildFormData = Omit<Child, "id" | "initials" | "color">;
 
+// Correspondance France ↔ UK (Maternelle → Lycée / Nursery → Sixth Form)
+const CLASSES = [
+  { section: "Maternelle", classe: "TPS", label: "Toute Petite Section — Pre-Nursery" },
+  { section: "Maternelle", classe: "PS", label: "Petite Section — Nursery" },
+  { section: "Maternelle", classe: "MS", label: "Moyenne Section — Reception" },
+  { section: "Maternelle", classe: "GS", label: "Grande Section — Year 1" },
+  { section: "Élémentaire", classe: "CP", label: "CP — Year 2" },
+  { section: "Élémentaire", classe: "CE1", label: "CE1 — Year 3" },
+  { section: "Élémentaire", classe: "CE2", label: "CE2 — Year 4" },
+  { section: "Élémentaire", classe: "CM1", label: "CM1 — Year 5" },
+  { section: "Élémentaire", classe: "CM2", label: "CM2 — Year 6" },
+  { section: "Collège", classe: "6e", label: "6ᵉ — Year 7" },
+  { section: "Collège", classe: "5e", label: "5ᵉ — Year 8" },
+  { section: "Collège", classe: "4e", label: "4ᵉ — Year 9" },
+  { section: "Collège", classe: "3e", label: "3ᵉ — Year 10" },
+  { section: "Lycée", classe: "2nde", label: "Seconde — Year 11" },
+  { section: "Lycée", classe: "1ère", label: "Première — Year 12 (Lower Sixth)" },
+  { section: "Lycée", classe: "Tle", label: "Terminale — Year 13 (Upper Sixth)" },
+] as const;
+
 function ChildModal({
   initial,
   onClose,
@@ -208,6 +228,8 @@ function ChildModal({
 
   const set = <K extends keyof ChildFormData>(k: K, v: ChildFormData[K]) =>
     setForm((p) => ({ ...p, [k]: v }));
+
+  const classKey = (section: string, classe: string) => `${section}|${classe}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
@@ -237,13 +259,34 @@ function ChildModal({
           <Input label="Prénom" value={form.prenom} onChange={(v) => set("prenom", v)} required />
           <Input label="Nom" value={form.nom} onChange={(v) => set("nom", v)} required />
           <Input label="Date de naissance" value={form.naissance} onChange={(v) => set("naissance", v)} placeholder="JJ/MM/AAAA" />
-          <SelectField
-            label="Section"
-            value={form.section}
-            onChange={(v) => set("section", v)}
-            options={["Maternelle", "Élémentaire", "Collège", "Lycée"]}
-          />
-          <Input label="Classe" value={form.classe} onChange={(v) => set("classe", v)} placeholder="CE2 · Year 4" />
+          <label className="flex flex-col gap-1.5 sm:col-span-2">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Classe · Class (France · UK)
+            </span>
+            <select
+              value={form.classe ? classKey(form.section, form.classe) : ""}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (!v) { set("classe", ""); return; }
+                const found = CLASSES.find((c) => classKey(c.section, c.classe) === v);
+                if (found) {
+                  setForm((p) => ({ ...p, section: found.section, classe: found.classe }));
+                }
+              }}
+              className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+            >
+              <option value="">— Sélectionner une classe —</option>
+              {(["Maternelle", "Élémentaire", "Collège", "Lycée"] as const).map((sec) => (
+                <optgroup key={sec} label={sec}>
+                  {CLASSES.filter((c) => c.section === sec).map((c) => (
+                    <option key={classKey(c.section, c.classe)} value={classKey(c.section, c.classe)}>
+                      {c.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </label>
           <Input label="Taille recommandée" value={form.taille} onChange={(v) => set("taille", v)} placeholder="8 ans / M" />
           <Input label="Hauteur" value={form.hauteur} onChange={(v) => set("hauteur", v)} placeholder="128 cm" />
           <Input label="Tour de poitrine" value={form.tour} onChange={(v) => set("tour", v)} placeholder="62 cm" />
