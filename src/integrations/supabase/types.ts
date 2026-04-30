@@ -14,7 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      children: {
+        Row: {
+          classe: string | null
+          created_at: string
+          hauteur: string | null
+          id: string
+          naissance: string | null
+          nom: string
+          prenom: string
+          section: string | null
+          taille: string | null
+          tour: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          classe?: string | null
+          created_at?: string
+          hauteur?: string | null
+          id?: string
+          naissance?: string | null
+          nom: string
+          prenom: string
+          section?: string | null
+          taille?: string | null
+          tour?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          classe?: string | null
+          created_at?: string
+          hauteur?: string | null
+          id?: string
+          naissance?: string | null
+          nom?: string
+          prenom?: string
+          section?: string | null
+          taille?: string | null
+          tour?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          adresse: string | null
+          civilite: string
+          code_postal: string | null
+          created_at: string
+          email: string
+          id: string
+          nom: string
+          prenom: string
+          telephone: string | null
+          updated_at: string
+          ville: string | null
+        }
+        Insert: {
+          adresse?: string | null
+          civilite?: string
+          code_postal?: string | null
+          created_at?: string
+          email: string
+          id: string
+          nom?: string
+          prenom?: string
+          telephone?: string | null
+          updated_at?: string
+          ville?: string | null
+        }
+        Update: {
+          adresse?: string | null
+          civilite?: string
+          code_postal?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          nom?: string
+          prenom?: string
+          telephone?: string | null
+          updated_at?: string
+          ville?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
