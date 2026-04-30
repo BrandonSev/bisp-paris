@@ -4,12 +4,17 @@ import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
 import { useStore, type CartItem, type Child } from "@/lib/store";
 import { toast } from "sonner";
+import { RequireAuth } from "@/components/RequireAuth";
 
 export const Route = createFileRoute("/panier")({
   head: () => ({
     meta: [{ title: "Mon panier · My cart — BISP" }],
   }),
-  component: PanierPage,
+  component: () => (
+    <RequireAuth>
+      <PanierPage />
+    </RequireAuth>
+  ),
 });
 
 function PanierPage() {

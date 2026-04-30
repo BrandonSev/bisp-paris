@@ -5,6 +5,7 @@ import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
+import { RequireAuth } from "@/components/RequireAuth";
 import poloFront from "@/assets/polo-bisp-marine.svg";
 import poloBack from "@/assets/polo-bisp-blanc.svg";
 import hoodieFront from "@/assets/hoodie-bisp-front.svg";
@@ -29,7 +30,11 @@ export const Route = createFileRoute("/boutique")({
       },
     ],
   }),
-  component: BoutiquePage,
+  component: () => (
+    <RequireAuth>
+      <BoutiquePage />
+    </RequireAuth>
+  ),
 });
 
 type Product = {
