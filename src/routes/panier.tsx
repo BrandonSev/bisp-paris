@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Lock, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
 import { useStore, type CartItem, type Child } from "@/lib/store";
@@ -18,7 +20,9 @@ export const Route = createFileRoute("/panier")({
 });
 
 function PanierPage() {
-  const { cart, children: kids, updateQty, removeFromCart, clearCart } = useStore();
+  const { cart, children: kids, updateQty, removeFromCart, checkout, profile } = useStore();
+  const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
 
   const groups = kids
     .map((child) => ({
@@ -36,11 +40,19 @@ function PanierPage() {
 
   const handleCheckout = () => {
     if (cart.length === 0) return;
-    clearCart();
-    toast.success("Commande confirmée", {
-      description: `Total ${total.toFixed(2)} € · livraison à BISP sous 5–7 jours.`,
-    });
+    setSubmitting(true);
+    checkout()
+      .then(({ orderNumber }) => {
+        toast.success(`Commande ${orderNumber} confirmée`, {
+          description: `Total ${total.toFixed(2)} € · livraison à BISP sous 5–7 jours.`,
+        });
+        navigate({ to: "/commandes" });
+      })
+      .catch((err) => toast.error(err.message ?? "Erreur lors de la commande"))
+      .finally(() => setSubmitting(false));
   };
+
+  const familyName = profile?.nom || "votre famille";
 
   return (
     <div className="min-h-screen bg-background">
@@ -53,7 +65,7 @@ function PanierPage() {
         <div className="relative flex items-baseline justify-between">
           <div>
             <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--teal-deep)]">
-              <span className="h-px w-6 bg-[var(--rouge)]" /> Famille Dubois
+              <span className="h-px w-6 bg-[var(--rouge)]" /> Famille {familyName}
             </span>
             <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Mon panier</h1>
             <p className="mt-1 text-sm italic text-muted-foreground">My cart</p>
@@ -101,10 +113,11 @@ function PanierPage() {
               <button
                 type="button"
                 onClick={handleCheckout}
-                className="mt-6 inline-flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] hover:bg-primary/90"
+                disabled={submitting}
+                className="mt-6 inline-flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] hover:bg-primary/90 disabled:opacity-60"
               >
                 <Lock className="h-4 w-4" />
-                Passer au paiement · Checkout
+                {submitting ? "Validation…" : "Valider la commande · Confirm"}
               </button>
               <p className="mt-3 text-center text-[11px] text-muted-foreground">
                 Paiement sécurisé · Secure · CB · 3× sans frais
