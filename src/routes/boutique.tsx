@@ -186,6 +186,7 @@ function ProductCard({ product }: { product: Product }) {
   const [opts, setOpts] = useState<Record<string, string>>(() =>
     Object.fromEntries((product.options ?? []).map((o) => [o.id, o.choices[0].value])),
   );
+  const [qty, setQty] = useState(1);
   const hasMultipleViews = product.images.length > 1;
 
   const prices = Object.values(product.pricing);
@@ -216,12 +217,12 @@ function ProductCard({ product }: { product: Product }) {
       ref: `BISP-${product.id.toUpperCase()}`,
       price: currentPrice,
       size,
-      qty: 1,
+      qty,
       image: product.images[0],
       childId: child,
     });
     toast.success(`Ajouté · ${product.name}`, {
-      description: `Taille ${size} · ${currentPrice.toFixed(2)} €${selected ? ` · pour ${selected.prenom}` : ""}`,
+      description: `${qty} × Taille ${size} · ${(currentPrice * qty).toFixed(2)} €${selected ? ` · pour ${selected.prenom}` : ""}`,
     });
   };
 
@@ -354,21 +355,45 @@ function ProductCard({ product }: { product: Product }) {
           </div>
         ))}
 
-        <button
-          type="button"
-          onClick={handleAdd}
-          disabled={!canAdd}
-          className={`mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-colors ${
-            canAdd
-              ? "bg-primary text-primary-foreground hover:bg-primary/90"
-              : "cursor-not-allowed bg-muted text-muted-foreground"
-          }`}
-        >
-          <ShoppingBag className="h-4 w-4" />
-          {canAdd && currentPrice !== undefined
-            ? `Ajouter · ${currentPrice.toFixed(2)} €`
-            : "Choisir une taille · Pick a size"}
-        </button>
+        {/* Quantité + Ajouter */}
+        <div className="mt-4 flex items-stretch gap-2">
+          <div className="inline-flex items-center rounded-xl border border-border bg-card">
+            <button
+              type="button"
+              onClick={() => setQty((q) => Math.max(1, q - 1))}
+              disabled={qty <= 1}
+              aria-label="Diminuer la quantité"
+              className="flex h-11 w-10 items-center justify-center text-foreground transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <Minus className="h-4 w-4" />
+            </button>
+            <span className="w-8 text-center text-sm font-semibold tabular-nums">{qty}</span>
+            <button
+              type="button"
+              onClick={() => setQty((q) => Math.min(99, q + 1))}
+              disabled={qty >= 99}
+              aria-label="Augmenter la quantité"
+              className="flex h-11 w-10 items-center justify-center text-foreground transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={handleAdd}
+            disabled={!canAdd}
+            className={`inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-colors ${
+              canAdd
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                : "cursor-not-allowed bg-muted text-muted-foreground"
+            }`}
+          >
+            <ShoppingBag className="h-4 w-4" />
+            {canAdd && currentPrice !== undefined
+              ? `Ajouter · ${(currentPrice * qty).toFixed(2)} €`
+              : "Choisir une taille · Pick a size"}
+          </button>
+        </div>
       </div>
     </article>
   );
