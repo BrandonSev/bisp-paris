@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PanierRouteImport } from './routes/panier'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as EnfantsRouteImport } from './routes/enfants'
+import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as BoutiqueRouteImport } from './routes/boutique'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
 const PanierRoute = PanierRouteImport.update({
@@ -30,9 +32,19 @@ const EnfantsRoute = EnfantsRouteImport.update({
   path: '/enfants',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommandesRoute = CommandesRouteImport.update({
+  id: '/commandes',
+  path: '/commandes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BoutiqueRoute = BoutiqueRouteImport.update({
   id: '/boutique',
   path: '/boutique',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -43,14 +55,18 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/boutique': typeof BoutiqueRoute
+  '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRoute
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/boutique': typeof BoutiqueRoute
+  '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRoute
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
@@ -58,22 +74,48 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/boutique': typeof BoutiqueRoute
+  '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRoute
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/boutique' | '/enfants' | '/login' | '/panier'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/boutique'
+    | '/commandes'
+    | '/enfants'
+    | '/login'
+    | '/panier'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/boutique' | '/enfants' | '/login' | '/panier'
-  id: '__root__' | '/' | '/boutique' | '/enfants' | '/login' | '/panier'
+  to:
+    | '/'
+    | '/admin'
+    | '/boutique'
+    | '/commandes'
+    | '/enfants'
+    | '/login'
+    | '/panier'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/boutique'
+    | '/commandes'
+    | '/enfants'
+    | '/login'
+    | '/panier'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   BoutiqueRoute: typeof BoutiqueRoute
+  CommandesRoute: typeof CommandesRoute
   EnfantsRoute: typeof EnfantsRoute
   LoginRoute: typeof LoginRoute
   PanierRoute: typeof PanierRoute
@@ -102,11 +144,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnfantsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/commandes': {
+      id: '/commandes'
+      path: '/commandes'
+      fullPath: '/commandes'
+      preLoaderRoute: typeof CommandesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/boutique': {
       id: '/boutique'
       path: '/boutique'
       fullPath: '/boutique'
       preLoaderRoute: typeof BoutiqueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -121,7 +177,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   BoutiqueRoute: BoutiqueRoute,
+  CommandesRoute: CommandesRoute,
   EnfantsRoute: EnfantsRoute,
   LoginRoute: LoginRoute,
   PanierRoute: PanierRoute,

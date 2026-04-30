@@ -216,8 +216,9 @@ function ProductCard({ product }: { product: Product }) {
     const nameWithOpts = optionLabels.length
       ? `${product.name} (${optionLabels.join(", ")})`
       : product.name;
+    const variantKey = optionLabels.join(", ");
     addToCart({
-      productId: product.id,
+      productId: variantKey ? `${product.id}::${variantKey}` : product.id,
       name: nameWithOpts,
       ref: `BISP-${product.id.toUpperCase()}`,
       price: currentPrice,
