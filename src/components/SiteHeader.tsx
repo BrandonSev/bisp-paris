@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, ShoppingBag, User } from "lucide-react";
+import { LogOut, ShieldCheck, ShoppingBag, User } from "lucide-react";
 import logo from "@/assets/bisp-logo.png";
 import { SchoolIdentityBar } from "@/components/SchoolMotif";
 import { useStore } from "@/lib/store";
@@ -12,7 +12,7 @@ interface SiteHeaderProps {
 }
 
 export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHeaderProps) {
-  const { cartCount: storeCount, profile, user, signOut } = useStore();
+  const { cartCount: storeCount, profile, user, signOut, isAdmin } = useStore();
   const count = cartCount ?? storeCount;
   const navigate = useNavigate();
   const familyLabel = profile?.nom ? `Famille ${profile.nom}` : (user?.email ?? "Mon compte");
@@ -45,9 +45,14 @@ export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHe
               <Link to="/enfants" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
                 Mes enfants
               </Link>
-              <Link to="/panier" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
-                Commandes
+              <Link to="/commandes" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
+                Mes commandes
               </Link>
+              {isAdmin && (
+                <Link to="/admin" className="inline-flex items-center gap-1 transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
+                  <ShieldCheck className="h-3.5 w-3.5" /> Admin
+                </Link>
+              )}
             </nav>
           )}
 
