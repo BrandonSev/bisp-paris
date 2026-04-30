@@ -84,6 +84,7 @@ type StoreCtx = {
   session: Session | null;
   profile: Profile | null;
   authLoading: boolean;
+  isAdmin: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   updateProfile: (patch: Partial<Omit<Profile, "id" | "email">>) => Promise<void>;
@@ -101,6 +102,7 @@ type StoreCtx = {
   removeFromCart: (id: string) => void;
   clearCart: () => void;
   cartCount: number;
+  checkout: () => Promise<{ orderId: string; orderNumber: string }>;
 };
 
 const Ctx = createContext<StoreCtx | null>(null);
@@ -129,6 +131,7 @@ export function StoreProvider({ children: kids }: { children: ReactNode }) {
   const [authLoading, setAuthLoading] = useState(true);
   const [childList, setChildList] = useState<Child[]>([]);
   const [cart, setCart] = useLocal<CartItem[]>("bisp.cart", []);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // auth listener
   useEffect(() => {
@@ -138,6 +141,7 @@ export function StoreProvider({ children: kids }: { children: ReactNode }) {
       if (!s) {
         setProfile(null);
         setChildList([]);
+        setIsAdmin(false);
       }
     });
     supabase.auth.getSession().then(({ data: { session: s } }) => {
@@ -158,15 +162,21 @@ export function StoreProvider({ children: kids }: { children: ReactNode }) {
     if (data) setChildList(data.map((c, i) => decorate(c as any, i)));
   }, []);
 
+  const loadAdmin = useCallback(async (uid: string) => {
+    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle();
+    setIsAdmin(!!data);
+  }, []);
+
   useEffect(() => {
     if (user) {
       loadProfile(user.id);
       loadChildren(user.id);
+      loadAdmin(user.id);
     }
-  }, [user, loadProfile, loadChildren]);
+  }, [user, loadProfile, loadChildren, loadAdmin]);
 
   const value = useMemo<StoreCtx>(() => ({
-    user, session, profile, authLoading,
+    user, session, profile, authLoading, isAdmin,
     signOut: async () => { await supabase.auth.signOut(); },
     refreshProfile: async () => { if (user) await loadProfile(user.id); },
     updateProfile: async (patch) => {
@@ -215,7 +225,47 @@ export function StoreProvider({ children: kids }: { children: ReactNode }) {
     removeFromCart: (id) => setCart((prev) => prev.filter((i) => i.id !== id)),
     clearCart: () => setCart([]),
     cartCount: cart.reduce((s, i) => s + i.qty, 0),
-  }), [user, session, profile, authLoading, childList, cart, setCart, loadProfile]);
+    checkout: async () => {
+      if (!user || !profile) throw new Error("Non connecté");
+      if (cart.length === 0) throw new Error("Panier vide");
+      const total = cart.reduce((s, i) => s + i.qty * i.price, 0);
+      const { data: order, error: oErr } = await supabase.from("orders").insert({
+        user_id: user.id,
+        status: "En attente",
+        total_amount: total,
+        family_civilite: profile.civilite,
+        family_nom: profile.nom,
+        family_prenom: profile.prenom,
+        family_email: profile.email,
+        family_telephone: profile.telephone,
+      }).select().single();
+      if (oErr) throw oErr;
+      const items = cart.map((i) => {
+        const child = childList.find((c) => c.id === i.childId);
+        const [productId, ...variantParts] = i.productId.split("::");
+        return {
+          order_id: order.id,
+          child_id: i.childId || null,
+          child_prenom: child?.prenom ?? "—",
+          child_nom: child?.nom ?? "—",
+          child_classe: child?.classe ?? null,
+          child_section: child?.section ?? null,
+          product_id: productId,
+          product_name: i.name,
+          product_ref: i.ref,
+          variant: variantParts.join("::") || null,
+          size: i.size,
+          quantity: i.qty,
+          unit_price: i.price,
+          line_total: i.qty * i.price,
+        };
+      });
+      const { error: iErr } = await supabase.from("order_items").insert(items);
+      if (iErr) throw iErr;
+      setCart([]);
+      return { orderId: order.id, orderNumber: order.order_number };
+    },
+  }), [user, session, profile, authLoading, isAdmin, childList, cart, setCart, loadProfile]);
 
   return <Ctx.Provider value={value}>{kids}</Ctx.Provider>;
 }
