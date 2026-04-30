@@ -1,8 +1,9 @@
-import { Link } from "@tanstack/react-router";
-import { ShoppingBag, User } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { LogOut, ShoppingBag, User } from "lucide-react";
 import logo from "@/assets/bisp-logo.png";
 import { SchoolIdentityBar } from "@/components/SchoolMotif";
 import { useStore } from "@/lib/store";
+import { toast } from "sonner";
 
 interface SiteHeaderProps {
   schoolName?: string;
@@ -11,8 +12,15 @@ interface SiteHeaderProps {
 }
 
 export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHeaderProps) {
-  const { cartCount: storeCount } = useStore();
+  const { cartCount: storeCount, profile, user, signOut } = useStore();
   const count = cartCount ?? storeCount;
+  const navigate = useNavigate();
+  const familyLabel = profile?.nom ? `Famille ${profile.nom}` : (user?.email ?? "Mon compte");
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Déconnecté");
+    navigate({ to: "/login" });
+  };
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b border-border bg-background/90 backdrop-blur-md">
@@ -44,13 +52,23 @@ export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHe
           )}
 
           <div className="flex items-center gap-2">
-            {showAccount && (
+            {showAccount && user && (
               <button
                 type="button"
                 className="hidden h-10 items-center gap-2 rounded-full border border-border bg-card px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted sm:inline-flex"
               >
                 <User className="h-4 w-4" />
-                <span>Famille Dubois</span>
+                <span className="max-w-[160px] truncate">{familyLabel}</span>
+              </button>
+            )}
+            {showAccount && user && (
+              <button
+                type="button"
+                onClick={handleSignOut}
+                title="Se déconnecter"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:text-[var(--rouge)] hover:bg-muted"
+              >
+                <LogOut className="h-4 w-4" />
               </button>
             )}
             <Link

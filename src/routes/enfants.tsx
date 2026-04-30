@@ -5,18 +5,24 @@ import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
 import { useStore, type Child } from "@/lib/store";
 import { toast } from "sonner";
+import { RequireAuth } from "@/components/RequireAuth";
 
 export const Route = createFileRoute("/enfants")({
   head: () => ({
     meta: [{ title: "Mes enfants · My children — BISP" }],
   }),
-  component: EnfantsPage,
+  component: () => (
+    <RequireAuth>
+      <EnfantsPage />
+    </RequireAuth>
+  ),
 });
 
 function EnfantsPage() {
-  const { children: enfants, addChild, updateChild, removeChild } = useStore();
+  const { children: enfants, addChild, updateChild, removeChild, profile } = useStore();
   const [editing, setEditing] = useState<Child | null>(null);
   const [adding, setAdding] = useState(false);
+  const familyName = profile?.nom || "votre famille";
 
   return (
     <div className="min-h-screen bg-background">
@@ -29,7 +35,7 @@ function EnfantsPage() {
         <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
             <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--teal-deep)]">
-              <span className="h-px w-6 bg-[var(--rouge)]" /> Famille Dubois · Dubois family
+              <span className="h-px w-6 bg-[var(--rouge)]" /> Famille {familyName}
             </span>
             <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               Mes enfants
@@ -65,9 +71,9 @@ function EnfantsPage() {
               key={e.id}
               enfant={e}
               onEdit={() => setEditing(e)}
-              onRemove={() => {
-                removeChild(e.id);
-                toast.success(`${e.prenom} retiré(e)`);
+              onRemove={async () => {
+                try { await removeChild(e.id); toast.success(`${e.prenom} retiré(e)`); }
+                catch (err: any) { toast.error(err.message ?? "Erreur"); }
               }}
             />
           ))}
@@ -81,16 +87,20 @@ function EnfantsPage() {
             setEditing(null);
             setAdding(false);
           }}
-          onSubmit={(data) => {
-            if (editing) {
-              updateChild(editing.id, data);
-              toast.success(`${data.prenom} mis à jour`);
-            } else {
-              addChild(data);
-              toast.success(`${data.prenom} ajouté(e)`);
+          onSubmit={async (data) => {
+            try {
+              if (editing) {
+                await updateChild(editing.id, data);
+                toast.success(`${data.prenom} mis à jour`);
+              } else {
+                await addChild(data);
+                toast.success(`${data.prenom} ajouté(e)`);
+              }
+              setEditing(null);
+              setAdding(false);
+            } catch (err: any) {
+              toast.error(err.message ?? "Erreur d'enregistrement");
             }
-            setEditing(null);
-            setAdding(false);
           }}
         />
       )}
