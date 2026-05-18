@@ -16,6 +16,7 @@ import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as BoutiqueRouteImport } from './routes/boutique'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AideMentionsLegalesRouteImport } from './routes/aide.mentions-legales'
 import { Route as AideLivraisonRouteImport } from './routes/aide.livraison'
 import { Route as AideGuideTaillesRouteImport } from './routes/aide.guide-tailles'
 import { Route as AideContactRouteImport } from './routes/aide.contact'
@@ -56,6 +57,11 @@ const AdminRoute = AdminRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AideMentionsLegalesRoute = AideMentionsLegalesRouteImport.update({
+  id: '/aide/mentions-legales',
+  path: '/aide/mentions-legales',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AideLivraisonRoute = AideLivraisonRouteImport.update({
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
   '/aide/livraison': typeof AideLivraisonRoute
+  '/aide/mentions-legales': typeof AideMentionsLegalesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
 }
 export interface FileRoutesByTo {
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
   '/aide/livraison': typeof AideLivraisonRoute
+  '/aide/mentions-legales': typeof AideMentionsLegalesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
 }
 export interface FileRoutesById {
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
   '/aide/livraison': typeof AideLivraisonRoute
+  '/aide/mentions-legales': typeof AideMentionsLegalesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
 }
 export interface FileRouteTypes {
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/aide/contact'
     | '/aide/guide-tailles'
     | '/aide/livraison'
+    | '/aide/mentions-legales'
     | '/enfants/$childId/historique'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/aide/contact'
     | '/aide/guide-tailles'
     | '/aide/livraison'
+    | '/aide/mentions-legales'
     | '/enfants/$childId/historique'
   id:
     | '__root__'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/aide/contact'
     | '/aide/guide-tailles'
     | '/aide/livraison'
+    | '/aide/mentions-legales'
     | '/enfants/$childId/historique'
   fileRoutesById: FileRoutesById
 }
@@ -197,6 +209,7 @@ export interface RootRouteChildren {
   AideContactRoute: typeof AideContactRoute
   AideGuideTaillesRoute: typeof AideGuideTaillesRoute
   AideLivraisonRoute: typeof AideLivraisonRoute
+  AideMentionsLegalesRoute: typeof AideMentionsLegalesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -248,6 +261,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aide/mentions-legales': {
+      id: '/aide/mentions-legales'
+      path: '/aide/mentions-legales'
+      fullPath: '/aide/mentions-legales'
+      preLoaderRoute: typeof AideMentionsLegalesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/aide/livraison': {
@@ -319,6 +339,7 @@ const rootRouteChildren: RootRouteChildren = {
   AideContactRoute: AideContactRoute,
   AideGuideTaillesRoute: AideGuideTaillesRoute,
   AideLivraisonRoute: AideLivraisonRoute,
+  AideMentionsLegalesRoute: AideMentionsLegalesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
