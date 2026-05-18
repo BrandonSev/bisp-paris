@@ -134,6 +134,7 @@ export type CheckoutInput = {
   shipping_address?: string;
   shipping_postal?: string;
   shipping_city?: string;
+  payment_method?: 'cb_payplug' | 'cheque' | 'virement' | 'especes';
 };
 
 const Ctx = createContext<StoreCtx | null>(null);
@@ -407,6 +408,7 @@ export function StoreProvider({ children: kids }: { children: ReactNode }) {
         shipping_address: shipping.shipping_address ?? null,
         shipping_postal: shipping.shipping_postal ?? null,
         shipping_city: shipping.shipping_city ?? null,
+        payment_method: shipping.payment_method ?? 'cb_payplug',
       }).select().single();
       if (oErr) throw oErr;
       const items = cart.map((i) => {

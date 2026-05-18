@@ -284,6 +284,10 @@ export type Database = {
           id: string
           order_number: string
           paid_at: string | null
+          payment_id: string | null
+          payment_method: string
+          payment_provider: string | null
+          payment_status: string
           shipping_address: string | null
           shipping_city: string | null
           shipping_label: string | null
@@ -307,6 +311,10 @@ export type Database = {
           id?: string
           order_number?: string
           paid_at?: string | null
+          payment_id?: string | null
+          payment_method?: string
+          payment_provider?: string | null
+          payment_status?: string
           shipping_address?: string | null
           shipping_city?: string | null
           shipping_label?: string | null
@@ -330,6 +338,10 @@ export type Database = {
           id?: string
           order_number?: string
           paid_at?: string | null
+          payment_id?: string | null
+          payment_method?: string
+          payment_provider?: string | null
+          payment_status?: string
           shipping_address?: string | null
           shipping_city?: string | null
           shipping_label?: string | null

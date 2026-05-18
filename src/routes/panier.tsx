@@ -11,6 +11,8 @@ import { SizeBadge } from "@/components/SizeBadge";
 import { recommendSize } from "@/lib/sizeRecommendation";
 import { CheckoutConfirmModal } from "@/components/CheckoutConfirmModal";
 import type { CheckoutInput } from "@/lib/store";
+import { createPayplugPayment } from "@/lib/payplug.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 export const Route = createFileRoute("/panier")({
   head: () => ({
@@ -28,6 +30,7 @@ function PanierPage() {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const startPayplug = useServerFn(createPayplugPayment);
 
   const groups = kids
     .map((child) => ({
@@ -51,7 +54,14 @@ function PanierPage() {
   const handleConfirm = (input: CheckoutInput) => {
     setSubmitting(true);
     checkout(input)
-      .then(({ orderNumber }) => {
+      .then(async ({ orderId, orderNumber }) => {
+        if (input.payment_method === 'cb_payplug') {
+          const { paymentUrl } = await startPayplug({ data: { orderId } });
+          if (paymentUrl) {
+            window.location.href = paymentUrl;
+            return;
+          }
+        }
         toast.success(`Commande ${orderNumber} confirmée`, {
           description: `Total ${total.toFixed(2)} € · ${input.shipping_label}`,
         });
