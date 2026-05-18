@@ -21,6 +21,8 @@ type Order = {
   status: string;
   total_amount: number;
   created_at: string;
+  shipping_mode?: string | null;
+  shipping_label?: string | null;
 };
 
 type Item = {
@@ -95,6 +97,9 @@ function CommandesPage() {
                     <div className="text-xs text-muted-foreground">
                       {new Date(o.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })} · {o.status}
                     </div>
+                    {o.shipping_label && (
+                      <div className="mt-0.5 text-[11px] text-muted-foreground">{o.shipping_label}</div>
+                    )}
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-base font-semibold text-foreground">{Number(o.total_amount).toFixed(2)} €</span>
