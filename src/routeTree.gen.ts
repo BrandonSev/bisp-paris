@@ -19,6 +19,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AideLivraisonRouteImport } from './routes/aide.livraison'
 import { Route as AideGuideTaillesRouteImport } from './routes/aide.guide-tailles'
 import { Route as AideContactRouteImport } from './routes/aide.contact'
+import { Route as AideCgvRouteImport } from './routes/aide.cgv'
 import { Route as EnfantsChildIdHistoriqueRouteImport } from './routes/enfants.$childId.historique'
 
 const PanierRoute = PanierRouteImport.update({
@@ -71,6 +72,11 @@ const AideContactRoute = AideContactRouteImport.update({
   path: '/aide/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AideCgvRoute = AideCgvRouteImport.update({
+  id: '/aide/cgv',
+  path: '/aide/cgv',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EnfantsChildIdHistoriqueRoute =
   EnfantsChildIdHistoriqueRouteImport.update({
     id: '/$childId/historique',
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
+  '/aide/cgv': typeof AideCgvRoute
   '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
   '/aide/livraison': typeof AideLivraisonRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
+  '/aide/cgv': typeof AideCgvRoute
   '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
   '/aide/livraison': typeof AideLivraisonRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
+  '/aide/cgv': typeof AideCgvRoute
   '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
   '/aide/livraison': typeof AideLivraisonRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/enfants'
     | '/login'
     | '/panier'
+    | '/aide/cgv'
     | '/aide/contact'
     | '/aide/guide-tailles'
     | '/aide/livraison'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/enfants'
     | '/login'
     | '/panier'
+    | '/aide/cgv'
     | '/aide/contact'
     | '/aide/guide-tailles'
     | '/aide/livraison'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/enfants'
     | '/login'
     | '/panier'
+    | '/aide/cgv'
     | '/aide/contact'
     | '/aide/guide-tailles'
     | '/aide/livraison'
@@ -168,6 +180,7 @@ export interface RootRouteChildren {
   EnfantsRoute: typeof EnfantsRouteWithChildren
   LoginRoute: typeof LoginRoute
   PanierRoute: typeof PanierRoute
+  AideCgvRoute: typeof AideCgvRoute
   AideContactRoute: typeof AideContactRoute
   AideGuideTaillesRoute: typeof AideGuideTaillesRoute
   AideLivraisonRoute: typeof AideLivraisonRoute
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AideContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/aide/cgv': {
+      id: '/aide/cgv'
+      path: '/aide/cgv'
+      fullPath: '/aide/cgv'
+      preLoaderRoute: typeof AideCgvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/enfants/$childId/historique': {
       id: '/enfants/$childId/historique'
       path: '/$childId/historique'
@@ -274,6 +294,7 @@ const rootRouteChildren: RootRouteChildren = {
   EnfantsRoute: EnfantsRouteWithChildren,
   LoginRoute: LoginRoute,
   PanierRoute: PanierRoute,
+  AideCgvRoute: AideCgvRoute,
   AideContactRoute: AideContactRoute,
   AideGuideTaillesRoute: AideGuideTaillesRoute,
   AideLivraisonRoute: AideLivraisonRoute,
