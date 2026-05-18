@@ -30,6 +30,8 @@ import { Route as AideCgvRouteImport } from './routes/aide.cgv'
 import { Route as AideCguRouteImport } from './routes/aide.cgu'
 import { Route as EnfantsChildIdHistoriqueRouteImport } from './routes/enfants.$childId.historique'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicPayplugWebhookRouteImport } from './routes/api/public/payplug.webhook'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -139,6 +141,16 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPayplugWebhookRoute = ApiPublicPayplugWebhookRouteImport.update({
   id: '/api/public/payplug/webhook',
   path: '/api/public/payplug/webhook',
@@ -167,6 +179,8 @@ export interface FileRoutesByFullPath {
   '/paiement/succes': typeof PaiementSuccesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
   '/api/public/payplug/webhook': typeof ApiPublicPayplugWebhookRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
@@ -191,6 +205,8 @@ export interface FileRoutesByTo {
   '/paiement/succes': typeof PaiementSuccesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
   '/api/public/payplug/webhook': typeof ApiPublicPayplugWebhookRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -216,6 +232,8 @@ export interface FileRoutesById {
   '/paiement/succes': typeof PaiementSuccesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
   '/api/public/payplug/webhook': typeof ApiPublicPayplugWebhookRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -242,6 +260,8 @@ export interface FileRouteTypes {
     | '/paiement/succes'
     | '/enfants/$childId/historique'
     | '/api/public/payplug/webhook'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -266,6 +286,8 @@ export interface FileRouteTypes {
     | '/paiement/succes'
     | '/enfants/$childId/historique'
     | '/api/public/payplug/webhook'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -290,6 +312,8 @@ export interface FileRouteTypes {
     | '/paiement/succes'
     | '/enfants/$childId/historique'
     | '/api/public/payplug/webhook'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -314,6 +338,8 @@ export interface RootRouteChildren {
   PaiementEchecRoute: typeof PaiementEchecRoute
   PaiementSuccesRoute: typeof PaiementSuccesRoute
   ApiPublicPayplugWebhookRoute: typeof ApiPublicPayplugWebhookRoute
+  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
+  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
@@ -466,6 +492,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payplug/webhook': {
       id: '/api/public/payplug/webhook'
       path: '/api/public/payplug/webhook'
@@ -508,6 +548,8 @@ const rootRouteChildren: RootRouteChildren = {
   PaiementEchecRoute: PaiementEchecRoute,
   PaiementSuccesRoute: PaiementSuccesRoute,
   ApiPublicPayplugWebhookRoute: ApiPublicPayplugWebhookRoute,
+  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
+  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
