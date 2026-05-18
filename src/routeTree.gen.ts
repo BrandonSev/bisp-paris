@@ -9,7 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PanierRouteImport } from './routes/panier'
+import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as EnfantsRouteImport } from './routes/enfants'
 import { Route as CommandesRouteImport } from './routes/commandes'
@@ -25,9 +27,19 @@ import { Route as AideCgvRouteImport } from './routes/aide.cgv'
 import { Route as AideCguRouteImport } from './routes/aide.cgu'
 import { Route as EnfantsChildIdHistoriqueRouteImport } from './routes/enfants.$childId.historique'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PanierRoute = PanierRouteImport.update({
   id: '/panier',
   path: '/panier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotDePasseOublieRoute = MotDePasseOublieRouteImport.update({
+  id: '/mot-de-passe-oublie',
+  path: '/mot-de-passe-oublie',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -109,7 +121,9 @@ export interface FileRoutesByFullPath {
   '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/aide/cgu': typeof AideCguRoute
   '/aide/cgv': typeof AideCgvRoute
   '/aide/confidentialite': typeof AideConfidentialiteRoute
@@ -126,7 +140,9 @@ export interface FileRoutesByTo {
   '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/aide/cgu': typeof AideCguRoute
   '/aide/cgv': typeof AideCgvRoute
   '/aide/confidentialite': typeof AideConfidentialiteRoute
@@ -144,7 +160,9 @@ export interface FileRoutesById {
   '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/aide/cgu': typeof AideCguRoute
   '/aide/cgv': typeof AideCgvRoute
   '/aide/confidentialite': typeof AideConfidentialiteRoute
@@ -163,7 +181,9 @@ export interface FileRouteTypes {
     | '/commandes'
     | '/enfants'
     | '/login'
+    | '/mot-de-passe-oublie'
     | '/panier'
+    | '/reset-password'
     | '/aide/cgu'
     | '/aide/cgv'
     | '/aide/confidentialite'
@@ -180,7 +200,9 @@ export interface FileRouteTypes {
     | '/commandes'
     | '/enfants'
     | '/login'
+    | '/mot-de-passe-oublie'
     | '/panier'
+    | '/reset-password'
     | '/aide/cgu'
     | '/aide/cgv'
     | '/aide/confidentialite'
@@ -197,7 +219,9 @@ export interface FileRouteTypes {
     | '/commandes'
     | '/enfants'
     | '/login'
+    | '/mot-de-passe-oublie'
     | '/panier'
+    | '/reset-password'
     | '/aide/cgu'
     | '/aide/cgv'
     | '/aide/confidentialite'
@@ -215,7 +239,9 @@ export interface RootRouteChildren {
   CommandesRoute: typeof CommandesRoute
   EnfantsRoute: typeof EnfantsRouteWithChildren
   LoginRoute: typeof LoginRoute
+  MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   PanierRoute: typeof PanierRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   AideCguRoute: typeof AideCguRoute
   AideCgvRoute: typeof AideCgvRoute
   AideConfidentialiteRoute: typeof AideConfidentialiteRoute
@@ -227,11 +253,25 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/panier': {
       id: '/panier'
       path: '/panier'
       fullPath: '/panier'
       preLoaderRoute: typeof PanierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mot-de-passe-oublie': {
+      id: '/mot-de-passe-oublie'
+      path: '/mot-de-passe-oublie'
+      fullPath: '/mot-de-passe-oublie'
+      preLoaderRoute: typeof MotDePasseOublieRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -353,7 +393,9 @@ const rootRouteChildren: RootRouteChildren = {
   CommandesRoute: CommandesRoute,
   EnfantsRoute: EnfantsRouteWithChildren,
   LoginRoute: LoginRoute,
+  MotDePasseOublieRoute: MotDePasseOublieRoute,
   PanierRoute: PanierRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   AideCguRoute: AideCguRoute,
   AideCgvRoute: AideCgvRoute,
   AideConfidentialiteRoute: AideConfidentialiteRoute,
