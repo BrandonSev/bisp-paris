@@ -124,7 +124,16 @@ type StoreCtx = {
   removeFromCart: (id: string) => Promise<void> | void;
   clearCart: () => Promise<void> | void;
   cartCount: number;
-  checkout: () => Promise<{ orderId: string; orderNumber: string }>;
+  checkout: (input?: CheckoutInput) => Promise<{ orderId: string; orderNumber: string }>;
+};
+
+export type CheckoutInput = {
+  shipping_mode: string;
+  shipping_label: string;
+  shipping_recipient?: string;
+  shipping_address?: string;
+  shipping_postal?: string;
+  shipping_city?: string;
 };
 
 const Ctx = createContext<StoreCtx | null>(null);
@@ -375,10 +384,14 @@ export function StoreProvider({ children: kids }: { children: ReactNode }) {
       setCart([]);
     },
     cartCount: cart.reduce((s, i) => s + i.qty, 0),
-    checkout: async () => {
+    checkout: async (input?: CheckoutInput) => {
       if (!user || !profile) throw new Error("Non connecté");
       if (cart.length === 0) throw new Error("Panier vide");
       const total = cart.reduce((s, i) => s + i.qty * i.price, 0);
+      const shipping = input ?? {
+        shipping_mode: "pickup",
+        shipping_label: "Retrait à l'établissement BISP",
+      };
       const { data: order, error: oErr } = await supabase.from("orders").insert({
         user_id: user.id,
         status: "En attente",
@@ -388,6 +401,12 @@ export function StoreProvider({ children: kids }: { children: ReactNode }) {
         family_prenom: profile.prenom,
         family_email: profile.email,
         family_telephone: profile.telephone,
+        shipping_mode: shipping.shipping_mode,
+        shipping_label: shipping.shipping_label,
+        shipping_recipient: shipping.shipping_recipient ?? null,
+        shipping_address: shipping.shipping_address ?? null,
+        shipping_postal: shipping.shipping_postal ?? null,
+        shipping_city: shipping.shipping_city ?? null,
       }).select().single();
       if (oErr) throw oErr;
       const items = cart.map((i) => {
