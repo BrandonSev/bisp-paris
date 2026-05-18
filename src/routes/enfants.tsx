@@ -189,6 +189,13 @@ function EnfantCard({
                 Modifier
               </button>
               <Link
+                to="/enfants/$childId/historique"
+                params={{ childId: enfant.id }}
+                className="inline-flex h-9 items-center rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground hover:bg-muted"
+              >
+                Historique
+              </Link>
+              <Link
                 to="/boutique"
                 className="inline-flex h-9 items-center rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90"
               >
