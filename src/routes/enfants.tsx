@@ -224,6 +224,9 @@ function ChildModal({
     taille: initial?.taille ?? "",
     hauteur: initial?.hauteur ?? "",
     tour: initial?.tour ?? "",
+    tour_taille: initial?.tour_taille ?? "",
+    tour_bassin: initial?.tour_bassin ?? "",
+    genre: initial?.genre ?? "",
   });
 
   const set = <K extends keyof ChildFormData>(k: K, v: ChildFormData[K]) =>
