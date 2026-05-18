@@ -16,7 +16,13 @@ import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as BoutiqueRouteImport } from './routes/boutique'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AideMentionsLegalesRouteImport } from './routes/aide.mentions-legales'
+import { Route as AideLivraisonRouteImport } from './routes/aide.livraison'
 import { Route as AideGuideTaillesRouteImport } from './routes/aide.guide-tailles'
+import { Route as AideContactRouteImport } from './routes/aide.contact'
+import { Route as AideConfidentialiteRouteImport } from './routes/aide.confidentialite'
+import { Route as AideCgvRouteImport } from './routes/aide.cgv'
+import { Route as AideCguRouteImport } from './routes/aide.cgu'
 import { Route as EnfantsChildIdHistoriqueRouteImport } from './routes/enfants.$childId.historique'
 
 const PanierRoute = PanierRouteImport.update({
@@ -54,9 +60,39 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AideMentionsLegalesRoute = AideMentionsLegalesRouteImport.update({
+  id: '/aide/mentions-legales',
+  path: '/aide/mentions-legales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AideLivraisonRoute = AideLivraisonRouteImport.update({
+  id: '/aide/livraison',
+  path: '/aide/livraison',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AideGuideTaillesRoute = AideGuideTaillesRouteImport.update({
   id: '/aide/guide-tailles',
   path: '/aide/guide-tailles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AideContactRoute = AideContactRouteImport.update({
+  id: '/aide/contact',
+  path: '/aide/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AideConfidentialiteRoute = AideConfidentialiteRouteImport.update({
+  id: '/aide/confidentialite',
+  path: '/aide/confidentialite',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AideCgvRoute = AideCgvRouteImport.update({
+  id: '/aide/cgv',
+  path: '/aide/cgv',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AideCguRoute = AideCguRouteImport.update({
+  id: '/aide/cgu',
+  path: '/aide/cgu',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EnfantsChildIdHistoriqueRoute =
@@ -74,7 +110,13 @@ export interface FileRoutesByFullPath {
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
+  '/aide/cgu': typeof AideCguRoute
+  '/aide/cgv': typeof AideCgvRoute
+  '/aide/confidentialite': typeof AideConfidentialiteRoute
+  '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
+  '/aide/livraison': typeof AideLivraisonRoute
+  '/aide/mentions-legales': typeof AideMentionsLegalesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
 }
 export interface FileRoutesByTo {
@@ -85,7 +127,13 @@ export interface FileRoutesByTo {
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
+  '/aide/cgu': typeof AideCguRoute
+  '/aide/cgv': typeof AideCgvRoute
+  '/aide/confidentialite': typeof AideConfidentialiteRoute
+  '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
+  '/aide/livraison': typeof AideLivraisonRoute
+  '/aide/mentions-legales': typeof AideMentionsLegalesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
 }
 export interface FileRoutesById {
@@ -97,7 +145,13 @@ export interface FileRoutesById {
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
+  '/aide/cgu': typeof AideCguRoute
+  '/aide/cgv': typeof AideCgvRoute
+  '/aide/confidentialite': typeof AideConfidentialiteRoute
+  '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
+  '/aide/livraison': typeof AideLivraisonRoute
+  '/aide/mentions-legales': typeof AideMentionsLegalesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
 }
 export interface FileRouteTypes {
@@ -110,7 +164,13 @@ export interface FileRouteTypes {
     | '/enfants'
     | '/login'
     | '/panier'
+    | '/aide/cgu'
+    | '/aide/cgv'
+    | '/aide/confidentialite'
+    | '/aide/contact'
     | '/aide/guide-tailles'
+    | '/aide/livraison'
+    | '/aide/mentions-legales'
     | '/enfants/$childId/historique'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,7 +181,13 @@ export interface FileRouteTypes {
     | '/enfants'
     | '/login'
     | '/panier'
+    | '/aide/cgu'
+    | '/aide/cgv'
+    | '/aide/confidentialite'
+    | '/aide/contact'
     | '/aide/guide-tailles'
+    | '/aide/livraison'
+    | '/aide/mentions-legales'
     | '/enfants/$childId/historique'
   id:
     | '__root__'
@@ -132,7 +198,13 @@ export interface FileRouteTypes {
     | '/enfants'
     | '/login'
     | '/panier'
+    | '/aide/cgu'
+    | '/aide/cgv'
+    | '/aide/confidentialite'
+    | '/aide/contact'
     | '/aide/guide-tailles'
+    | '/aide/livraison'
+    | '/aide/mentions-legales'
     | '/enfants/$childId/historique'
   fileRoutesById: FileRoutesById
 }
@@ -144,7 +216,13 @@ export interface RootRouteChildren {
   EnfantsRoute: typeof EnfantsRouteWithChildren
   LoginRoute: typeof LoginRoute
   PanierRoute: typeof PanierRoute
+  AideCguRoute: typeof AideCguRoute
+  AideCgvRoute: typeof AideCgvRoute
+  AideConfidentialiteRoute: typeof AideConfidentialiteRoute
+  AideContactRoute: typeof AideContactRoute
   AideGuideTaillesRoute: typeof AideGuideTaillesRoute
+  AideLivraisonRoute: typeof AideLivraisonRoute
+  AideMentionsLegalesRoute: typeof AideMentionsLegalesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -198,11 +276,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/aide/mentions-legales': {
+      id: '/aide/mentions-legales'
+      path: '/aide/mentions-legales'
+      fullPath: '/aide/mentions-legales'
+      preLoaderRoute: typeof AideMentionsLegalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aide/livraison': {
+      id: '/aide/livraison'
+      path: '/aide/livraison'
+      fullPath: '/aide/livraison'
+      preLoaderRoute: typeof AideLivraisonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/aide/guide-tailles': {
       id: '/aide/guide-tailles'
       path: '/aide/guide-tailles'
       fullPath: '/aide/guide-tailles'
       preLoaderRoute: typeof AideGuideTaillesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aide/contact': {
+      id: '/aide/contact'
+      path: '/aide/contact'
+      fullPath: '/aide/contact'
+      preLoaderRoute: typeof AideContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aide/confidentialite': {
+      id: '/aide/confidentialite'
+      path: '/aide/confidentialite'
+      fullPath: '/aide/confidentialite'
+      preLoaderRoute: typeof AideConfidentialiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aide/cgv': {
+      id: '/aide/cgv'
+      path: '/aide/cgv'
+      fullPath: '/aide/cgv'
+      preLoaderRoute: typeof AideCgvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aide/cgu': {
+      id: '/aide/cgu'
+      path: '/aide/cgu'
+      fullPath: '/aide/cgu'
+      preLoaderRoute: typeof AideCguRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/enfants/$childId/historique': {
@@ -234,7 +354,13 @@ const rootRouteChildren: RootRouteChildren = {
   EnfantsRoute: EnfantsRouteWithChildren,
   LoginRoute: LoginRoute,
   PanierRoute: PanierRoute,
+  AideCguRoute: AideCguRoute,
+  AideCgvRoute: AideCgvRoute,
+  AideConfidentialiteRoute: AideConfidentialiteRoute,
+  AideContactRoute: AideContactRoute,
   AideGuideTaillesRoute: AideGuideTaillesRoute,
+  AideLivraisonRoute: AideLivraisonRoute,
+  AideMentionsLegalesRoute: AideMentionsLegalesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
