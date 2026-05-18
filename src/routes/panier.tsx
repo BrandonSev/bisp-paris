@@ -13,6 +13,7 @@ import { CheckoutConfirmModal } from "@/components/CheckoutConfirmModal";
 import type { CheckoutInput } from "@/lib/store";
 import { createPayplugPayment } from "@/lib/payplug.functions";
 import { useServerFn } from "@tanstack/react-start";
+import { sendTransactionalEmail } from "@/lib/email/send";
 
 export const Route = createFileRoute("/panier")({
   head: () => ({
@@ -55,6 +56,27 @@ function PanierPage() {
     setSubmitting(true);
     checkout(input)
       .then(async ({ orderId, orderNumber }) => {
+        // Fire-and-forget confirmation email
+        if (profile?.email) {
+          const paymentLabels: Record<string, string> = {
+            cb_payplug: 'Carte bancaire',
+            cheque: 'Chèque',
+            virement: 'Virement',
+            especes: 'Espèces',
+          };
+          void sendTransactionalEmail({
+            templateName: 'order-confirmation',
+            recipientEmail: profile.email,
+            idempotencyKey: `order-confirm-${orderId}`,
+            templateData: {
+              firstName: profile.prenom,
+              orderNumber,
+              total,
+              shippingLabel: input.shipping_label,
+              paymentLabel: paymentLabels[input.payment_method ?? 'cb_payplug'] ?? input.payment_method,
+            },
+          });
+        }
         if (input.payment_method === 'cb_payplug') {
           const { paymentUrl } = await startPayplug({ data: { orderId } });
           if (paymentUrl) {
