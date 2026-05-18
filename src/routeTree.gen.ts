@@ -17,6 +17,7 @@ import { Route as BoutiqueRouteImport } from './routes/boutique'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AideGuideTaillesRouteImport } from './routes/aide.guide-tailles'
+import { Route as EnfantsChildIdHistoriqueRouteImport } from './routes/enfants.$childId.historique'
 
 const PanierRoute = PanierRouteImport.update({
   id: '/panier',
@@ -58,26 +59,34 @@ const AideGuideTaillesRoute = AideGuideTaillesRouteImport.update({
   path: '/aide/guide-tailles',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EnfantsChildIdHistoriqueRoute =
+  EnfantsChildIdHistoriqueRouteImport.update({
+    id: '/$childId/historique',
+    path: '/$childId/historique',
+    getParentRoute: () => EnfantsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/boutique': typeof BoutiqueRoute
   '/commandes': typeof CommandesRoute
-  '/enfants': typeof EnfantsRoute
+  '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
+  '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/boutique': typeof BoutiqueRoute
   '/commandes': typeof CommandesRoute
-  '/enfants': typeof EnfantsRoute
+  '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
+  '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -85,10 +94,11 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/boutique': typeof BoutiqueRoute
   '/commandes': typeof CommandesRoute
-  '/enfants': typeof EnfantsRoute
+  '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
+  '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +111,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/panier'
     | '/aide/guide-tailles'
+    | '/enfants/$childId/historique'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +122,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/panier'
     | '/aide/guide-tailles'
+    | '/enfants/$childId/historique'
   id:
     | '__root__'
     | '/'
@@ -121,6 +133,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/panier'
     | '/aide/guide-tailles'
+    | '/enfants/$childId/historique'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,7 +141,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   BoutiqueRoute: typeof BoutiqueRoute
   CommandesRoute: typeof CommandesRoute
-  EnfantsRoute: typeof EnfantsRoute
+  EnfantsRoute: typeof EnfantsRouteWithChildren
   LoginRoute: typeof LoginRoute
   PanierRoute: typeof PanierRoute
   AideGuideTaillesRoute: typeof AideGuideTaillesRoute
@@ -192,15 +205,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AideGuideTaillesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/enfants/$childId/historique': {
+      id: '/enfants/$childId/historique'
+      path: '/$childId/historique'
+      fullPath: '/enfants/$childId/historique'
+      preLoaderRoute: typeof EnfantsChildIdHistoriqueRouteImport
+      parentRoute: typeof EnfantsRoute
+    }
   }
 }
+
+interface EnfantsRouteChildren {
+  EnfantsChildIdHistoriqueRoute: typeof EnfantsChildIdHistoriqueRoute
+}
+
+const EnfantsRouteChildren: EnfantsRouteChildren = {
+  EnfantsChildIdHistoriqueRoute: EnfantsChildIdHistoriqueRoute,
+}
+
+const EnfantsRouteWithChildren =
+  EnfantsRoute._addFileChildren(EnfantsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   BoutiqueRoute: BoutiqueRoute,
   CommandesRoute: CommandesRoute,
-  EnfantsRoute: EnfantsRoute,
+  EnfantsRoute: EnfantsRouteWithChildren,
   LoginRoute: LoginRoute,
   PanierRoute: PanierRoute,
   AideGuideTaillesRoute: AideGuideTaillesRoute,
