@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PanierRouteImport } from './routes/panier'
 import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
@@ -38,6 +39,11 @@ import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/em
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicPayplugWebhookRouteImport } from './routes/api/public/payplug.webhook'
 
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/aide/cgu': typeof AideCguRoute
   '/aide/cgv': typeof AideCgvRoute
   '/aide/confidentialite': typeof AideConfidentialiteRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/aide/cgu': typeof AideCguRoute
   '/aide/cgv': typeof AideCgvRoute
   '/aide/confidentialite': typeof AideConfidentialiteRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/aide/cgu': typeof AideCguRoute
   '/aide/cgv': typeof AideCgvRoute
   '/aide/confidentialite': typeof AideConfidentialiteRoute
@@ -287,6 +296,7 @@ export interface FileRouteTypes {
     | '/mot-de-passe-oublie'
     | '/panier'
     | '/reset-password'
+    | '/unsubscribe'
     | '/aide/cgu'
     | '/aide/cgv'
     | '/aide/confidentialite'
@@ -317,6 +327,7 @@ export interface FileRouteTypes {
     | '/mot-de-passe-oublie'
     | '/panier'
     | '/reset-password'
+    | '/unsubscribe'
     | '/aide/cgu'
     | '/aide/cgv'
     | '/aide/confidentialite'
@@ -347,6 +358,7 @@ export interface FileRouteTypes {
     | '/mot-de-passe-oublie'
     | '/panier'
     | '/reset-password'
+    | '/unsubscribe'
     | '/aide/cgu'
     | '/aide/cgv'
     | '/aide/confidentialite'
@@ -378,6 +390,7 @@ export interface RootRouteChildren {
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   PanierRoute: typeof PanierRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   AideCguRoute: typeof AideCguRoute
   AideCgvRoute: typeof AideCgvRoute
   AideConfidentialiteRoute: typeof AideConfidentialiteRoute
@@ -399,6 +412,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -620,6 +640,7 @@ const rootRouteChildren: RootRouteChildren = {
   MotDePasseOublieRoute: MotDePasseOublieRoute,
   PanierRoute: PanierRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   AideCguRoute: AideCguRoute,
   AideCgvRoute: AideCgvRoute,
   AideConfidentialiteRoute: AideConfidentialiteRoute,
