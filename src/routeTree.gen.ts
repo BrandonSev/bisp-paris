@@ -29,6 +29,7 @@ import { Route as AideConfidentialiteRouteImport } from './routes/aide.confident
 import { Route as AideCgvRouteImport } from './routes/aide.cgv'
 import { Route as AideCguRouteImport } from './routes/aide.cgu'
 import { Route as EnfantsChildIdHistoriqueRouteImport } from './routes/enfants.$childId.historique'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicPayplugWebhookRouteImport } from './routes/api/public/payplug.webhook'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -132,6 +133,12 @@ const EnfantsChildIdHistoriqueRoute =
     path: '/$childId/historique',
     getParentRoute: () => EnfantsRoute,
   } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicPayplugWebhookRoute = ApiPublicPayplugWebhookRouteImport.update({
   id: '/api/public/payplug/webhook',
   path: '/api/public/payplug/webhook',
@@ -160,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/paiement/succes': typeof PaiementSuccesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
   '/api/public/payplug/webhook': typeof ApiPublicPayplugWebhookRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -183,6 +191,7 @@ export interface FileRoutesByTo {
   '/paiement/succes': typeof PaiementSuccesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
   '/api/public/payplug/webhook': typeof ApiPublicPayplugWebhookRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -207,6 +216,7 @@ export interface FileRoutesById {
   '/paiement/succes': typeof PaiementSuccesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
   '/api/public/payplug/webhook': typeof ApiPublicPayplugWebhookRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -232,6 +242,7 @@ export interface FileRouteTypes {
     | '/paiement/succes'
     | '/enfants/$childId/historique'
     | '/api/public/payplug/webhook'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -255,6 +266,7 @@ export interface FileRouteTypes {
     | '/paiement/succes'
     | '/enfants/$childId/historique'
     | '/api/public/payplug/webhook'
+    | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/'
@@ -278,6 +290,7 @@ export interface FileRouteTypes {
     | '/paiement/succes'
     | '/enfants/$childId/historique'
     | '/api/public/payplug/webhook'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -301,6 +314,7 @@ export interface RootRouteChildren {
   PaiementEchecRoute: typeof PaiementEchecRoute
   PaiementSuccesRoute: typeof PaiementSuccesRoute
   ApiPublicPayplugWebhookRoute: typeof ApiPublicPayplugWebhookRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -445,6 +459,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnfantsChildIdHistoriqueRouteImport
       parentRoute: typeof EnfantsRoute
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payplug/webhook': {
       id: '/api/public/payplug/webhook'
       path: '/api/public/payplug/webhook'
@@ -487,7 +508,18 @@ const rootRouteChildren: RootRouteChildren = {
   PaiementEchecRoute: PaiementEchecRoute,
   PaiementSuccesRoute: PaiementSuccesRoute,
   ApiPublicPayplugWebhookRoute: ApiPublicPayplugWebhookRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
