@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { X, Truck, Store, Loader2 } from "lucide-react";
+import { X, Truck, Store, Loader2, CreditCard, FileText, Banknote, Wallet } from "lucide-react";
 import { fetchDeliveryOptions, type DeliveryOption } from "@/lib/deliveryOptions";
 import type { CheckoutInput } from "@/lib/store";
 import { useStore } from "@/lib/store";
@@ -20,6 +20,7 @@ export function CheckoutConfirmModal({ open, total, onClose, onConfirm, submitti
   const [address, setAddress] = useState("");
   const [postal, setPostal] = useState("");
   const [city, setCity] = useState("");
+  const [payment, setPayment] = useState<'cb_payplug' | 'cheque' | 'virement' | 'especes'>('cb_payplug');
 
   useEffect(() => {
     if (!open) return;
@@ -48,6 +49,7 @@ export function CheckoutConfirmModal({ open, total, onClose, onConfirm, submitti
     const payload: CheckoutInput = {
       shipping_mode: selectedOpt.code,
       shipping_label: selectedOpt.label,
+      payment_method: payment,
     };
     if (needsAddress) {
       payload.shipping_recipient = recipient.trim();
@@ -117,6 +119,39 @@ export function CheckoutConfirmModal({ open, total, onClose, onConfirm, submitti
               </div>
             </div>
           )}
+
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Mode de paiement · Payment method
+            </p>
+            {PAYMENT_METHODS.map((m) => {
+              const isOn = m.code === payment;
+              const Icon = m.icon;
+              return (
+                <button
+                  key={m.code}
+                  type="button"
+                  onClick={() => setPayment(m.code)}
+                  className={`flex w-full items-start gap-3 rounded-xl border p-3 text-left transition ${
+                    isOn
+                      ? "border-primary bg-primary/5"
+                      : "border-border bg-background hover:border-primary/40"
+                  }`}
+                >
+                  <div className={`mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg ${isOn ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-semibold text-foreground">{m.label}</span>
+                      <span className={`h-4 w-4 shrink-0 rounded-full border-2 ${isOn ? "border-primary bg-primary" : "border-border"}`} />
+                    </div>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{m.description}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <footer className="flex items-center justify-between gap-3 border-t border-border bg-secondary/40 px-6 py-4">
