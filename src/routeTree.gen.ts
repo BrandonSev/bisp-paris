@@ -16,7 +16,9 @@ import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as BoutiqueRouteImport } from './routes/boutique'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AideLivraisonRouteImport } from './routes/aide.livraison'
 import { Route as AideGuideTaillesRouteImport } from './routes/aide.guide-tailles'
+import { Route as AideContactRouteImport } from './routes/aide.contact'
 import { Route as EnfantsChildIdHistoriqueRouteImport } from './routes/enfants.$childId.historique'
 
 const PanierRoute = PanierRouteImport.update({
@@ -54,9 +56,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AideLivraisonRoute = AideLivraisonRouteImport.update({
+  id: '/aide/livraison',
+  path: '/aide/livraison',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AideGuideTaillesRoute = AideGuideTaillesRouteImport.update({
   id: '/aide/guide-tailles',
   path: '/aide/guide-tailles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AideContactRoute = AideContactRouteImport.update({
+  id: '/aide/contact',
+  path: '/aide/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EnfantsChildIdHistoriqueRoute =
@@ -74,7 +86,9 @@ export interface FileRoutesByFullPath {
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
+  '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
+  '/aide/livraison': typeof AideLivraisonRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
 }
 export interface FileRoutesByTo {
@@ -85,7 +99,9 @@ export interface FileRoutesByTo {
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
+  '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
+  '/aide/livraison': typeof AideLivraisonRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
 }
 export interface FileRoutesById {
@@ -97,7 +113,9 @@ export interface FileRoutesById {
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
+  '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
+  '/aide/livraison': typeof AideLivraisonRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
 }
 export interface FileRouteTypes {
@@ -110,7 +128,9 @@ export interface FileRouteTypes {
     | '/enfants'
     | '/login'
     | '/panier'
+    | '/aide/contact'
     | '/aide/guide-tailles'
+    | '/aide/livraison'
     | '/enfants/$childId/historique'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,7 +141,9 @@ export interface FileRouteTypes {
     | '/enfants'
     | '/login'
     | '/panier'
+    | '/aide/contact'
     | '/aide/guide-tailles'
+    | '/aide/livraison'
     | '/enfants/$childId/historique'
   id:
     | '__root__'
@@ -132,7 +154,9 @@ export interface FileRouteTypes {
     | '/enfants'
     | '/login'
     | '/panier'
+    | '/aide/contact'
     | '/aide/guide-tailles'
+    | '/aide/livraison'
     | '/enfants/$childId/historique'
   fileRoutesById: FileRoutesById
 }
@@ -144,7 +168,9 @@ export interface RootRouteChildren {
   EnfantsRoute: typeof EnfantsRouteWithChildren
   LoginRoute: typeof LoginRoute
   PanierRoute: typeof PanierRoute
+  AideContactRoute: typeof AideContactRoute
   AideGuideTaillesRoute: typeof AideGuideTaillesRoute
+  AideLivraisonRoute: typeof AideLivraisonRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -198,11 +224,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/aide/livraison': {
+      id: '/aide/livraison'
+      path: '/aide/livraison'
+      fullPath: '/aide/livraison'
+      preLoaderRoute: typeof AideLivraisonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/aide/guide-tailles': {
       id: '/aide/guide-tailles'
       path: '/aide/guide-tailles'
       fullPath: '/aide/guide-tailles'
       preLoaderRoute: typeof AideGuideTaillesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aide/contact': {
+      id: '/aide/contact'
+      path: '/aide/contact'
+      fullPath: '/aide/contact'
+      preLoaderRoute: typeof AideContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/enfants/$childId/historique': {
@@ -234,8 +274,19 @@ const rootRouteChildren: RootRouteChildren = {
   EnfantsRoute: EnfantsRouteWithChildren,
   LoginRoute: LoginRoute,
   PanierRoute: PanierRoute,
+  AideContactRoute: AideContactRoute,
   AideGuideTaillesRoute: AideGuideTaillesRoute,
+  AideLivraisonRoute: AideLivraisonRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
