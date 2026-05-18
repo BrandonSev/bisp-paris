@@ -6,6 +6,9 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useStore } from "@/lib/store";
 import { downloadOrderPdf } from "@/lib/orderPdf";
+import { createPayplugPayment } from "@/lib/payplug.functions";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/commandes")({
   head: () => ({ meta: [{ title: "Mes commandes · My orders — BISP" }] }),
@@ -33,6 +36,8 @@ type Order = {
   family_nom?: string;
   family_email?: string;
   family_telephone?: string | null;
+  payment_method?: string | null;
+  payment_status?: string | null;
 };
 
 type Item = {
@@ -56,6 +61,20 @@ function CommandesPage() {
   const [items, setItems] = useState<Record<string, Item[]>>({});
   const [open, setOpen] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [paying, setPaying] = useState<string | null>(null);
+  const startPayplug = useServerFn(createPayplugPayment);
+
+  const payNow = async (o: Order, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPaying(o.id);
+    try {
+      const { paymentUrl } = await startPayplug({ data: { orderId: o.id } });
+      if (paymentUrl) window.location.href = paymentUrl;
+    } catch (err: any) {
+      toast.error(err?.message ?? "Erreur de paiement");
+      setPaying(null);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
