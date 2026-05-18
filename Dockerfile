@@ -1,0 +1,44 @@
+# ---- Build stage ----
+FROM oven/bun:1 AS builder
+WORKDIR /app
+
+ARG VITE_SUPABASE_URL=https://ntdiopbtaorkasoscifu.supabase.co
+ARG VITE_SUPABASE_PUBLISHABLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50ZGlvcGJ0YW9ya2Fzb3NjaWZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1MDY2MTEsImV4cCI6MjA5MzA4MjYxMX0.0cW3aTh8q1fUo_w85LkmxvKIDsahmOO8ruV29XbrAAA
+ARG VITE_SUPABASE_PROJECT_ID=ntdiopbtaorkasoscifu
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY
+ENV VITE_SUPABASE_PROJECT_ID=$VITE_SUPABASE_PROJECT_ID
+
+COPY package.json bun.lock* bun.lockb* ./
+RUN bun install --frozen-lockfile
+
+COPY . .
+RUN bun run build
+
+# ---- Runtime stage ----
+FROM oven/bun:1-slim AS runtime
+WORKDIR /app
+
+ARG VITE_SUPABASE_URL=https://ntdiopbtaorkasoscifu.supabase.co
+ARG VITE_SUPABASE_PUBLISHABLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50ZGlvcGJ0YW9ya2Fzb3NjaWZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1MDY2MTEsImV4cCI6MjA5MzA4MjYxMX0.0cW3aTh8q1fUo_w85LkmxvKIDsahmOO8ruV29XbrAAA
+ARG VITE_SUPABASE_PROJECT_ID=ntdiopbtaorkasoscifu
+ARG SUPABASE_URL=$VITE_SUPABASE_URL
+ARG SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY
+
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV SUPABASE_URL=$SUPABASE_URL
+ENV SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY
+ENV VITE_SUPABASE_PROJECT_ID=$VITE_SUPABASE_PROJECT_ID
+
+# Copie le build et les deps runtime (hono + @hono/node-server)
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/server.mjs ./server.mjs
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+
+EXPOSE 3000
+
+CMD ["bun", "run", "server.mjs"]
