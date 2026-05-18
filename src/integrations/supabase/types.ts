@@ -295,6 +295,42 @@ export type Database = {
         }
         Relationships: []
       }
+      order_incidents: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          order_id: string
+          resolution_note: string | null
+          resolved_at: string | null
+          status: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description: string
+          id?: string
+          order_id: string
+          resolution_note?: string | null
+          resolved_at?: string | null
+          status?: string
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          order_id?: string
+          resolution_note?: string | null
+          resolved_at?: string | null
+          status?: string
+          type?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           child_classe: string | null
@@ -576,7 +612,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "apel"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -704,7 +740,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "apel"],
     },
   },
 } as const
