@@ -154,6 +154,60 @@ export type Database = {
         }
         Relationships: []
       }
+      family_parents: {
+        Row: {
+          adresse: string | null
+          civilite: string
+          code_postal: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_default_shipping: boolean
+          lien: string | null
+          nom: string
+          position: number
+          prenom: string
+          telephone: string | null
+          updated_at: string
+          user_id: string
+          ville: string | null
+        }
+        Insert: {
+          adresse?: string | null
+          civilite?: string
+          code_postal?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_default_shipping?: boolean
+          lien?: string | null
+          nom: string
+          position?: number
+          prenom: string
+          telephone?: string | null
+          updated_at?: string
+          user_id: string
+          ville?: string | null
+        }
+        Update: {
+          adresse?: string | null
+          civilite?: string
+          code_postal?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_default_shipping?: boolean
+          lien?: string | null
+          nom?: string
+          position?: number
+          prenom?: string
+          telephone?: string | null
+          updated_at?: string
+          user_id?: string
+          ville?: string | null
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           child_classe: string | null
@@ -295,9 +349,11 @@ export type Database = {
         Row: {
           adresse: string | null
           civilite: string
+          code_etablissement: string | null
           code_postal: string | null
           created_at: string
           email: string
+          family_name: string | null
           id: string
           nom: string
           prenom: string
@@ -308,9 +364,11 @@ export type Database = {
         Insert: {
           adresse?: string | null
           civilite?: string
+          code_etablissement?: string | null
           code_postal?: string | null
           created_at?: string
           email: string
+          family_name?: string | null
           id: string
           nom?: string
           prenom?: string
@@ -321,9 +379,11 @@ export type Database = {
         Update: {
           adresse?: string | null
           civilite?: string
+          code_etablissement?: string | null
           code_postal?: string | null
           created_at?: string
           email?: string
+          family_name?: string | null
           id?: string
           nom?: string
           prenom?: string
