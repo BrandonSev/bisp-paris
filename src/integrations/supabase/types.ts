@@ -121,6 +121,39 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_options: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          label: string
+          position: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          label: string
+          position?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          label?: string
+          position?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           child_classe: string | null
@@ -196,8 +229,17 @@ export type Database = {
           family_telephone: string | null
           id: string
           order_number: string
+          paid_at: string | null
+          shipping_address: string | null
+          shipping_city: string | null
+          shipping_label: string | null
+          shipping_mode: string
+          shipping_postal: string | null
+          shipping_recipient: string | null
           status: string
           total_amount: number
+          tracking_carrier: string | null
+          tracking_number: string | null
           updated_at: string
           user_id: string
         }
@@ -210,8 +252,17 @@ export type Database = {
           family_telephone?: string | null
           id?: string
           order_number?: string
+          paid_at?: string | null
+          shipping_address?: string | null
+          shipping_city?: string | null
+          shipping_label?: string | null
+          shipping_mode?: string
+          shipping_postal?: string | null
+          shipping_recipient?: string | null
           status?: string
           total_amount?: number
+          tracking_carrier?: string | null
+          tracking_number?: string | null
           updated_at?: string
           user_id: string
         }
@@ -224,8 +275,17 @@ export type Database = {
           family_telephone?: string | null
           id?: string
           order_number?: string
+          paid_at?: string | null
+          shipping_address?: string | null
+          shipping_city?: string | null
+          shipping_label?: string | null
+          shipping_mode?: string
+          shipping_postal?: string | null
+          shipping_recipient?: string | null
           status?: string
           total_amount?: number
+          tracking_carrier?: string | null
+          tracking_number?: string | null
           updated_at?: string
           user_id?: string
         }
