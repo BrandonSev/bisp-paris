@@ -21,6 +21,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PaiementSuccesRouteImport } from './routes/paiement.succes'
 import { Route as PaiementEchecRouteImport } from './routes/paiement.echec'
+import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AideMentionsLegalesRouteImport } from './routes/aide.mentions-legales'
 import { Route as AideLivraisonRouteImport } from './routes/aide.livraison'
 import { Route as AideGuideTaillesRouteImport } from './routes/aide.guide-tailles'
@@ -28,7 +29,10 @@ import { Route as AideContactRouteImport } from './routes/aide.contact'
 import { Route as AideConfidentialiteRouteImport } from './routes/aide.confidentialite'
 import { Route as AideCgvRouteImport } from './routes/aide.cgv'
 import { Route as AideCguRouteImport } from './routes/aide.cgu'
+import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as EnfantsChildIdHistoriqueRouteImport } from './routes/enfants.$childId.historique'
+import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -94,6 +98,11 @@ const PaiementEchecRoute = PaiementEchecRouteImport.update({
   path: '/paiement/echec',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
+  id: '/email/unsubscribe',
+  path: '/email/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AideMentionsLegalesRoute = AideMentionsLegalesRouteImport.update({
   id: '/aide/mentions-legales',
   path: '/aide/mentions-legales',
@@ -129,11 +138,28 @@ const AideCguRoute = AideCguRouteImport.update({
   path: '/aide/cgu',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
+  id: '/lovable/email/suppression',
+  path: '/lovable/email/suppression',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EnfantsChildIdHistoriqueRoute =
   EnfantsChildIdHistoriqueRouteImport.update({
     id: '/$childId/historique',
     path: '/$childId/historique',
     getParentRoute: () => EnfantsRoute,
+  } as any)
+const LovableEmailTransactionalSendRoute =
+  LovableEmailTransactionalSendRouteImport.update({
+    id: '/lovable/email/transactional/send',
+    path: '/lovable/email/transactional/send',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
@@ -175,13 +201,17 @@ export interface FileRoutesByFullPath {
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
   '/aide/livraison': typeof AideLivraisonRoute
   '/aide/mentions-legales': typeof AideMentionsLegalesRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/paiement/echec': typeof PaiementEchecRoute
   '/paiement/succes': typeof PaiementSuccesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/payplug/webhook': typeof ApiPublicPayplugWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -201,13 +231,17 @@ export interface FileRoutesByTo {
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
   '/aide/livraison': typeof AideLivraisonRoute
   '/aide/mentions-legales': typeof AideMentionsLegalesRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/paiement/echec': typeof PaiementEchecRoute
   '/paiement/succes': typeof PaiementSuccesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/payplug/webhook': typeof ApiPublicPayplugWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -228,13 +262,17 @@ export interface FileRoutesById {
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
   '/aide/livraison': typeof AideLivraisonRoute
   '/aide/mentions-legales': typeof AideMentionsLegalesRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/paiement/echec': typeof PaiementEchecRoute
   '/paiement/succes': typeof PaiementSuccesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/payplug/webhook': typeof ApiPublicPayplugWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -256,13 +294,17 @@ export interface FileRouteTypes {
     | '/aide/guide-tailles'
     | '/aide/livraison'
     | '/aide/mentions-legales'
+    | '/email/unsubscribe'
     | '/paiement/echec'
     | '/paiement/succes'
     | '/enfants/$childId/historique'
+    | '/lovable/email/suppression'
     | '/api/public/payplug/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -282,13 +324,17 @@ export interface FileRouteTypes {
     | '/aide/guide-tailles'
     | '/aide/livraison'
     | '/aide/mentions-legales'
+    | '/email/unsubscribe'
     | '/paiement/echec'
     | '/paiement/succes'
     | '/enfants/$childId/historique'
+    | '/lovable/email/suppression'
     | '/api/public/payplug/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   id:
     | '__root__'
     | '/'
@@ -308,13 +354,17 @@ export interface FileRouteTypes {
     | '/aide/guide-tailles'
     | '/aide/livraison'
     | '/aide/mentions-legales'
+    | '/email/unsubscribe'
     | '/paiement/echec'
     | '/paiement/succes'
     | '/enfants/$childId/historique'
+    | '/lovable/email/suppression'
     | '/api/public/payplug/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -335,12 +385,16 @@ export interface RootRouteChildren {
   AideGuideTaillesRoute: typeof AideGuideTaillesRoute
   AideLivraisonRoute: typeof AideLivraisonRoute
   AideMentionsLegalesRoute: typeof AideMentionsLegalesRoute
+  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   PaiementEchecRoute: typeof PaiementEchecRoute
   PaiementSuccesRoute: typeof PaiementSuccesRoute
+  LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicPayplugWebhookRoute: typeof ApiPublicPayplugWebhookRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
+  LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -429,6 +483,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PaiementEchecRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/email/unsubscribe': {
+      id: '/email/unsubscribe'
+      path: '/email/unsubscribe'
+      fullPath: '/email/unsubscribe'
+      preLoaderRoute: typeof EmailUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/aide/mentions-legales': {
       id: '/aide/mentions-legales'
       path: '/aide/mentions-legales'
@@ -478,12 +539,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AideCguRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/suppression': {
+      id: '/lovable/email/suppression'
+      path: '/lovable/email/suppression'
+      fullPath: '/lovable/email/suppression'
+      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/enfants/$childId/historique': {
       id: '/enfants/$childId/historique'
       path: '/$childId/historique'
       fullPath: '/enfants/$childId/historique'
       preLoaderRoute: typeof EnfantsChildIdHistoriqueRouteImport
       parentRoute: typeof EnfantsRoute
+    }
+    '/lovable/email/transactional/send': {
+      id: '/lovable/email/transactional/send'
+      path: '/lovable/email/transactional/send'
+      fullPath: '/lovable/email/transactional/send'
+      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
@@ -545,12 +627,16 @@ const rootRouteChildren: RootRouteChildren = {
   AideGuideTaillesRoute: AideGuideTaillesRoute,
   AideLivraisonRoute: AideLivraisonRoute,
   AideMentionsLegalesRoute: AideMentionsLegalesRoute,
+  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   PaiementEchecRoute: PaiementEchecRoute,
   PaiementSuccesRoute: PaiementSuccesRoute,
+  LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicPayplugWebhookRoute: ApiPublicPayplugWebhookRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
+  LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
