@@ -134,6 +134,7 @@ export type CheckoutInput = {
   shipping_address?: string;
   shipping_postal?: string;
   shipping_city?: string;
+  payment_method?: 'cb_payplug' | 'cheque' | 'virement' | 'especes';
 };
 
 const Ctx = createContext<StoreCtx | null>(null);
