@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PanierRouteImport } from './routes/panier'
 import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as LoginRouteImport } from './routes/login'
@@ -26,6 +27,11 @@ import { Route as AideCgvRouteImport } from './routes/aide.cgv'
 import { Route as AideCguRouteImport } from './routes/aide.cgu'
 import { Route as EnfantsChildIdHistoriqueRouteImport } from './routes/enfants.$childId.historique'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PanierRoute = PanierRouteImport.update({
   id: '/panier',
   path: '/panier',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/aide/cgu': typeof AideCguRoute
   '/aide/cgv': typeof AideCgvRoute
   '/aide/confidentialite': typeof AideConfidentialiteRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/aide/cgu': typeof AideCguRoute
   '/aide/cgv': typeof AideCgvRoute
   '/aide/confidentialite': typeof AideConfidentialiteRoute
@@ -154,6 +162,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/aide/cgu': typeof AideCguRoute
   '/aide/cgv': typeof AideCgvRoute
   '/aide/confidentialite': typeof AideConfidentialiteRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mot-de-passe-oublie'
     | '/panier'
+    | '/reset-password'
     | '/aide/cgu'
     | '/aide/cgv'
     | '/aide/confidentialite'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mot-de-passe-oublie'
     | '/panier'
+    | '/reset-password'
     | '/aide/cgu'
     | '/aide/cgv'
     | '/aide/confidentialite'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mot-de-passe-oublie'
     | '/panier'
+    | '/reset-password'
     | '/aide/cgu'
     | '/aide/cgv'
     | '/aide/confidentialite'
@@ -229,6 +241,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   PanierRoute: typeof PanierRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   AideCguRoute: typeof AideCguRoute
   AideCgvRoute: typeof AideCgvRoute
   AideConfidentialiteRoute: typeof AideConfidentialiteRoute
@@ -240,6 +253,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/panier': {
       id: '/panier'
       path: '/panier'
@@ -375,6 +395,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MotDePasseOublieRoute: MotDePasseOublieRoute,
   PanierRoute: PanierRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   AideCguRoute: AideCguRoute,
   AideCgvRoute: AideCgvRoute,
   AideConfidentialiteRoute: AideConfidentialiteRoute,

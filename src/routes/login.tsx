@@ -145,6 +145,11 @@ function LoginPage() {
                 <Field label="Mot de passe · Password" icon={<Lock className="h-4 w-4" />}>
                   <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={inputCls} />
                 </Field>
+                <div className="flex justify-end -mt-2">
+                  <Link to="/mot-de-passe-oublie" className="text-xs text-[var(--teal-deep)] hover:underline">
+                    Mot de passe oublié ?
+                  </Link>
+                </div>
                 <button type="submit" disabled={loading} className={primaryBtn}>
                   {loading ? "Connexion…" : "Accéder à la boutique"}
                 </button>
