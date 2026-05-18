@@ -4,6 +4,13 @@ import { fetchDeliveryOptions, type DeliveryOption } from "@/lib/deliveryOptions
 import type { CheckoutInput } from "@/lib/store";
 import { useStore } from "@/lib/store";
 
+const PAYMENT_METHODS = [
+  { code: 'cb_payplug' as const, label: 'Carte bancaire · Card', description: 'Paiement sécurisé via PayPlug', icon: CreditCard },
+  { code: 'cheque' as const, label: 'Chèque', description: "À l'ordre de l'établissement BISP", icon: FileText },
+  { code: 'virement' as const, label: 'Virement bancaire · Bank transfer', description: "Coordonnées envoyées par email", icon: Banknote },
+  { code: 'especes' as const, label: 'Espèces · Cash', description: "À régler au secrétariat", icon: Wallet },
+];
+
 type Props = {
   open: boolean;
   total: number;
