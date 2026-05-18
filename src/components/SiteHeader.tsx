@@ -48,6 +48,9 @@ export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHe
               <Link to="/commandes" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
                 Mes commandes
               </Link>
+              <Link to="/famille" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
+                Ma famille
+              </Link>
               {isAdmin && (
                 <Link to="/admin" className="inline-flex items-center gap-1 transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
                   <ShieldCheck className="h-3.5 w-3.5" /> Admin
@@ -58,13 +61,13 @@ export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHe
 
           <div className="flex items-center gap-2">
             {showAccount && user && (
-              <button
-                type="button"
+              <Link
+                to="/famille"
                 className="hidden h-10 items-center gap-2 rounded-full border border-border bg-card px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted sm:inline-flex"
               >
                 <User className="h-4 w-4" />
                 <span className="max-w-[160px] truncate">{familyLabel}</span>
-              </button>
+              </Link>
             )}
             {showAccount && user && (
               <button
