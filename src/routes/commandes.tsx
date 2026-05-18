@@ -162,6 +162,19 @@ function CommandesPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-base font-semibold text-foreground">{Number(o.total_amount).toFixed(2)} €</span>
+                    {o.payment_status === 'paid' ? (
+                      <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800">Payé</span>
+                    ) : o.payment_method === 'cb_payplug' ? (
+                      <button
+                        onClick={(e) => payNow(o, e)}
+                        disabled={paying === o.id}
+                        className="inline-flex h-8 items-center rounded-md bg-primary px-2.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+                      >
+                        {paying === o.id ? "…" : "Payer · Pay"}
+                      </button>
+                    ) : (
+                      <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800">En attente</span>
+                    )}
                     <button
                       onClick={(e) => handleDownload(o, e)}
                       className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 text-xs font-medium text-foreground hover:bg-muted"
