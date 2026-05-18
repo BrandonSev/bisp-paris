@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PanierRouteImport } from './routes/panier'
+import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as EnfantsRouteImport } from './routes/enfants'
 import { Route as CommandesRouteImport } from './routes/commandes'
@@ -28,6 +29,11 @@ import { Route as EnfantsChildIdHistoriqueRouteImport } from './routes/enfants.$
 const PanierRoute = PanierRouteImport.update({
   id: '/panier',
   path: '/panier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotDePasseOublieRoute = MotDePasseOublieRouteImport.update({
+  id: '/mot-de-passe-oublie',
+  path: '/mot-de-passe-oublie',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
   '/aide/cgu': typeof AideCguRoute
   '/aide/cgv': typeof AideCgvRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
   '/aide/cgu': typeof AideCguRoute
   '/aide/cgv': typeof AideCgvRoute
@@ -144,6 +152,7 @@ export interface FileRoutesById {
   '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRouteWithChildren
   '/login': typeof LoginRoute
+  '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
   '/aide/cgu': typeof AideCguRoute
   '/aide/cgv': typeof AideCgvRoute
@@ -163,6 +172,7 @@ export interface FileRouteTypes {
     | '/commandes'
     | '/enfants'
     | '/login'
+    | '/mot-de-passe-oublie'
     | '/panier'
     | '/aide/cgu'
     | '/aide/cgv'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/commandes'
     | '/enfants'
     | '/login'
+    | '/mot-de-passe-oublie'
     | '/panier'
     | '/aide/cgu'
     | '/aide/cgv'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/commandes'
     | '/enfants'
     | '/login'
+    | '/mot-de-passe-oublie'
     | '/panier'
     | '/aide/cgu'
     | '/aide/cgv'
@@ -215,6 +227,7 @@ export interface RootRouteChildren {
   CommandesRoute: typeof CommandesRoute
   EnfantsRoute: typeof EnfantsRouteWithChildren
   LoginRoute: typeof LoginRoute
+  MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   PanierRoute: typeof PanierRoute
   AideCguRoute: typeof AideCguRoute
   AideCgvRoute: typeof AideCgvRoute
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       path: '/panier'
       fullPath: '/panier'
       preLoaderRoute: typeof PanierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mot-de-passe-oublie': {
+      id: '/mot-de-passe-oublie'
+      path: '/mot-de-passe-oublie'
+      fullPath: '/mot-de-passe-oublie'
+      preLoaderRoute: typeof MotDePasseOublieRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -353,6 +373,7 @@ const rootRouteChildren: RootRouteChildren = {
   CommandesRoute: CommandesRoute,
   EnfantsRoute: EnfantsRouteWithChildren,
   LoginRoute: LoginRoute,
+  MotDePasseOublieRoute: MotDePasseOublieRoute,
   PanierRoute: PanierRoute,
   AideCguRoute: AideCguRoute,
   AideCgvRoute: AideCgvRoute,
@@ -365,3 +386,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
