@@ -44,7 +44,11 @@ export const Route = createFileRoute('/api/public/payplug/webhook')({
           return new Response('No reference', { status: 400 });
         }
 
-        const update: Record<string, any> = {};
+        const update: {
+          payment_status?: string;
+          paid_at?: string;
+          status?: string;
+        } = {};
         if (isPaid) {
           update.payment_status = 'paid';
           update.paid_at = new Date().toISOString();
@@ -55,7 +59,7 @@ export const Route = createFileRoute('/api/public/payplug/webhook')({
           update.payment_status = 'pending';
         }
 
-        const query = supabaseAdmin.from('orders').update(update);
+        const query = supabaseAdmin.from('orders').update(update as never);
         const { error } = orderId
           ? await query.eq('id', orderId)
           : await query.eq('payment_id', paymentId!);
