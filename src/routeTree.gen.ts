@@ -19,6 +19,8 @@ import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as BoutiqueRouteImport } from './routes/boutique'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PaiementSuccesRouteImport } from './routes/paiement.succes'
+import { Route as PaiementEchecRouteImport } from './routes/paiement.echec'
 import { Route as AideMentionsLegalesRouteImport } from './routes/aide.mentions-legales'
 import { Route as AideLivraisonRouteImport } from './routes/aide.livraison'
 import { Route as AideGuideTaillesRouteImport } from './routes/aide.guide-tailles'
@@ -77,6 +79,16 @@ const AdminRoute = AdminRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaiementSuccesRoute = PaiementSuccesRouteImport.update({
+  id: '/paiement/succes',
+  path: '/paiement/succes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaiementEchecRoute = PaiementEchecRouteImport.update({
+  id: '/paiement/echec',
+  path: '/paiement/echec',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AideMentionsLegalesRoute = AideMentionsLegalesRouteImport.update({
@@ -144,6 +156,8 @@ export interface FileRoutesByFullPath {
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
   '/aide/livraison': typeof AideLivraisonRoute
   '/aide/mentions-legales': typeof AideMentionsLegalesRoute
+  '/paiement/echec': typeof PaiementEchecRoute
+  '/paiement/succes': typeof PaiementSuccesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
   '/api/public/payplug/webhook': typeof ApiPublicPayplugWebhookRoute
 }
@@ -165,6 +179,8 @@ export interface FileRoutesByTo {
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
   '/aide/livraison': typeof AideLivraisonRoute
   '/aide/mentions-legales': typeof AideMentionsLegalesRoute
+  '/paiement/echec': typeof PaiementEchecRoute
+  '/paiement/succes': typeof PaiementSuccesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
   '/api/public/payplug/webhook': typeof ApiPublicPayplugWebhookRoute
 }
@@ -187,6 +203,8 @@ export interface FileRoutesById {
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
   '/aide/livraison': typeof AideLivraisonRoute
   '/aide/mentions-legales': typeof AideMentionsLegalesRoute
+  '/paiement/echec': typeof PaiementEchecRoute
+  '/paiement/succes': typeof PaiementSuccesRoute
   '/enfants/$childId/historique': typeof EnfantsChildIdHistoriqueRoute
   '/api/public/payplug/webhook': typeof ApiPublicPayplugWebhookRoute
 }
@@ -210,6 +228,8 @@ export interface FileRouteTypes {
     | '/aide/guide-tailles'
     | '/aide/livraison'
     | '/aide/mentions-legales'
+    | '/paiement/echec'
+    | '/paiement/succes'
     | '/enfants/$childId/historique'
     | '/api/public/payplug/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -231,6 +251,8 @@ export interface FileRouteTypes {
     | '/aide/guide-tailles'
     | '/aide/livraison'
     | '/aide/mentions-legales'
+    | '/paiement/echec'
+    | '/paiement/succes'
     | '/enfants/$childId/historique'
     | '/api/public/payplug/webhook'
   id:
@@ -252,6 +274,8 @@ export interface FileRouteTypes {
     | '/aide/guide-tailles'
     | '/aide/livraison'
     | '/aide/mentions-legales'
+    | '/paiement/echec'
+    | '/paiement/succes'
     | '/enfants/$childId/historique'
     | '/api/public/payplug/webhook'
   fileRoutesById: FileRoutesById
@@ -274,6 +298,8 @@ export interface RootRouteChildren {
   AideGuideTaillesRoute: typeof AideGuideTaillesRoute
   AideLivraisonRoute: typeof AideLivraisonRoute
   AideMentionsLegalesRoute: typeof AideMentionsLegalesRoute
+  PaiementEchecRoute: typeof PaiementEchecRoute
+  PaiementSuccesRoute: typeof PaiementSuccesRoute
   ApiPublicPayplugWebhookRoute: typeof ApiPublicPayplugWebhookRoute
 }
 
@@ -347,6 +373,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/paiement/succes': {
+      id: '/paiement/succes'
+      path: '/paiement/succes'
+      fullPath: '/paiement/succes'
+      preLoaderRoute: typeof PaiementSuccesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/paiement/echec': {
+      id: '/paiement/echec'
+      path: '/paiement/echec'
+      fullPath: '/paiement/echec'
+      preLoaderRoute: typeof PaiementEchecRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/aide/mentions-legales': {
@@ -444,8 +484,19 @@ const rootRouteChildren: RootRouteChildren = {
   AideGuideTaillesRoute: AideGuideTaillesRoute,
   AideLivraisonRoute: AideLivraisonRoute,
   AideMentionsLegalesRoute: AideMentionsLegalesRoute,
+  PaiementEchecRoute: PaiementEchecRoute,
+  PaiementSuccesRoute: PaiementSuccesRoute,
   ApiPublicPayplugWebhookRoute: ApiPublicPayplugWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
