@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { RequireAuth } from "@/components/RequireAuth";
 import { SizeBadge } from "@/components/SizeBadge";
 import { recommendSize } from "@/lib/sizeRecommendation";
+import { CheckoutConfirmModal } from "@/components/CheckoutConfirmModal";
+import type { CheckoutInput } from "@/lib/store";
 
 export const Route = createFileRoute("/panier")({
   head: () => ({
@@ -25,6 +27,7 @@ function PanierPage() {
   const { cart, children: kids, updateQty, removeFromCart, checkout, profile } = useStore();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const groups = kids
     .map((child) => ({
@@ -40,14 +43,19 @@ function PanierPage() {
   const delivery = 0;
   const total = subtotal + delivery;
 
-  const handleCheckout = () => {
+  const openConfirm = () => {
     if (cart.length === 0) return;
+    setConfirmOpen(true);
+  };
+
+  const handleConfirm = (input: CheckoutInput) => {
     setSubmitting(true);
-    checkout()
+    checkout(input)
       .then(({ orderNumber }) => {
         toast.success(`Commande ${orderNumber} confirmée`, {
-          description: `Total ${total.toFixed(2)} € · livraison à BISP sous 5–7 jours.`,
+          description: `Total ${total.toFixed(2)} € · ${input.shipping_label}`,
         });
+        setConfirmOpen(false);
         navigate({ to: "/commandes" });
       })
       .catch((err) => toast.error(err.message ?? "Erreur lors de la commande"))
@@ -114,12 +122,12 @@ function PanierPage() {
               </div>
               <button
                 type="button"
-                onClick={handleCheckout}
+                onClick={openConfirm}
                 disabled={submitting}
                 className="mt-6 inline-flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-card)] hover:bg-primary/90 disabled:opacity-60"
               >
                 <Lock className="h-4 w-4" />
-                {submitting ? "Validation…" : "Valider la commande · Confirm"}
+                Valider la commande · Confirm
               </button>
               <p className="mt-3 text-center text-[11px] text-muted-foreground">
                 Paiement sécurisé · Secure · CB · 3× sans frais
@@ -135,6 +143,14 @@ function PanierPage() {
         </div>
         )}
       </section>
+
+      <CheckoutConfirmModal
+        open={confirmOpen}
+        total={total}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirm}
+        submitting={submitting}
+      />
 
       <SiteFooter />
     </div>
