@@ -1,6 +1,68 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { createHmac, timingSafeEqual } from 'crypto';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
+import * as React from 'react';
+import { render } from '@react-email/components';
+import { TEMPLATES } from '@/lib/email-templates/registry';
+
+const SITE_NAME = 'BISP Paris';
+const SENDER_DOMAIN = 'notify.franceuniformes.fr';
+const FROM_DOMAIN = 'notify.franceuniformes.fr';
+
+async function sendOrderPaidEmail(orderId: string) {
+  const { data: order } = await supabaseAdmin
+    .from('orders')
+    .select('id, order_number, total_amount, family_email, family_prenom')
+    .eq('id', orderId)
+    .maybeSingle();
+  if (!order?.family_email) return;
+
+  const entry = TEMPLATES['order-paid'];
+  if (!entry) return;
+  const data = {
+    firstName: order.family_prenom,
+    orderNumber: order.order_number,
+    total: Number(order.total_amount),
+  };
+  const element = React.createElement(entry.component, data);
+  const html = await render(element);
+  const text = await render(element, { plainText: true });
+  const subject = typeof entry.subject === 'function' ? entry.subject(data) : entry.subject;
+  const messageId = `order-paid-${order.id}`;
+
+  // Idempotency: skip if already enqueued/sent
+  const { data: existing } = await supabaseAdmin
+    .from('email_send_log')
+    .select('id')
+    .eq('message_id', messageId)
+    .limit(1)
+    .maybeSingle();
+  if (existing) return;
+
+  await supabaseAdmin.from('email_send_log').insert({
+    message_id: messageId,
+    template_name: 'order-paid',
+    recipient_email: order.family_email,
+    status: 'pending',
+  });
+
+  await supabaseAdmin.rpc('enqueue_email', {
+    queue_name: 'transactional_emails',
+    payload: {
+      message_id: messageId,
+      to: order.family_email,
+      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+      sender_domain: SENDER_DOMAIN,
+      subject,
+      html,
+      text,
+      purpose: 'transactional',
+      label: 'order-paid',
+      idempotency_key: messageId,
+      queued_at: new Date().toISOString(),
+    },
+  });
+}
 
 export const Route = createFileRoute('/api/public/payplug/webhook')({
   server: {
@@ -67,6 +129,26 @@ export const Route = createFileRoute('/api/public/payplug/webhook')({
         if (error) {
           console.error('Webhook update failed', error);
           return new Response('DB error', { status: 500 });
+        }
+
+        // Send payment confirmation email (fire-and-forget; do not fail webhook on email errors)
+        if (isPaid) {
+          let resolvedOrderId = orderId;
+          if (!resolvedOrderId && paymentId) {
+            const { data: o } = await supabaseAdmin
+              .from('orders')
+              .select('id')
+              .eq('payment_id', paymentId)
+              .maybeSingle();
+            resolvedOrderId = o?.id;
+          }
+          if (resolvedOrderId) {
+            try {
+              await sendOrderPaidEmail(resolvedOrderId);
+            } catch (e) {
+              console.error('order-paid email failed', e);
+            }
+          }
         }
 
         return new Response('ok');
