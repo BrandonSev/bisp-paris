@@ -16,6 +16,7 @@ import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as BoutiqueRouteImport } from './routes/boutique'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AideGuideTaillesRouteImport } from './routes/aide.guide-tailles'
 
 const PanierRoute = PanierRouteImport.update({
   id: '/panier',
@@ -52,6 +53,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AideGuideTaillesRoute = AideGuideTaillesRouteImport.update({
+  id: '/aide/guide-tailles',
+  path: '/aide/guide-tailles',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/enfants': typeof EnfantsRoute
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
+  '/aide/guide-tailles': typeof AideGuideTaillesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/enfants': typeof EnfantsRoute
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
+  '/aide/guide-tailles': typeof AideGuideTaillesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   '/enfants': typeof EnfantsRoute
   '/login': typeof LoginRoute
   '/panier': typeof PanierRoute
+  '/aide/guide-tailles': typeof AideGuideTaillesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +100,7 @@ export interface FileRouteTypes {
     | '/enfants'
     | '/login'
     | '/panier'
+    | '/aide/guide-tailles'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/enfants'
     | '/login'
     | '/panier'
+    | '/aide/guide-tailles'
   id:
     | '__root__'
     | '/'
@@ -109,6 +120,7 @@ export interface FileRouteTypes {
     | '/enfants'
     | '/login'
     | '/panier'
+    | '/aide/guide-tailles'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -119,6 +131,7 @@ export interface RootRouteChildren {
   EnfantsRoute: typeof EnfantsRoute
   LoginRoute: typeof LoginRoute
   PanierRoute: typeof PanierRoute
+  AideGuideTaillesRoute: typeof AideGuideTaillesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -172,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/aide/guide-tailles': {
+      id: '/aide/guide-tailles'
+      path: '/aide/guide-tailles'
+      fullPath: '/aide/guide-tailles'
+      preLoaderRoute: typeof AideGuideTaillesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -183,6 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   EnfantsRoute: EnfantsRoute,
   LoginRoute: LoginRoute,
   PanierRoute: PanierRoute,
+  AideGuideTaillesRoute: AideGuideTaillesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

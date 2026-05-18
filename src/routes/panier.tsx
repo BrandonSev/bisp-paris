@@ -7,6 +7,8 @@ import { ShellMotif } from "@/components/SchoolMotif";
 import { useStore, type CartItem, type Child } from "@/lib/store";
 import { toast } from "sonner";
 import { RequireAuth } from "@/components/RequireAuth";
+import { SizeBadge } from "@/components/SizeBadge";
+import { recommendSize } from "@/lib/sizeRecommendation";
 
 export const Route = createFileRoute("/panier")({
   head: () => ({
@@ -168,6 +170,12 @@ function ChildGroup({
   onQty: (id: string, qty: number) => void;
   onRemove: (id: string) => void;
 }) {
+  const reco = recommendSize({
+    hauteur: child.hauteur,
+    tour: child.tour,
+    tour_taille: child.tour_taille,
+    tour_bassin: child.tour_bassin,
+  });
   return (
     <section className="overflow-hidden rounded-3xl border border-border bg-card">
       <header className="flex items-center justify-between border-b border-border bg-secondary/60 px-6 py-4">
@@ -180,9 +188,12 @@ function ChildGroup({
             <p className="text-xs text-muted-foreground">{child.classe} · {child.section}</p>
           </div>
         </div>
-        <span className="rounded-full bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
-          {items.reduce((a, i) => a + i.qty, 0)} article{items.reduce((a, i) => a + i.qty, 0) > 1 ? "s" : ""}
-        </span>
+        <div className="flex items-center gap-2">
+          {reco && <SizeBadge size={reco.row.age} />}
+          <span className="rounded-full bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
+            {items.reduce((a, i) => a + i.qty, 0)} article{items.reduce((a, i) => a + i.qty, 0) > 1 ? "s" : ""}
+          </span>
+        </div>
       </header>
 
       <ul className="divide-y divide-border">
@@ -196,8 +207,13 @@ function ChildGroup({
                 <div className="min-w-0">
                   <h4 className="truncate text-sm font-semibold text-foreground">{item.name}</h4>
                   <p className="mt-0.5 text-xs text-muted-foreground">Réf. {item.ref}</p>
-                  <p className="mt-2 text-xs text-foreground/80">
+                  <p className="mt-2 flex flex-wrap items-center gap-2 text-xs text-foreground/80">
                     Taille <span className="font-semibold">{item.size}</span>
+                    {reco && reco.row.age !== item.size && (
+                      <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800 ring-1 ring-inset ring-amber-200">
+                        Recommandé : {reco.row.age}
+                      </span>
+                    )}
                   </p>
                 </div>
                 <div className="shrink-0 text-right">

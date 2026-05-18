@@ -6,6 +6,8 @@ import { ShellMotif } from "@/components/SchoolMotif";
 import { useStore, type Child } from "@/lib/store";
 import { toast } from "sonner";
 import { RequireAuth } from "@/components/RequireAuth";
+import { SizeBadge } from "@/components/SizeBadge";
+import { recommendSize } from "@/lib/sizeRecommendation";
 
 export const Route = createFileRoute("/enfants")({
   head: () => ({
@@ -140,10 +142,35 @@ function EnfantCard({
             <Ruler className="h-3.5 w-3.5" /> Mensurations · Measurements
           </div>
           <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
-            <Field label="Taille recommandée" value={enfant.taille} />
             <Field label="Hauteur · Height" value={enfant.hauteur} />
-            <Field label="Tour de poitrine" value={enfant.tour} />
+            <Field label="Tour poitrine · Chest" value={enfant.tour} />
+            <Field label="Tour taille · Waist" value={enfant.tour_taille} />
+            <Field label="Tour bassin · Hips" value={enfant.tour_bassin} />
+            <Field label="Genre" value={enfant.genre} />
           </div>
+          {(() => {
+            const reco = recommendSize({
+              hauteur: enfant.hauteur,
+              tour: enfant.tour,
+              tour_taille: enfant.tour_taille,
+              tour_bassin: enfant.tour_bassin,
+            });
+            if (!reco) {
+              return (
+                <p className="mt-4 text-xs italic text-muted-foreground">
+                  Renseignez au moins une mensuration pour obtenir une taille recommandée.
+                </p>
+              );
+            }
+            return (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <SizeBadge size={reco.row.age} />
+                <Link to="/aide/guide-tailles" className="text-xs text-[var(--teal-deep)] hover:underline">
+                  Voir le guide · Size guide
+                </Link>
+              </div>
+            );
+          })()}
 
           <div className="mt-6 flex items-center justify-between border-t border-border pt-5">
             <button
@@ -233,6 +260,12 @@ function ChildModal({
     setForm((p) => ({ ...p, [k]: v }));
 
   const classKey = (section: string, classe: string) => `${section}|${classe}`;
+  const liveReco = recommendSize({
+    hauteur: form.hauteur,
+    tour: form.tour,
+    tour_taille: form.tour_taille,
+    tour_bassin: form.tour_bassin,
+  });
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
@@ -290,9 +323,31 @@ function ChildModal({
               ))}
             </select>
           </label>
-          <Input label="Taille recommandée" value={form.taille} onChange={(v) => set("taille", v)} placeholder="8 ans / M" />
-          <Input label="Hauteur" value={form.hauteur} onChange={(v) => set("hauteur", v)} placeholder="128 cm" />
-          <Input label="Tour de poitrine" value={form.tour} onChange={(v) => set("tour", v)} placeholder="62 cm" />
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Genre</span>
+            <select
+              value={form.genre}
+              onChange={(e) => set("genre", e.target.value as ChildFormData["genre"])}
+              className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+            >
+              <option value="">—</option>
+              <option value="Fille">Fille · Girl</option>
+              <option value="Garçon">Garçon · Boy</option>
+            </select>
+          </label>
+          <Input label="Hauteur · Height (cm)" value={form.hauteur} onChange={(v) => set("hauteur", v)} placeholder="128" />
+          <Input label="Tour de poitrine · Chest (cm)" value={form.tour} onChange={(v) => set("tour", v)} placeholder="62" />
+          <Input label="Tour de taille · Waist (cm)" value={form.tour_taille} onChange={(v) => set("tour_taille", v)} placeholder="57" />
+          <Input label="Tour de bassin · Hips (cm)" value={form.tour_bassin} onChange={(v) => set("tour_bassin", v)} placeholder="68" />
+          {liveReco && (
+            <div className="sm:col-span-2 flex flex-wrap items-center gap-2 rounded-xl bg-[var(--teal)]/8 px-3 py-2">
+              <SizeBadge size={liveReco.row.age} />
+              <span className="text-xs text-muted-foreground">
+                Suggestion automatique basée sur les mensurations saisies ·{" "}
+                <Link to="/aide/guide-tailles" className="underline">Voir le guide</Link>
+              </span>
+            </div>
+          )}
           <div className="sm:col-span-2 flex justify-end gap-2 border-t border-border pt-4">
             <button
               type="button"

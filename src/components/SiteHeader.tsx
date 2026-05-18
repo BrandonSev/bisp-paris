@@ -120,10 +120,9 @@ export function SiteFooter() {
         <div>
           <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Famille · Family</h4>
           <ul className="mt-4 space-y-2 text-sm text-white/85">
-            <li>Mon espace · My account</li>
-            <li>Mes enfants · My children</li>
-            <li>Mes commandes · Orders</li>
-            <li>Guide des tailles · Size guide</li>
+            <li><Link to="/enfants" className="hover:underline">Mes enfants · My children</Link></li>
+            <li><Link to="/commandes" className="hover:underline">Mes commandes · Orders</Link></li>
+            <li><Link to="/aide/guide-tailles" className="hover:underline">Guide des tailles · Size guide</Link></li>
           </ul>
         </div>
         <div>
