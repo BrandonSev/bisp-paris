@@ -12,6 +12,9 @@ export type Child = {
   taille: string;
   hauteur: string;
   tour: string;
+  tour_taille: string;
+  tour_bassin: string;
+  genre: "" | "Fille" | "Garçon";
   initials: string;
   color: string;
 };
@@ -61,7 +64,23 @@ export function gradientFor(idx: number) {
   return COLORS[idx % COLORS.length];
 }
 
-function decorate(c: { id: string; prenom: string; nom: string; naissance: string | null; classe: string | null; section: string | null; taille: string | null; hauteur: string | null; tour: string | null }, idx: number): Child {
+function decorate(
+  c: {
+    id: string;
+    prenom: string;
+    nom: string;
+    naissance: string | null;
+    classe: string | null;
+    section: string | null;
+    taille: string | null;
+    hauteur: string | null;
+    tour: string | null;
+    tour_taille?: string | null;
+    tour_bassin?: string | null;
+    genre?: string | null;
+  },
+  idx: number,
+): Child {
   const initials = ((c.prenom[0] ?? "") + (c.nom[0] ?? "")).toUpperCase();
   return {
     id: c.id,
@@ -73,6 +92,9 @@ function decorate(c: { id: string; prenom: string; nom: string; naissance: strin
     taille: c.taille ?? "",
     hauteur: c.hauteur ?? "",
     tour: c.tour ?? "",
+    tour_taille: c.tour_taille ?? "",
+    tour_bassin: c.tour_bassin ?? "",
+    genre: (c.genre as Child["genre"]) ?? "",
     initials,
     color: COLORS[idx % COLORS.length],
   };
