@@ -14,10 +14,64 @@ export type Database = {
   }
   public: {
     Tables: {
+      cart_items: {
+        Row: {
+          child_id: string | null
+          created_at: string
+          id: string
+          image: string | null
+          name: string
+          price: number
+          product_id: string
+          qty: number
+          ref: string
+          size: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          child_id?: string | null
+          created_at?: string
+          id?: string
+          image?: string | null
+          name: string
+          price: number
+          product_id: string
+          qty: number
+          ref: string
+          size: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          child_id?: string | null
+          created_at?: string
+          id?: string
+          image?: string | null
+          name?: string
+          price?: number
+          product_id?: string
+          qty?: number
+          ref?: string
+          size?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       children: {
         Row: {
           classe: string | null
           created_at: string
+          genre: string | null
           hauteur: string | null
           id: string
           naissance: string | null
@@ -26,12 +80,15 @@ export type Database = {
           section: string | null
           taille: string | null
           tour: string | null
+          tour_bassin: string | null
+          tour_taille: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           classe?: string | null
           created_at?: string
+          genre?: string | null
           hauteur?: string | null
           id?: string
           naissance?: string | null
@@ -40,12 +97,15 @@ export type Database = {
           section?: string | null
           taille?: string | null
           tour?: string | null
+          tour_bassin?: string | null
+          tour_taille?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           classe?: string | null
           created_at?: string
+          genre?: string | null
           hauteur?: string | null
           id?: string
           naissance?: string | null
@@ -54,6 +114,8 @@ export type Database = {
           section?: string | null
           taille?: string | null
           tour?: string | null
+          tour_bassin?: string | null
+          tour_taille?: string | null
           updated_at?: string
           user_id?: string
         }
