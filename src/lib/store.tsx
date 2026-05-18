@@ -119,31 +119,30 @@ type StoreCtx = {
 
   // cart (local)
   cart: CartItem[];
-  addToCart: (item: Omit<CartItem, "id">) => void;
-  updateQty: (id: string, qty: number) => void;
-  removeFromCart: (id: string) => void;
-  clearCart: () => void;
+  addToCart: (item: Omit<CartItem, "id">) => Promise<void> | void;
+  updateQty: (id: string, qty: number) => Promise<void> | void;
+  removeFromCart: (id: string) => Promise<void> | void;
+  clearCart: () => Promise<void> | void;
   cartCount: number;
   checkout: () => Promise<{ orderId: string; orderNumber: string }>;
 };
 
 const Ctx = createContext<StoreCtx | null>(null);
 
-function useLocal<T>(key: string, initial: T): [T, (v: T | ((p: T) => T)) => void] {
-  const [val, setVal] = useState<T>(initial);
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(key);
-      if (raw) setVal(JSON.parse(raw));
-    } catch {}
-    setHydrated(true);
-  }, [key]);
-  useEffect(() => {
-    if (!hydrated) return;
-    try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
-  }, [key, val, hydrated]);
-  return [val, setVal];
+const CART_LOCAL_KEY = "bisp.cart";
+
+function dbRowToItem(r: any): CartItem {
+  return {
+    id: r.id,
+    productId: r.product_id,
+    name: r.name,
+    ref: r.ref,
+    price: Number(r.price),
+    size: r.size,
+    qty: r.qty,
+    image: r.image ?? "",
+    childId: r.child_id ?? "",
+  };
 }
 
 export function StoreProvider({ children: kids }: { children: ReactNode }) {
@@ -152,7 +151,8 @@ export function StoreProvider({ children: kids }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [childList, setChildList] = useState<Child[]>([]);
-  const [cart, setCart] = useLocal<CartItem[]>("bisp.cart", []);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cartLoaded, setCartLoaded] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   // auth listener
@@ -189,13 +189,95 @@ export function StoreProvider({ children: kids }: { children: ReactNode }) {
     setIsAdmin(!!data);
   }, []);
 
+  const loadCart = useCallback(async (uid: string) => {
+    const { data: dbRows } = await supabase
+      .from("cart_items")
+      .select("*")
+      .eq("user_id", uid)
+      .order("created_at", { ascending: true });
+    const dbItems: CartItem[] = (dbRows ?? []).map(dbRowToItem);
+
+    // Fusion : si un panier local existait avant connexion, on le pousse en DB.
+    let localItems: CartItem[] = [];
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem(CART_LOCAL_KEY) : null;
+      if (raw) localItems = JSON.parse(raw) as CartItem[];
+    } catch {}
+
+    if (localItems.length > 0) {
+      for (const li of localItems) {
+        const existing = dbItems.find(
+          (d) => d.productId === li.productId && d.size === li.size && d.childId === li.childId,
+        );
+        if (existing) {
+          const newQty = existing.qty + li.qty;
+          await supabase.from("cart_items").update({ qty: newQty }).eq("id", existing.id);
+          existing.qty = newQty;
+        } else {
+          const { data: inserted } = await supabase
+            .from("cart_items")
+            .insert({
+              user_id: uid,
+              product_id: li.productId,
+              name: li.name,
+              ref: li.ref,
+              price: li.price,
+              size: li.size,
+              qty: li.qty,
+              image: li.image ?? "",
+              child_id: li.childId || null,
+            })
+            .select()
+            .single();
+          if (inserted) dbItems.push(dbRowToItem(inserted));
+        }
+      }
+      try { localStorage.removeItem(CART_LOCAL_KEY); } catch {}
+    }
+
+    setCart(dbItems);
+    setCartLoaded(true);
+  }, []);
+
   useEffect(() => {
     if (user) {
       loadProfile(user.id);
       loadChildren(user.id);
       loadAdmin(user.id);
+      loadCart(user.id);
+    } else {
+      // Utilisateur déconnecté : on charge le panier local s'il existe.
+      try {
+        const raw = typeof window !== "undefined" ? localStorage.getItem(CART_LOCAL_KEY) : null;
+        setCart(raw ? (JSON.parse(raw) as CartItem[]) : []);
+      } catch {
+        setCart([]);
+      }
+      setCartLoaded(true);
     }
-  }, [user, loadProfile, loadChildren, loadAdmin]);
+  }, [user, loadProfile, loadChildren, loadAdmin, loadCart]);
+
+  // Persistance localStorage uniquement quand l'utilisateur n'est pas connecté.
+  useEffect(() => {
+    if (!cartLoaded || user) return;
+    try { localStorage.setItem(CART_LOCAL_KEY, JSON.stringify(cart)); } catch {}
+  }, [cart, cartLoaded, user]);
+
+  // Purge des items orphelins (enfant supprimé ailleurs, ou items legacy sans enfant).
+  useEffect(() => {
+    if (!user) return;
+    const validIds = new Set(childList.map((c) => c.id));
+    setCart((prev) => {
+      const stale = prev.filter((i) => !i.childId || !validIds.has(i.childId));
+      if (stale.length === 0) return prev;
+      supabase
+        .from("cart_items")
+        .delete()
+        .in("id", stale.map((s) => s.id))
+        .then(() => {});
+      return prev.filter((i) => i.childId && validIds.has(i.childId));
+    });
+  }, [user, childList]);
 
   const value = useMemo<StoreCtx>(() => ({
     user, session, profile, authLoading, isAdmin,
@@ -217,6 +299,9 @@ export function StoreProvider({ children: kids }: { children: ReactNode }) {
         naissance: c.naissance || null,
         classe: c.classe || null, section: c.section || null,
         taille: c.taille || null, hauteur: c.hauteur || null, tour: c.tour || null,
+        tour_taille: c.tour_taille || null,
+        tour_bassin: c.tour_bassin || null,
+        genre: c.genre || null,
       }).select().single();
       if (error) throw error;
       if (data) setChildList((p) => [...p, decorate(data as any, p.length)]);
@@ -224,6 +309,7 @@ export function StoreProvider({ children: kids }: { children: ReactNode }) {
     updateChild: async (id, patch) => {
       const dbPatch: any = { ...patch };
       if ("naissance" in dbPatch && !dbPatch.naissance) dbPatch.naissance = null;
+      if ("genre" in dbPatch && !dbPatch.genre) dbPatch.genre = null;
       const { data, error } = await supabase.from("children").update(dbPatch).eq("id", id).select().single();
       if (error) throw error;
       if (data) setChildList((p) => p.map((c, i) => (c.id === id ? decorate(data as any, i) : c)));
@@ -233,19 +319,61 @@ export function StoreProvider({ children: kids }: { children: ReactNode }) {
       if (error) throw error;
       setChildList((p) => p.filter((c) => c.id !== id));
       setCart((p) => p.filter((i) => i.childId !== id));
+      if (user) {
+        await supabase.from("cart_items").delete().eq("user_id", user.id).eq("child_id", id);
+      }
     },
 
     cart,
-    addToCart: (item) => {
-      setCart((prev) => {
-        const existing = prev.find((i) => i.productId === item.productId && i.size === item.size && i.childId === item.childId);
-        if (existing) return prev.map((i) => (i.id === existing.id ? { ...i, qty: i.qty + item.qty } : i));
-        return [...prev, { ...item, id: `${item.productId}-${item.size}-${item.childId}-${Date.now()}` }];
-      });
+    addToCart: async (item) => {
+      // Cas non connecté : on travaille en local (persistance via useEffect).
+      if (!user) {
+        setCart((prev) => {
+          const existing = prev.find((i) => i.productId === item.productId && i.size === item.size && i.childId === item.childId);
+          if (existing) return prev.map((i) => (i.id === existing.id ? { ...i, qty: i.qty + item.qty } : i));
+          return [...prev, { ...item, id: `${item.productId}-${item.size}-${item.childId}-${Date.now()}` }];
+        });
+        return;
+      }
+      const existing = cart.find((i) => i.productId === item.productId && i.size === item.size && i.childId === item.childId);
+      if (existing) {
+        const newQty = existing.qty + item.qty;
+        const { data, error } = await supabase.from("cart_items").update({ qty: newQty }).eq("id", existing.id).select().single();
+        if (error) throw error;
+        if (data) setCart((prev) => prev.map((i) => (i.id === existing.id ? dbRowToItem(data) : i)));
+      } else {
+        const { data, error } = await supabase.from("cart_items").insert({
+          user_id: user.id,
+          product_id: item.productId,
+          name: item.name,
+          ref: item.ref,
+          price: item.price,
+          size: item.size,
+          qty: item.qty,
+          image: item.image ?? "",
+          child_id: item.childId || null,
+        }).select().single();
+        if (error) throw error;
+        if (data) setCart((prev) => [...prev, dbRowToItem(data)]);
+      }
     },
-    updateQty: (id, qty) => setCart((prev) => qty <= 0 ? prev.filter((i) => i.id !== id) : prev.map((i) => i.id === id ? { ...i, qty } : i)),
-    removeFromCart: (id) => setCart((prev) => prev.filter((i) => i.id !== id)),
-    clearCart: () => setCart([]),
+    updateQty: async (id, qty) => {
+      if (qty <= 0) {
+        if (user) await supabase.from("cart_items").delete().eq("id", id);
+        setCart((prev) => prev.filter((i) => i.id !== id));
+        return;
+      }
+      if (user) await supabase.from("cart_items").update({ qty }).eq("id", id);
+      setCart((prev) => prev.map((i) => (i.id === id ? { ...i, qty } : i)));
+    },
+    removeFromCart: async (id) => {
+      if (user) await supabase.from("cart_items").delete().eq("id", id);
+      setCart((prev) => prev.filter((i) => i.id !== id));
+    },
+    clearCart: async () => {
+      if (user) await supabase.from("cart_items").delete().eq("user_id", user.id);
+      setCart([]);
+    },
     cartCount: cart.reduce((s, i) => s + i.qty, 0),
     checkout: async () => {
       if (!user || !profile) throw new Error("Non connecté");
@@ -284,10 +412,11 @@ export function StoreProvider({ children: kids }: { children: ReactNode }) {
       });
       const { error: iErr } = await supabase.from("order_items").insert(items);
       if (iErr) throw iErr;
+      await supabase.from("cart_items").delete().eq("user_id", user.id);
       setCart([]);
       return { orderId: order.id, orderNumber: order.order_number };
     },
-  }), [user, session, profile, authLoading, isAdmin, childList, cart, setCart, loadProfile]);
+  }), [user, session, profile, authLoading, isAdmin, childList, cart, loadProfile]);
 
   return <Ctx.Provider value={value}>{kids}</Ctx.Provider>;
 }
