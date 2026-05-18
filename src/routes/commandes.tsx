@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Package, ChevronDown, ChevronUp } from "lucide-react";
+import { Package, ChevronDown, ChevronUp, Download } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { RequireAuth } from "@/components/RequireAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useStore } from "@/lib/store";
+import { downloadOrderPdf } from "@/lib/orderPdf";
 
 export const Route = createFileRoute("/commandes")({
   head: () => ({ meta: [{ title: "Mes commandes · My orders — BISP" }] }),
@@ -23,6 +24,15 @@ type Order = {
   created_at: string;
   shipping_mode?: string | null;
   shipping_label?: string | null;
+  shipping_recipient?: string | null;
+  shipping_address?: string | null;
+  shipping_postal?: string | null;
+  shipping_city?: string | null;
+  family_civilite?: string | null;
+  family_prenom?: string;
+  family_nom?: string;
+  family_email?: string;
+  family_telephone?: string | null;
 };
 
 type Item = {
@@ -65,6 +75,36 @@ function CommandesPage() {
     }
   };
 
+  const handleDownload = async (o: Order, e: React.MouseEvent) => {
+    e.stopPropagation();
+    let list = items[o.id];
+    if (!list) {
+      const { data } = await supabase.from("order_items").select("*").eq("order_id", o.id);
+      list = (data as Item[]) ?? [];
+      setItems((p) => ({ ...p, [o.id]: list! }));
+    }
+    downloadOrderPdf({
+      order: {
+        order_number: o.order_number,
+        status: o.status,
+        total_amount: Number(o.total_amount),
+        created_at: o.created_at,
+        shipping_mode: o.shipping_mode,
+        shipping_label: o.shipping_label,
+        shipping_recipient: o.shipping_recipient,
+        shipping_address: o.shipping_address,
+        shipping_postal: o.shipping_postal,
+        shipping_city: o.shipping_city,
+        family_civilite: o.family_civilite ?? profile?.civilite ?? null,
+        family_prenom: o.family_prenom ?? profile?.prenom ?? "",
+        family_nom: o.family_nom ?? profile?.nom ?? "",
+        family_email: o.family_email ?? profile?.email ?? "",
+        family_telephone: o.family_telephone ?? profile?.telephone ?? null,
+      },
+      items: list!,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader schoolName="BISP" />
@@ -103,6 +143,13 @@ function CommandesPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-base font-semibold text-foreground">{Number(o.total_amount).toFixed(2)} €</span>
+                    <button
+                      onClick={(e) => handleDownload(o, e)}
+                      className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 text-xs font-medium text-foreground hover:bg-muted"
+                      title="Télécharger le bon de commande PDF"
+                    >
+                      <Download className="h-3.5 w-3.5" /> PDF
+                    </button>
                     {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                   </div>
                 </button>
