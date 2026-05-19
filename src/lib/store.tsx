@@ -17,6 +17,7 @@ export type Child = {
   genre: "" | "Fille" | "Garçon";
   initials: string;
   color: string;
+  updated_at?: string;
 };
 
 export type Profile = {
@@ -29,6 +30,7 @@ export type Profile = {
   adresse: string | null;
   code_postal: string | null;
   ville: string | null;
+  family_name?: string | null;
 };
 
 export type CartItem = {
@@ -78,6 +80,7 @@ function decorate(
     tour_taille?: string | null;
     tour_bassin?: string | null;
     genre?: string | null;
+    updated_at?: string | null;
   },
   idx: number,
 ): Child {
@@ -97,6 +100,7 @@ function decorate(
     genre: (c.genre as Child["genre"]) ?? "",
     initials,
     color: COLORS[idx % COLORS.length],
+    updated_at: c.updated_at ?? undefined,
   };
 }
 
