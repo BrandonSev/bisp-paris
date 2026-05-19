@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Minus, Plus, ShieldCheck, ShoppingBag, Sparkles } from "lucide-react";
+import { Minus, Plus, Plus as PlusIcon, ShieldCheck, ShoppingBag, Sparkles, UserPlus } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
 import { RequireAuth } from "@/components/RequireAuth";
+import { AddChildDialog } from "@/components/AddChildDialog";
 import poloFront from "@/assets/polo-bisp-marine.svg";
 import poloBack from "@/assets/polo-bisp-blanc.svg";
 import hoodieFront from "@/assets/hoodie-bisp-back.svg";
