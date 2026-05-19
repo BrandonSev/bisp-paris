@@ -1,8 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, MapPin, ShieldCheck, Truck, GraduationCap, Globe2, Sparkles } from "lucide-react";
+import { ArrowRight, MapPin, ShieldCheck, Truck } from "lucide-react";
 import logo from "@/assets/bisp-logo.svg";
-import classeBisp from "@/assets/classe-bisp.jpg";
-import { WaveMotif, ShellMotif } from "@/components/SchoolMotif";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -62,82 +60,86 @@ function Index() {
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10" style={{ background: "var(--gradient-hero)" }} />
-        <div className="absolute inset-0 -z-10 opacity-25 mix-blend-overlay">
-          <img src={classeBisp} alt="" className="h-full w-full object-cover" loading="eager" />
-        </div>
-        <div className="absolute inset-0 -z-10 bg-primary-deep/70" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary-deep/85 via-primary-deep/60 to-primary-deep/30" />
-        <div className="pointer-events-none absolute inset-0 -z-10 text-white">
-          <ShellMotif className="absolute -left-40 -top-32 h-[700px] w-[700px]" opacity={0.08} />
-          <ShellMotif className="absolute -right-48 -bottom-48 h-[700px] w-[700px]" opacity={0.06} />
-        </div>
-
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8 bg-primary">
-          <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
-            <div className="text-center lg:text-left">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.18em] text-white backdrop-blur">
-                <ShieldCheck className="h-3.5 w-3.5" /> Family portal · Espace officiel
-              </span>
-              <h1 className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-[3.4rem] lg:leading-[1.05]">
-                Boutique officielle
-                <br />
-                des uniformes
-              </h1>
-              <div className="mt-5 h-1 w-20 rounded-full bg-[var(--rouge)] mx-auto lg:mx-0" />
-              <p className="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg mx-auto lg:mx-0">
-                Bilingual International School of Paris · 15ᵉ. Commandez les tenues officielles brodées de l'écusson
-                BISP pour la maternelle, l'élémentaire et le collège.
-              </p>
-              <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/65 italic mx-auto lg:mx-0">
-                Order your official BISP school uniforms — embroidered crest, quality fabrics, ready for the new school
-                year.
-              </p>
-
-              <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
-                <Link
-                  to="/login"
-                  className="inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-sm font-semibold text-primary shadow-xl transition-all hover:gap-3 hover:bg-white/95"
-                >
-                  Accéder à la boutique <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-
-              <div className="mt-10 grid grid-cols-3 gap-4 max-w-xl mx-auto lg:mx-0">
-                <HeroStat icon={<GraduationCap className="h-4 w-4" />} value="PS → Terminal" label="Niveaux" />
-                <HeroStat icon={<Globe2 className="h-4 w-4" />} value="FR / EN" label="Bilingue" />
-                <HeroStat icon={<Sparkles className="h-4 w-4" />} value="2026" label="Rentrée" />
+      <section className="bg-background px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="relative grid grid-cols-1 overflow-hidden border border-white/5 bg-primary text-white shadow-2xl lg:grid-cols-2">
+            {/* Left: Heritage seal */}
+            <div className="relative flex flex-col items-center justify-center border-b border-white/10 p-12 lg:border-b-0 lg:border-r lg:p-20">
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary-deep to-primary" aria-hidden />
+              <div className="absolute left-0 top-0 h-16 w-16 border-l-2 border-t-2 border-[var(--rouge)]/40" aria-hidden />
+              <div className="relative z-10 flex flex-col items-center">
+                <img
+                  src={logo}
+                  alt="Écusson BISP"
+                  className="h-56 w-56 object-contain drop-shadow-2xl sm:h-64 sm:w-64 lg:h-72 lg:w-72"
+                  loading="eager"
+                />
+                <div className="mt-10 space-y-3 text-center">
+                  <span className="block text-[10px] font-bold uppercase tracking-[0.5em] text-[var(--rouge)]">
+                    Simply Exceptional
+                  </span>
+                  <div className="mx-auto h-px w-12 bg-white/20" />
+                  <p className="text-[11px] font-light uppercase tracking-[0.25em] text-white/60">
+                    Établissement Bilingue · Paris XV
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Right : framed crest */}
-            <div className="relative hidden lg:block">
-              <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/5 shadow-2xl backdrop-blur">
-                <div className="flex aspect-[4/5] flex-col items-center justify-center p-12">
-                  <img
-                    src={logo}
-                    alt="Écusson BISP"
-                    className="h-72 w-72 object-contain drop-shadow-2xl"
-                    loading="eager"
-                  />
-                  <div className="mt-8 text-center">
-                    <div className="text-[10px] font-medium uppercase tracking-[0.22em] text-white/75">
-                      Écusson officiel · Official crest
-                    </div>
-                    <div className="mt-2 font-display text-2xl font-semibold text-white italic">Simply exceptional</div>
+            {/* Right: Boutique portal */}
+            <div className="relative flex flex-col justify-center bg-primary-deep p-10 lg:p-20">
+              <div className="relative z-10 max-w-md">
+                <div className="mb-8 inline-flex items-center gap-3">
+                  <span className="h-px w-8 bg-[var(--rouge)]" />
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-white/55">
+                    Official School Shop
+                  </span>
+                </div>
+
+                <h1
+                  className="mb-8 text-4xl font-normal leading-[1.05] sm:text-5xl lg:text-6xl"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  Boutique officielle
+                  <br />
+                  <span className="italic text-white/75">des uniformes</span>
+                </h1>
+
+                <p className="text-base font-light leading-relaxed text-white/85 sm:text-lg">
+                  Bilingual International School of Paris · 15ᵉ. Commandez les tenues officielles brodées de l'écusson
+                  BISP pour la maternelle, l'élémentaire et le collège.
+                </p>
+                <p className="mt-4 text-sm font-light italic leading-relaxed text-white/55">
+                  Order your official BISP school uniforms — featuring the embroidered crest and premium quality fabrics
+                  for the new academic year.
+                </p>
+
+                <div className="mt-12 flex flex-col items-stretch gap-6 sm:flex-row sm:items-center">
+                  <Link
+                    to="/login"
+                    className="group inline-flex items-center justify-center gap-3 bg-[var(--rouge)] px-10 py-5 text-xs font-bold uppercase tracking-[0.2em] text-white shadow-xl transition-colors duration-300 hover:bg-white hover:text-primary"
+                  >
+                    Accéder à la boutique
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                  <div className="flex items-center gap-4 text-[10px] font-bold tracking-[0.25em]">
+                    <span className="text-[var(--rouge)]">FR</span>
+                    <span className="h-4 w-px bg-white/15" />
+                    <span className="text-white/40">EN</span>
                   </div>
                 </div>
               </div>
-              <div className="absolute -right-4 -top-4 h-20 w-20 rounded-2xl border-2 border-[var(--rouge)] bg-white/10 backdrop-blur" />
-              <div className="absolute -left-3 bottom-10 h-12 w-12 rounded-full bg-[var(--rouge)]" />
+
+              {/* Decorative watermark */}
+              <div
+                className="pointer-events-none absolute bottom-6 right-6 select-none text-[120px] italic leading-none text-white/[0.04] lg:text-[160px]"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+                aria-hidden
+              >
+                BISP
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* wave bottom */}
-        <div className="absolute inset-x-0 bottom-0 h-16 text-background">
-          <WaveMotif className="h-full w-full" opacity={1} />
         </div>
       </section>
 
@@ -208,18 +210,6 @@ function TrustItem({ icon, title, text, sub }: { icon: React.ReactNode; title: s
         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{text}</p>
         <p className="mt-0.5 text-xs italic text-muted-foreground/70">{sub}</p>
       </div>
-    </div>
-  );
-}
-
-function HeroStat({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
-  return (
-    <div className="rounded-xl border border-white/15 bg-white/10 px-3 py-3 text-left backdrop-blur">
-      <div className="flex items-center gap-1.5 text-white/70">
-        {icon}
-        <span className="text-[10px] font-medium uppercase tracking-[0.18em]">{label}</span>
-      </div>
-      <div className="mt-1 text-xl font-semibold text-white">{value}</div>
     </div>
   );
 }
