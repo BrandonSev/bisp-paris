@@ -3,7 +3,6 @@ import { ArrowRight, MapPin, ShieldCheck, Truck, GraduationCap, Globe2, Sparkles
 import logo from "@/assets/bisp-logo.svg";
 import classeBisp from "@/assets/classe-bisp.jpg";
 import { WaveMotif, ShellMotif } from "@/components/SchoolMotif";
-import { SiteFooter } from "@/components/SiteHeader";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -45,7 +44,9 @@ function Index() {
           <div className="flex items-center gap-3">
             <img src={logo} alt="BISP" className="h-12 w-12 object-contain" />
             <div className="leading-tight">
-              <div className="text-base font-semibold tracking-tight text-primary">Bilingual International School of Paris</div>
+              <div className="text-base font-semibold tracking-tight text-primary">
+                Bilingual International School of Paris
+              </div>
               <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                 Boutique officielle · Official shop
               </div>
@@ -79,33 +80,12 @@ function Index() {
               <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.18em] text-white backdrop-blur">
                 <ShieldCheck className="h-3.5 w-3.5" /> Family portal · Espace officiel
               </span>
-              <h1 className="mt-6 font-display text-white">
-                <span className="block text-sm font-medium uppercase tracking-[0.32em] text-[var(--cream)]/90 animate-fade-in">
-                  Boutique des uniformes scolaires
-                </span>
-                <span
-                  className="mt-3 block text-4xl font-semibold tracking-tight sm:text-5xl lg:text-[3.6rem] lg:leading-[1.02] animate-fade-in"
-                  style={{ animationDelay: "120ms", animationFillMode: "both" }}
-                >
-                  Bilingual{" "}
-                  <span className="relative inline-block bg-gradient-to-r from-white via-[var(--cream)] to-[var(--rouge)] bg-clip-text text-transparent">
-                    International School
-                    <span className="absolute -bottom-1 left-0 h-[3px] w-full origin-left rounded-full bg-gradient-to-r from-[var(--rouge)] via-[var(--rouge)]/70 to-transparent" />
-                  </span>{" "}
-                  of Paris
-                </span>
-                <span
-                  className="mt-2 block text-2xl font-light tracking-[0.18em] text-white/80 sm:text-3xl animate-fade-in"
-                  style={{ animationDelay: "260ms", animationFillMode: "both" }}
-                >
-                  — Paris 15ᵉ —
-                </span>
+              <h1 className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-[3.4rem] lg:leading-[1.05]">
+                Boutique officielle
+                <br />
+                des uniformes
               </h1>
-              <div className="mt-6 flex items-center gap-3 justify-center lg:justify-start">
-                <span className="h-px w-10 bg-[var(--rouge)]" />
-                <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-white/70">Simply exceptional</span>
-                <span className="h-px w-10 bg-[var(--rouge)]" />
-              </div>
+              <div className="mt-5 h-1 w-20 rounded-full bg-[var(--rouge)] mx-auto lg:mx-0" />
               <p className="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg mx-auto lg:mx-0">
                 Bilingual International School of Paris · 15ᵉ. Commandez les tenues officielles brodées de l'écusson
                 BISP pour la maternelle, l'élémentaire et le collège.
@@ -121,12 +101,6 @@ function Index() {
                   className="inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-sm font-semibold text-primary shadow-xl transition-all hover:gap-3 hover:bg-white/95"
                 >
                   Accéder à la boutique <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  to="/boutique"
-                  className="inline-flex h-12 items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 text-sm font-medium text-white backdrop-blur transition-colors hover:bg-white/20"
-                >
-                  Voir les uniformes
                 </Link>
               </div>
 
@@ -200,7 +174,7 @@ function Index() {
           <TrustItem
             icon={<Truck className="h-5 w-5" />}
             title="Livraison à l'école"
-            text="Pour la rentrée 2026, vos commandes sont remises à votre enfant à l'école ou expédiées à votre domicile à partir d'octobre 2026."
+            text="Vos commandes sont remises à votre enfant ou expédiées à votre domicile."
             sub="Delivered to school or home"
           />
           <TrustItem
@@ -212,7 +186,13 @@ function Index() {
         </div>
       </section>
 
-      <SiteFooter />
+      {/* Footer */}
+      <footer className="border-t border-border bg-background">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-6 text-xs text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
+          <span>© {new Date().getFullYear()} Bilingual International School of Paris · BISP</span>
+          <span>operations@bisparis.com · Paiement sécurisé</span>
+        </div>
+      </footer>
     </div>
   );
 }
