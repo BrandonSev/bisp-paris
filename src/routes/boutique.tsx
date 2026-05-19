@@ -338,21 +338,63 @@ function ProductCard({ product }: { product: Product }) {
           <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
             Taille · Size
           </label>
-          <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {product.sizes.map((s) => (
-              <button
-                key={s}
-                onClick={() => setSize(s)}
-                className={`min-w-[2.5rem] rounded-md border px-2 py-1 text-xs font-medium transition-colors ${
-                  size === s
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-foreground hover:border-primary/40"
-                }`}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+          {(() => {
+            const groups: { label: string; sizes: string[] }[] = [
+              { label: "Enfant", sizes: product.sizes.filter((s) => (SIZE_GROUPS.enfant as readonly string[]).includes(s)) },
+              { label: "Junior", sizes: product.sizes.filter((s) => (SIZE_GROUPS.junior as readonly string[]).includes(s)) },
+              { label: "Adulte", sizes: product.sizes.filter((s) => (SIZE_GROUPS.adulte as readonly string[]).includes(s)) },
+            ].filter((g) => g.sizes.length > 0);
+            const ungrouped = product.sizes.filter((s) => !sizeGroupLabel(s));
+            return (
+              <div className="mt-1.5 space-y-2">
+                {groups.map((g) => {
+                  const groupPrice = product.pricing[g.sizes[0]];
+                  return (
+                    <div key={g.label}>
+                      <div className="mb-1 flex items-center justify-between text-[10px] font-medium text-muted-foreground">
+                        <span>{g.label}</span>
+                        {groupPrice !== undefined && (
+                          <span className="tabular-nums">{groupPrice.toFixed(2)} €</span>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {g.sizes.map((s) => (
+                          <button
+                            key={s}
+                            onClick={() => setSize(s)}
+                            className={`min-w-[2.5rem] rounded-md border px-2 py-1 text-xs font-medium transition-colors ${
+                              size === s
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border bg-card text-foreground hover:border-primary/40"
+                            }`}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+                {ungrouped.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {ungrouped.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => setSize(s)}
+                        className={`min-w-[2.5rem] rounded-md border px-2 py-1 text-xs font-medium transition-colors ${
+                          size === s
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-card text-foreground hover:border-primary/40"
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
 
         {/* Options (couleur, etc.) */}
