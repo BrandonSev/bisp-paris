@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { HelpPageShell } from "@/components/HelpPageShell";
+import { LegalPageShell } from "@/components/LegalPageShell";
 
 export const Route = createFileRoute("/aide/cgv")({
   component: CgvPage,
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/aide/cgv")({
 
 function CgvPage() {
   return (
-    <HelpPageShell title="Conditions Générales de Vente — Familles" subtitle="Dernière mise à jour : mai 2026">
+    <LegalPageShell title="Conditions Générales de Vente — Familles" updatedAt="mai 2026">
       <h2>1. Vendeur</h2>
       <p>
         <strong>France Uniformes (FU)</strong><br />
@@ -287,6 +287,6 @@ function CgvPage() {
         Pour toute question, contactez-nous à{" "}
         <a href="mailto:info@franceuniforme.fr">info@franceuniforme.fr</a>.
       </p>
-    </HelpPageShell>
+    </LegalPageShell>
   );
 }
