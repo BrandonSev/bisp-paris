@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { LogOut, ShieldCheck, ShoppingBag, User } from "lucide-react";
 import logo from "@/assets/bisp-logo.svg";
-import { SchoolIdentityBar } from "@/components/SchoolMotif";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
 
@@ -94,7 +93,6 @@ export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHe
           </div>
         </div>
       </header>
-      {schoolName && <SchoolIdentityBar />}
     </>
   );
 }
