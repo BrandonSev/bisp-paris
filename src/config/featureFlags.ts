@@ -29,7 +29,7 @@ export type EstablishmentConfig = {
 export const establishment: EstablishmentConfig = {
   code: "bisp",
   shortName: "BISP",
-  legalName: "British International School of Paris",
+  legalName: "Bilingual International School of Paris",
   city: "Paris",
   contactEmail: "uniformes@bisp.fr",
   emailDomain: "notify.franceuniformes.fr",
