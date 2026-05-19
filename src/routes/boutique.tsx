@@ -47,7 +47,7 @@ type Product = {
   sizes: string[];
   /** options de personnalisation (ex: couleur du zip) */
   options?: ProductOption[];
-  category: "Polos" | "Pulls" | "Chemises" | "T-shirts" | "Accessoires";
+  category: "Polos" | "Pulls" | "Sweats" | "Chemises" | "T-shirts" | "Accessoires";
 };
 
 type ProductOption = {
@@ -92,7 +92,7 @@ const products: Product[] = [
     pricing: ageBased(62, 3), // 62 → 77
     images: [hoodieFront, hoodieBack],
     sizes: kidsSizes,
-    category: "Pulls",
+    category: "Sweats",
   },
   {
     id: "teddy-charlie",
@@ -115,7 +115,7 @@ const products: Product[] = [
   },
 ];
 
-const categories = ["Tous", "Polos", "Pulls", "Accessoires"] as const;
+const categories = ["Tous", "Polos", "Sweats", "Pulls", "Accessoires"] as const;
 
 function BoutiquePage() {
   const [active, setActive] = useState<(typeof categories)[number]>("Tous");
