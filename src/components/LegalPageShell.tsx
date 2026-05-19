@@ -25,7 +25,25 @@ export function LegalPageShell({ title, updatedAt, eyebrow = "Légal", children 
         </span>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{title}</h1>
         {updatedAt && <p className="mt-3 text-sm text-muted-foreground">Dernière mise à jour : {updatedAt}</p>}
-        <div className="prose prose-sm mt-8 max-w-none text-foreground/85 prose-headings:text-foreground prose-headings:font-semibold prose-h2:mt-6 prose-h2:text-lg prose-h3:mt-4 prose-h3:text-base prose-p:text-sm prose-p:leading-relaxed prose-li:text-sm prose-li:leading-relaxed prose-strong:text-foreground prose-a:text-primary">
+        <div
+          className={[
+            "mt-8 max-w-none text-foreground/85",
+            // Headings — match Dax spacing/sizing exactly
+            "[&_h2]:mt-6 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-foreground",
+            "[&_h2:first-child]:mt-8",
+            "[&_h3]:mt-4 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground",
+            // Body
+            "[&_p]:mt-2 [&_p]:text-sm [&_p]:leading-relaxed",
+            // Lists
+            "[&_ul]:mt-2 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5 [&_ul]:text-sm [&_ul]:leading-relaxed",
+            "[&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_ol]:text-sm [&_ol]:leading-relaxed",
+            "[&_li]:text-sm [&_li]:leading-relaxed",
+            // Inline
+            "[&_strong]:font-semibold [&_strong]:text-foreground",
+            "[&_a]:text-primary [&_a]:underline hover:[&_a]:no-underline",
+            "[&_em]:italic",
+          ].join(" ")}
+        >
           {children}
         </div>
       </article>
