@@ -58,9 +58,36 @@ type ProductOption = {
 
 const kidsSizes = ["4 ans", "6 ans", "8 ans", "10 ans", "12 ans", "14 ans"];
 
-/** Génère une grille de prix croissante par taille */
-function ageBased(start: number, step = 1): Record<string, number> {
-  return Object.fromEntries(kidsSizes.map((s, i) => [s, start + i * step]));
+/**
+ * 3 groupes de tailles avec un prix unique par groupe.
+ * Les prix sont indicatifs et facilement modifiables produit par produit.
+ */
+const SIZE_GROUPS = {
+  enfant: ["3 ans", "4 ans", "6 ans", "8 ans", "10 ans"],
+  junior: ["12 ans", "14 ans", "16 ans", "18 ans"],
+  adulte: ["XS", "S", "M", "L", "XL"],
+} as const;
+
+const ALL_APPAREL_SIZES = [
+  ...SIZE_GROUPS.enfant,
+  ...SIZE_GROUPS.junior,
+  ...SIZE_GROUPS.adulte,
+];
+
+/** Construit un mapping taille → prix à partir d'un prix par groupe. */
+function groupPricing(prices: { enfant: number; junior: number; adulte: number }): Record<string, number> {
+  const out: Record<string, number> = {};
+  SIZE_GROUPS.enfant.forEach((s) => (out[s] = prices.enfant));
+  SIZE_GROUPS.junior.forEach((s) => (out[s] = prices.junior));
+  SIZE_GROUPS.adulte.forEach((s) => (out[s] = prices.adulte));
+  return out;
+}
+
+function sizeGroupLabel(size: string): "Enfant" | "Junior" | "Adulte" | null {
+  if ((SIZE_GROUPS.enfant as readonly string[]).includes(size)) return "Enfant";
+  if ((SIZE_GROUPS.junior as readonly string[]).includes(size)) return "Junior";
+  if ((SIZE_GROUPS.adulte as readonly string[]).includes(size)) return "Adulte";
+  return null;
 }
 
 const trousseColors: ProductOption = {
@@ -80,27 +107,27 @@ const products: Product[] = [
     id: "polo-officiel",
     name: "Polo officiel BISP",
     nameEn: "Official BISP polo",
-    pricing: ageBased(28, 1), // 28 → 33
+    pricing: groupPricing({ enfant: 28, junior: 32, adulte: 36 }),
     images: [poloFront, poloBack],
-    sizes: kidsSizes,
+    sizes: ALL_APPAREL_SIZES,
     category: "Polos",
   },
   {
     id: "hoodie-jean-eudes",
     name: "Hoodie zippé Jean-Eudes",
     nameEn: "Jean-Eudes zip hoodie",
-    pricing: ageBased(62, 3), // 62 → 77
+    pricing: groupPricing({ enfant: 62, junior: 72, adulte: 82 }),
     images: [hoodieFront, hoodieBack],
-    sizes: kidsSizes,
+    sizes: ALL_APPAREL_SIZES,
     category: "Sweats",
   },
   {
     id: "teddy-charlie",
     name: "Teddy boutonné Charlie",
     nameEn: "Charlie button teddy jacket",
-    pricing: ageBased(78, 4), // 78 → 98
+    pricing: groupPricing({ enfant: 78, junior: 90, adulte: 102 }),
     images: [teddyFront, teddyBack],
-    sizes: kidsSizes,
+    sizes: ALL_APPAREL_SIZES,
     category: "Pulls",
   },
   {
