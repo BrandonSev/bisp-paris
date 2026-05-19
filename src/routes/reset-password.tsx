@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Lock, ShieldCheck } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
-import logo from "@/assets/bisp-logo.png";
+import logo from "@/assets/bisp-logo.svg";
 import { ShellMotif } from "@/components/SchoolMotif";
 import { supabase } from "@/integrations/supabase/client";
 

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { LogOut, ShieldCheck, ShoppingBag, User } from "lucide-react";
-import logo from "@/assets/bisp-logo.png";
+import logo from "@/assets/bisp-logo.svg";
 import { SchoolIdentityBar } from "@/components/SchoolMotif";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
@@ -32,7 +32,7 @@ export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHe
                 Family portal · Espace familles
               </span>
               <span className="text-sm font-semibold tracking-tight text-primary">
-                Bilingual School of Paris
+                Bilingual International School of Paris
               </span>
             </div>
           </Link>
