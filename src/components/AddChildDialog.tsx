@@ -35,12 +35,26 @@ const empty: ChildForm = {
   genre: "",
 };
 
-const classesBySection: Record<string, string[]> = {
-  Maternelle: ["TPS", "PS", "MS", "GS"],
-  Élémentaire: ["CP", "CE1", "CE2", "CM1", "CM2"],
-  Collège: ["6e", "5e", "4e", "3e"],
-  Lycée: ["2nde", "1ère", "Tle"],
-};
+type ClassOption = { section: string; classe: string; uk: string };
+const CLASSES: ClassOption[] = [
+  { section: "Maternelle", classe: "TPS", uk: "Pre-Nursery" },
+  { section: "Maternelle", classe: "PS", uk: "Nursery" },
+  { section: "Maternelle", classe: "MS", uk: "Reception" },
+  { section: "Maternelle", classe: "GS", uk: "Year 1" },
+  { section: "Élémentaire", classe: "CP", uk: "Year 2" },
+  { section: "Élémentaire", classe: "CE1", uk: "Year 3" },
+  { section: "Élémentaire", classe: "CE2", uk: "Year 4" },
+  { section: "Élémentaire", classe: "CM1", uk: "Year 5" },
+  { section: "Élémentaire", classe: "CM2", uk: "Year 6" },
+  { section: "Collège", classe: "6e", uk: "Year 7" },
+  { section: "Collège", classe: "5e", uk: "Year 8" },
+  { section: "Collège", classe: "4e", uk: "Year 9" },
+  { section: "Collège", classe: "3e", uk: "Year 10" },
+  { section: "Lycée", classe: "2nde", uk: "Year 11" },
+  { section: "Lycée", classe: "1ère", uk: "Year 12" },
+  { section: "Lycée", classe: "Tle", uk: "Year 13" },
+];
+const classKey = (section: string, classe: string) => `${section}|${classe}`;
 
 type Props = {
   open: boolean;
@@ -175,20 +189,32 @@ export function AddChildDialog({ open, initial, onClose, onCreated }: Props) {
             </div>
           </div>
 
-          <div className="sm:col-span-4 grid grid-cols-2 gap-2.5">
-            <Select
-              label="Section *"
-              value={form.section}
-              onChange={(v) => setForm({ ...form, section: v, classe: "" })}
-              options={["Maternelle", "Élémentaire", "Collège", "Lycée"]}
-            />
-            <Select
-              label="Classe actuelle *"
-              value={form.classe}
-              onChange={(v) => setForm({ ...form, classe: v })}
-              options={classesBySection[form.section] ?? []}
-              placeholder="Sélectionner une classe"
-            />
+          <div className="sm:col-span-4">
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Classe actuelle * <span className="normal-case font-normal text-muted-foreground/80">(France / UK)</span>
+            </label>
+            <select
+              required
+              value={form.section && form.classe ? classKey(form.section, form.classe) : ""}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (!v) { setForm({ ...form, section: "", classe: "" }); return; }
+                const [section, classe] = v.split("|");
+                setForm({ ...form, section, classe });
+              }}
+              className="mt-1.5 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Sélectionner une classe</option>
+              {["Maternelle", "Élémentaire", "Collège", "Lycée"].map((sec) => (
+                <optgroup key={sec} label={sec}>
+                  {CLASSES.filter((c) => c.section === sec).map((c) => (
+                    <option key={classKey(c.section, c.classe)} value={classKey(c.section, c.classe)}>
+                      {c.classe} — {c.uk}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
           </div>
 
           <div className="sm:col-span-4 mt-2 flex items-center gap-3">
