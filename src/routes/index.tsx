@@ -178,7 +178,7 @@ function Index() {
           <TrustItem
             icon={<Truck className="h-5 w-5" />}
             title="Livraison à l'école"
-            text="Vos commandes sont remises à votre enfant ou expédiées à votre domicile."
+            text="Pour la rentrée 2026, vos commandes sont remises à votre enfant à l'école ou expédiées à votre domicile à partir d'octobre 2026."
             sub="Delivered to school or home"
           />
           <TrustItem
