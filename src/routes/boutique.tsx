@@ -215,6 +215,7 @@ function ProductCard({ product }: { product: Product }) {
   const { children: kids, addToCart } = useStore();
   const [view, setView] = useState(0);
   const [child, setChild] = useState<string>(kids[0]?.id ?? "");
+  const [showAddChild, setShowAddChild] = useState(false);
   const [size, setSize] = useState<string>("");
   const [opts, setOpts] = useState<Record<string, string>>(() =>
     Object.fromEntries((product.options ?? []).map((o) => [o.id, o.choices[0].value])),
@@ -328,9 +329,14 @@ function ProductCard({ product }: { product: Product }) {
                 <span className="text-[10px] text-muted-foreground">{c.classe}</span>
               </button>
             ))}
-            {kids.length === 0 && (
-              <span className="text-xs text-muted-foreground">Ajoutez d'abord un enfant.</span>
-            )}
+            <button
+              type="button"
+              onClick={() => setShowAddChild(true)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-primary/40 bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+            >
+              <UserPlus className="h-3.5 w-3.5" />
+              {kids.length === 0 ? "Ajouter un enfant · Add a child" : "Ajouter · Add"}
+            </button>
           </div>
         </div>
 
@@ -471,6 +477,14 @@ function ProductCard({ product }: { product: Product }) {
           </button>
         </div>
       </div>
+      <AddChildDialog
+        open={showAddChild}
+        onClose={() => setShowAddChild(false)}
+        onCreated={(c) => {
+          setChild(c.id);
+          setShowAddChild(false);
+        }}
+      />
     </article>
   );
 }
