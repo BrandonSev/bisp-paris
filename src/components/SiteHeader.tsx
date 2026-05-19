@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { LogOut, ShieldCheck, ShoppingBag, User } from "lucide-react";
 import logo from "@/assets/bisp-logo.svg";
+import franceUniformesWhite from "@/assets/france-uniformes-logo-white.svg";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
 
@@ -117,6 +118,20 @@ export function SiteFooter() {
             Official BISP uniform shop. Quality embroidered uniforms for our students,
             from kindergarten to middle school.
           </p>
+          <div className="mt-6 flex flex-col items-start gap-2">
+            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/60 sm:text-[11px]">
+              Confectionné par
+            </span>
+            <img
+              src={franceUniformesWhite}
+              alt="France Uniformes"
+              className="h-6 w-auto object-contain sm:h-8"
+              loading="lazy"
+            />
+            <span className="text-[10px] uppercase tracking-[0.2em] text-white/60 sm:text-[11px]">
+              Fabrication française
+            </span>
+          </div>
         </div>
         <div>
           <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Famille · Family</h4>
@@ -139,8 +154,8 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-white/15">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-white/70 sm:flex-row sm:px-6 lg:px-8">
-          <span>© {new Date().getFullYear()} Bilingual International School of Paris</span>
-          <span>Paiement sécurisé · Secure payment</span>
+          <span className="text-center">© {new Date().getFullYear()} France Uniformes · Tous droits réservés</span>
+          <span>Paiement sécurisé</span>
         </div>
       </div>
     </footer>
