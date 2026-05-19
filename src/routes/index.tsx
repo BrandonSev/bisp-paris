@@ -3,6 +3,7 @@ import { ArrowRight, MapPin, ShieldCheck, Truck, GraduationCap, Globe2, Sparkles
 import logo from "@/assets/bisp-logo.svg";
 import classeBisp from "@/assets/classe-bisp.jpg";
 import { WaveMotif, ShellMotif } from "@/components/SchoolMotif";
+import { SiteFooter } from "@/components/SiteHeader";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -190,13 +191,7 @@ function Index() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-background">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-6 text-xs text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
-          <span>© {new Date().getFullYear()} Bilingual International School of Paris · BISP</span>
-          <span>operations@bisparis.com · Paiement sécurisé</span>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
