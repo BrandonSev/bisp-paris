@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { HelpPageShell } from "@/components/HelpPageShell";
+import { LegalPageShell } from "@/components/LegalPageShell";
 
 export const Route = createFileRoute("/aide/cgu")({
   component: CguPage,
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/aide/cgu")({
 
 function CguPage() {
   return (
-    <HelpPageShell title="Conditions générales d'utilisation" subtitle="Dernière mise à jour : mai 2026">
+    <LegalPageShell title="Conditions générales" updatedAt="mai 2026">
       <h2>1. Éditeur de la plateforme</h2>
       <p>La présente boutique en ligne est éditée et exploitée par :</p>
       <p>
@@ -177,6 +177,6 @@ function CguPage() {
         📧 <a href="mailto:info@franceuniforme.fr">info@franceuniforme.fr</a><br />
         📍 France Uniformes — 2 Rue Percheronne, 28000 Chartres
       </p>
-    </HelpPageShell>
+    </LegalPageShell>
   );
 }
