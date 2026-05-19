@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, MapPin, ShieldCheck, Truck, GraduationCap, Globe2, Sparkles } from "lucide-react";
-import logo from "@/assets/bisp-logo.png";
+import logo from "@/assets/bisp-logo.svg";
 import classeBisp from "@/assets/classe-bisp.jpg";
 import { WaveMotif, ShellMotif } from "@/components/SchoolMotif";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "BISP — Boutique officielle des uniformes · Bilingual School of Paris" },
+      { title: "BISP — Boutique officielle des uniformes · Bilingual International School of Paris" },
       {
         name: "description",
         content:
@@ -44,7 +44,7 @@ function Index() {
           <div className="flex items-center gap-3">
             <img src={logo} alt="BISP" className="h-12 w-12 object-contain" />
             <div className="leading-tight">
-              <div className="text-base font-semibold tracking-tight text-primary">Bilingual School of Paris</div>
+              <div className="text-base font-semibold tracking-tight text-primary">Bilingual International School of Paris</div>
               <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                 Boutique officielle · Official shop
               </div>

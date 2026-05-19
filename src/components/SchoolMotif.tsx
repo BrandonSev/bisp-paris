@@ -1,4 +1,4 @@
-import logo from "@/assets/bisp-logo.png";
+import logo from "@/assets/bisp-logo.svg";
 
 /**
  * Decorative wave shapes — élément graphique officiel de la charte BISP.
