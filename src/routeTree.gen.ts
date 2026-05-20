@@ -28,6 +28,8 @@ import { Route as AideLivraisonRouteImport } from './routes/aide.livraison'
 import { Route as AideGuideTaillesRouteImport } from './routes/aide.guide-tailles'
 import { Route as AideContactRouteImport } from './routes/aide.contact'
 import { Route as AideConfidentialiteRouteImport } from './routes/aide.confidentialite'
+import { Route as AideCgvRouteImport } from './routes/aide.cgv'
+import { Route as AideCguRouteImport } from './routes/aide.cgu'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as EnfantsChildIdHistoriqueRouteImport } from './routes/enfants.$childId.historique'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
@@ -132,6 +134,16 @@ const AideConfidentialiteRoute = AideConfidentialiteRouteImport.update({
   path: '/aide/confidentialite',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AideCgvRoute = AideCgvRouteImport.update({
+  id: '/aide/cgv',
+  path: '/aide/cgv',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AideCguRoute = AideCguRouteImport.update({
+  id: '/aide/cgu',
+  path: '/aide/cgu',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
   path: '/lovable/email/suppression',
@@ -189,6 +201,8 @@ export interface FileRoutesByFullPath {
   '/panier': typeof PanierRoute
   '/reset-password': typeof ResetPasswordRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/aide/cgu': typeof AideCguRoute
+  '/aide/cgv': typeof AideCgvRoute
   '/aide/confidentialite': typeof AideConfidentialiteRoute
   '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
@@ -218,6 +232,8 @@ export interface FileRoutesByTo {
   '/panier': typeof PanierRoute
   '/reset-password': typeof ResetPasswordRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/aide/cgu': typeof AideCguRoute
+  '/aide/cgv': typeof AideCgvRoute
   '/aide/confidentialite': typeof AideConfidentialiteRoute
   '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
@@ -248,6 +264,8 @@ export interface FileRoutesById {
   '/panier': typeof PanierRoute
   '/reset-password': typeof ResetPasswordRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/aide/cgu': typeof AideCguRoute
+  '/aide/cgv': typeof AideCgvRoute
   '/aide/confidentialite': typeof AideConfidentialiteRoute
   '/aide/contact': typeof AideContactRoute
   '/aide/guide-tailles': typeof AideGuideTaillesRoute
@@ -279,6 +297,8 @@ export interface FileRouteTypes {
     | '/panier'
     | '/reset-password'
     | '/unsubscribe'
+    | '/aide/cgu'
+    | '/aide/cgv'
     | '/aide/confidentialite'
     | '/aide/contact'
     | '/aide/guide-tailles'
@@ -308,6 +328,8 @@ export interface FileRouteTypes {
     | '/panier'
     | '/reset-password'
     | '/unsubscribe'
+    | '/aide/cgu'
+    | '/aide/cgv'
     | '/aide/confidentialite'
     | '/aide/contact'
     | '/aide/guide-tailles'
@@ -337,6 +359,8 @@ export interface FileRouteTypes {
     | '/panier'
     | '/reset-password'
     | '/unsubscribe'
+    | '/aide/cgu'
+    | '/aide/cgv'
     | '/aide/confidentialite'
     | '/aide/contact'
     | '/aide/guide-tailles'
@@ -367,6 +391,8 @@ export interface RootRouteChildren {
   PanierRoute: typeof PanierRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
+  AideCguRoute: typeof AideCguRoute
+  AideCgvRoute: typeof AideCgvRoute
   AideConfidentialiteRoute: typeof AideConfidentialiteRoute
   AideContactRoute: typeof AideContactRoute
   AideGuideTaillesRoute: typeof AideGuideTaillesRoute
@@ -519,6 +545,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AideConfidentialiteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/aide/cgv': {
+      id: '/aide/cgv'
+      path: '/aide/cgv'
+      fullPath: '/aide/cgv'
+      preLoaderRoute: typeof AideCgvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aide/cgu': {
+      id: '/aide/cgu'
+      path: '/aide/cgu'
+      fullPath: '/aide/cgu'
+      preLoaderRoute: typeof AideCguRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/suppression': {
       id: '/lovable/email/suppression'
       path: '/lovable/email/suppression'
@@ -601,6 +641,8 @@ const rootRouteChildren: RootRouteChildren = {
   PanierRoute: PanierRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   UnsubscribeRoute: UnsubscribeRoute,
+  AideCguRoute: AideCguRoute,
+  AideCgvRoute: AideCgvRoute,
   AideConfidentialiteRoute: AideConfidentialiteRoute,
   AideContactRoute: AideContactRoute,
   AideGuideTaillesRoute: AideGuideTaillesRoute,
@@ -620,3 +662,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
