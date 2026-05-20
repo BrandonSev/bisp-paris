@@ -65,87 +65,89 @@ function Index() {
       </header>
 
       {/* Hero */}
-      <section className="bg-primary">
-        <div className="relative grid grid-cols-1 overflow-hidden bg-primary text-white shadow-2xl lg:grid-cols-2">
-            {/* Left: Heritage seal */}
-            <div className="relative flex flex-col items-center justify-center border-b border-white/10 p-12 lg:border-b-0 lg:border-r lg:p-20">
-              <div className="absolute inset-0 bg-gradient-to-tr from-primary-deep to-primary" aria-hidden />
-              <div
-                className="absolute left-0 top-0 h-16 w-16 border-l-2 border-t-2 border-[var(--rouge)]/40"
-                aria-hidden
-              />
-              <div className="relative z-10 flex flex-col items-center">
-                <img
-                  src={logo}
-                  alt="Écusson BISP"
-                  className="h-56 w-56 object-contain drop-shadow-2xl sm:h-64 sm:w-64 lg:h-72 lg:w-72"
-                  loading="eager"
+      <section>
+        <div className="mx-auto max-w-7xl">
+          <div className="relative grid grid-cols-1 overflow-hidden bg-primary text-white shadow-2xl lg:grid-cols-2">
+              {/* Left: Heritage seal */}
+              <div className="relative flex flex-col items-center justify-center border-b border-white/10 p-12 lg:border-b-0 lg:border-r lg:p-20">
+                <div className="absolute inset-0 bg-gradient-to-tr from-primary-deep to-primary" aria-hidden />
+                <div
+                  className="absolute left-0 top-0 h-16 w-16 border-l-2 border-t-2 border-[var(--rouge)]/40"
+                  aria-hidden
                 />
-                <div className="mt-10 space-y-3 text-center">
-                  <span className="block text-[10px] font-bold uppercase tracking-[0.5em] text-[var(--rouge)]">
-                    Simply Exceptional
-                  </span>
-                  <div className="mx-auto h-px w-12 bg-white/20" />
-                  <p className="text-[11px] font-light uppercase tracking-[0.25em] text-white/60">
-                    Établissement Bilingue · Paris XV
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Right: Boutique portal */}
-            <div className="relative flex flex-col justify-center bg-primary-deep p-10 lg:p-20">
-              <div className="relative z-10 max-w-md">
-                <div className="mb-8 inline-flex items-center gap-3">
-                  <span className="h-px w-8 bg-[var(--rouge)]" />
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-white/55">
-                    Official School Shop
-                  </span>
-                </div>
-
-                <h1
-                  className="mb-8 text-4xl font-normal leading-[1.05] sm:text-5xl lg:text-6xl"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                >
-                  Boutique officielle
-                  <br />
-                  <span className="italic text-white/75">des uniformes</span>
-                </h1>
-
-                <p className="text-base font-light leading-relaxed text-white/85 sm:text-lg">
-                  Bilingual International School of Paris · 15ᵉ. Commandez les tenues officielles brodées de l'écusson
-                  BISP pour toute la communauté de l'école.
-                </p>
-                <p className="mt-4 text-sm font-light italic leading-relaxed text-white/55">
-                  Order your official BISP school uniforms — featuring the embroidered crest and premium quality fabrics
-                  for the new academic year.
-                </p>
-
-                <div className="mt-12 flex flex-col items-stretch gap-6 sm:flex-row sm:items-center">
-                  <Link
-                    to="/login"
-                    className="group inline-flex items-center justify-center gap-3 bg-[var(--rouge)] px-10 py-5 text-xs font-bold uppercase tracking-[0.2em] text-white shadow-xl transition-colors duration-300 hover:bg-white hover:text-primary"
-                  >
-                    Accéder à la boutique
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                  <div className="flex items-center gap-4 text-[10px] font-bold tracking-[0.25em]">
-                    <span className="text-[var(--rouge)]">FR</span>
-                    <span className="h-4 w-px bg-white/15" />
-                    <span className="text-white/40">EN</span>
+                <div className="relative z-10 flex flex-col items-center">
+                  <img
+                    src={logo}
+                    alt="Écusson BISP"
+                    className="h-56 w-56 object-contain drop-shadow-2xl sm:h-64 sm:w-64 lg:h-72 lg:w-72"
+                    loading="eager"
+                  />
+                  <div className="mt-10 space-y-3 text-center">
+                    <span className="block text-[10px] font-bold uppercase tracking-[0.5em] text-[var(--rouge)]">
+                      Simply Exceptional
+                    </span>
+                    <div className="mx-auto h-px w-12 bg-white/20" />
+                    <p className="text-[11px] font-light uppercase tracking-[0.25em] text-white/60">
+                      Établissement Bilingue · Paris XV
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Decorative watermark */}
-              <div
-                className="pointer-events-none absolute bottom-6 right-6 select-none text-[120px] italic leading-none text-white/[0.04] lg:text-[160px]"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-                aria-hidden
-              >
-                BISP
+              {/* Right: Boutique portal */}
+              <div className="relative flex flex-col justify-center bg-primary-deep p-10 lg:p-20">
+                <div className="relative z-10 max-w-md">
+                  <div className="mb-8 inline-flex items-center gap-3">
+                    <span className="h-px w-8 bg-[var(--rouge)]" />
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-white/55">
+                      Official School Shop
+                    </span>
+                  </div>
+
+                  <h1
+                    className="mb-8 text-4xl font-normal leading-[1.05] sm:text-5xl lg:text-6xl"
+                    style={{ fontFamily: "'Playfair Display', serif" }}
+                  >
+                    Boutique officielle
+                    <br />
+                    <span className="italic text-white/75">des uniformes</span>
+                  </h1>
+
+                  <p className="text-base font-light leading-relaxed text-white/85 sm:text-lg">
+                    Bilingual International School of Paris · 15ᵉ. Commandez les tenues officielles brodées de l'écusson
+                    BISP pour toute la communauté de l'école.
+                  </p>
+                  <p className="mt-4 text-sm font-light italic leading-relaxed text-white/55">
+                    Order your official BISP school uniforms — featuring the embroidered crest and premium quality fabrics
+                    for the new academic year.
+                  </p>
+
+                  <div className="mt-12 flex flex-col items-stretch gap-6 sm:flex-row sm:items-center">
+                    <Link
+                      to="/login"
+                      className="group inline-flex items-center justify-center gap-3 bg-[var(--rouge)] px-10 py-5 text-xs font-bold uppercase tracking-[0.2em] text-white shadow-xl transition-colors duration-300 hover:bg-white hover:text-primary"
+                    >
+                      Accéder à la boutique
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                    <div className="flex items-center gap-4 text-[10px] font-bold tracking-[0.25em]">
+                      <span className="text-[var(--rouge)]">FR</span>
+                      <span className="h-4 w-px bg-white/15" />
+                      <span className="text-white/40">EN</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Decorative watermark */}
+                <div
+                  className="pointer-events-none absolute bottom-6 right-6 select-none text-[120px] italic leading-none text-white/[0.04] lg:text-[160px]"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                  aria-hidden
+                >
+                  BISP
+                </div>
               </div>
-            </div>
+          </div>
         </div>
       </section>
 
