@@ -115,7 +115,7 @@ function Index() {
 
                 <p className="text-base font-light leading-relaxed text-white/85 sm:text-lg">
                   Bilingual International School of Paris · 15ᵉ. Commandez les tenues officielles brodées de l'écusson
-                  BISP pour la maternelle, l'élémentaire et le collège.
+                  BISP pour toute la communauté de l'école.
                 </p>
                 <p className="mt-4 text-sm font-light italic leading-relaxed text-white/55">
                   Order your official BISP school uniforms — featuring the embroidered crest and premium quality fabrics
