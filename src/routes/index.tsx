@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, MapPin, ShieldCheck, Truck } from "lucide-react";
+import { ArrowRight, CreditCard, ShieldCheck, Truck } from "lucide-react";
 import logo from "@/assets/bisp-logo.svg";
 
 export const Route = createFileRoute("/")({
@@ -169,24 +169,26 @@ function Index() {
 
       {/* Trust strip */}
       <section className="border-t border-border bg-card">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:grid-cols-3 sm:px-6 lg:px-8">
+        <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
           <TrustItem
             icon={<ShieldCheck className="h-5 w-5" />}
-            title="Écusson brodé officiel"
-            text="Toutes les tenues portent l'écusson brodé fidèle à la charte BISP."
-            sub="Official embroidered crest"
+            title="Tenues validées par l'établissement"
+            text="Chaque produit est référencé en accord avec la direction de BISP et brodé de l'écusson officiel."
           />
           <TrustItem
             icon={<Truck className="h-5 w-5" />}
-            title="Livraison à l'école"
-            text="Vos commandes sont remises à votre enfant ou expédiées à votre domicile."
-            sub="Delivered to school or home"
+            title="Livraison à l'école pour la rentrée"
+            text="Pour la rentrée 2026, vos commandes sont remises à votre enfant à l'école ou expédiées à votre domicile à partir d'octobre 2026."
           />
           <TrustItem
-            icon={<MapPin className="h-5 w-5" />}
-            title="Paris 15ᵉ"
-            text="Boutique officielle de l'école BISP, Paris 15ᵉ arrondissement."
-            sub="Official Paris 15 shop"
+            icon={<ShieldCheck className="h-5 w-5" />}
+            title="Qualité premium"
+            text="Tissus durables sélectionnés pour résister au rythme de l'école, de la maternelle au collège."
+          />
+          <TrustItem
+            icon={<CreditCard className="h-5 w-5" />}
+            title="Paiement en ligne sécurisé"
+            text="Réglez vos commandes en toute confiance par carte bancaire via notre prestataire certifié."
           />
         </div>
       </section>
@@ -202,16 +204,15 @@ function Index() {
   );
 }
 
-function TrustItem({ icon, title, text, sub }: { icon: React.ReactNode; title: string; text: string; sub: string }) {
+function TrustItem({ icon, title, text }: { icon: React.ReactNode; title: string; text: string }) {
   return (
-    <div className="flex gap-4">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--teal)]/15 text-[var(--teal-deep)]">
+    <div className="flex flex-col items-center gap-4">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
         {icon}
       </div>
-      <div>
+      <div className="text-center">
         <h4 className="text-sm font-semibold text-foreground">{title}</h4>
         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{text}</p>
-        <p className="mt-0.5 text-xs italic text-muted-foreground/70">{sub}</p>
       </div>
     </div>
   );
