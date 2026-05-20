@@ -2,9 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CreditCard, ShieldCheck, Truck } from "lucide-react";
 import logo from "@/assets/bisp-logo.svg";
 import { FrenchFlag } from "@/components/FrenchFlag";
-import maternelleImg from "@/assets/maternelle-bisp.jpg";
-import classeImg from "@/assets/classe-bisp.jpg";
-import collegeImg from "@/assets/college-bisp.jpg";
+import poloImg from "@/assets/polo-bisp.jpg";
+import pullImg from "@/assets/pull-bisp.jpg";
+import chemiseImg from "@/assets/chemise-bisp.jpg";
+import trousseImg from "@/assets/trousses-bisp.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -114,7 +115,7 @@ function Index() {
 
                 <p className="text-base font-light leading-relaxed text-white/85 sm:text-lg">
                   Bilingual International School of Paris · 15ᵉ. Commandez les tenues officielles brodées de l'écusson
-                  BISP pour la maternelle, l'élémentaire et le collège.
+                  BISP pour toute la communauté de l'école.
                 </p>
                 <p className="mt-4 text-sm font-light italic leading-relaxed text-white/55">
                   Order your official BISP school uniforms — featuring the embroidered crest and premium quality fabrics
@@ -171,27 +172,28 @@ function Index() {
         </div>
       </section>
 
-      {/* Niveaux scolaires */}
+      {/* Catégories produits */}
       <section className="border-t border-border bg-background">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
           <div className="mb-10 flex flex-col items-center text-center">
             <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--rouge)]">
-              <span className="h-px w-8 bg-[var(--rouge)]" /> Niveaux · Levels
+              <span className="h-px w-8 bg-[var(--rouge)]" /> Collection · Collection
             </span>
             <h2
               className="mt-3 text-3xl font-normal tracking-tight text-foreground sm:text-4xl"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Une tenue pour chaque âge
+              La collection officielle
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              De la maternelle au collège, des tenues pensées pour le confort, la durabilité et l'identité BISP.
+              Polos, pulls, chemises et accessoires brodés de l'écusson BISP.
             </p>
           </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <LevelCard image={maternelleImg} label="Maternelle" range="Kindergarten · 3-5 ans" />
-            <LevelCard image={classeImg} label="Élémentaire" range="Primary · 6-10 ans" />
-            <LevelCard image={collegeImg} label="Collège" range="Middle School · 11-15 ans" />
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <CategoryCard image={poloImg} label="Polos" />
+            <CategoryCard image={pullImg} label="Pulls" />
+            <CategoryCard image={chemiseImg} label="Chemises" />
+            <CategoryCard image={trousseImg} label="Accessoires" />
           </div>
         </div>
       </section>
@@ -267,13 +269,13 @@ function TrustItem({ icon, title, text }: { icon: React.ReactNode; title: string
   );
 }
 
-function LevelCard({ image, label, range }: { image: string; label: string; range: string }) {
+function CategoryCard({ image, label }: { image: string; label: string }) {
   return (
     <Link
       to="/boutique"
       className="group relative block overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all hover:shadow-xl"
     >
-      <div className="aspect-[4/5] overflow-hidden">
+      <div className="aspect-[4/5] overflow-hidden bg-muted">
         <img
           src={image}
           alt={label}
@@ -283,15 +285,14 @@ function LevelCard({ image, label, range }: { image: string; label: string; rang
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-primary-deep/85 via-primary-deep/20 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[var(--rouge)]">{range}</p>
         <h3
-          className="mt-2 text-2xl font-normal"
+          className="text-2xl font-normal"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           {label}
         </h3>
         <span className="mt-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/80 transition-all group-hover:gap-3 group-hover:text-white">
-          Voir les tenues <ArrowRight className="h-3.5 w-3.5" />
+          Découvrir <ArrowRight className="h-3.5 w-3.5" />
         </span>
       </div>
     </Link>
