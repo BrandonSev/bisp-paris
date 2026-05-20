@@ -65,9 +65,8 @@ function Index() {
       </header>
 
       {/* Hero */}
-      <section className="bg-background px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="relative grid grid-cols-1 overflow-hidden border border-white/5 bg-primary text-white shadow-2xl lg:grid-cols-2">
+      <section className="bg-primary">
+        <div className="relative grid grid-cols-1 overflow-hidden bg-primary text-white shadow-2xl lg:grid-cols-2">
             {/* Left: Heritage seal */}
             <div className="relative flex flex-col items-center justify-center border-b border-white/10 p-12 lg:border-b-0 lg:border-r lg:p-20">
               <div className="absolute inset-0 bg-gradient-to-tr from-primary-deep to-primary" aria-hidden />
@@ -147,28 +146,6 @@ function Index() {
                 BISP
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA boutique */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--teal)]">
-            <span className="h-px w-8 bg-[var(--teal)]" /> Boutique · Shop
-          </span>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            Tous les uniformes officiels
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Polos, pulls, chemises, t-shirts et accessoires brodés de l'écusson BISP.
-          </p>
-          <Link
-            to="/boutique"
-            className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-xl transition-all hover:gap-3 hover:bg-primary/90"
-          >
-            Découvrir la boutique <ArrowRight className="h-4 w-4" />
-          </Link>
         </div>
       </section>
 
