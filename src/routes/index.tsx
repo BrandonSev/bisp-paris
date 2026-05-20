@@ -66,7 +66,10 @@ function Index() {
             {/* Left: Heritage seal */}
             <div className="relative flex flex-col items-center justify-center border-b border-white/10 p-12 lg:border-b-0 lg:border-r lg:p-20">
               <div className="absolute inset-0 bg-gradient-to-tr from-primary-deep to-primary" aria-hidden />
-              <div className="absolute left-0 top-0 h-16 w-16 border-l-2 border-t-2 border-[var(--rouge)]/40" aria-hidden />
+              <div
+                className="absolute left-0 top-0 h-16 w-16 border-l-2 border-t-2 border-[var(--rouge)]/40"
+                aria-hidden
+              />
               <div className="relative z-10 flex flex-col items-center">
                 <img
                   src={logo}
@@ -191,8 +194,8 @@ function Index() {
       {/* Footer */}
       <footer className="border-t border-border bg-background">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-6 text-xs text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
-          <span>© {new Date().getFullYear()} Bilingual International School of Paris · BISP</span>
-          <span>operations@bisparis.com · Paiement sécurisé</span>
+          <span>© {new Date().getFullYear()} France Uniformes · Tous droits réservés</span>
+          <span>boutique@franceuniformes.fr · Paiement sécurisé</span>
         </div>
       </footer>
     </div>
