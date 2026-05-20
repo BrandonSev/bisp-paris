@@ -2,13 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPageShell } from "@/components/LegalPageShell";
 
 export const Route = createFileRoute("/aide/cgu")({
-  component: CguPage,
   head: () => ({
     meta: [
-      { title: "Conditions générales d'utilisation · BISP Uniformes" },
+      { title: "Conditions générales d'utilisation · BISP" },
       { name: "description", content: "Conditions générales d'utilisation de la boutique uniformes BISP." },
     ],
   }),
+  component: CguPage,
 });
 
 function CguPage() {
@@ -24,7 +24,8 @@ function CguPage() {
         SIRET : 983 587 932 00010<br />
         Numéro de TVA intracommunautaire : FR43983587932<br />
         Contact : <a href="mailto:info@franceuniforme.fr">info@franceuniforme.fr</a><br />
-        Délégué à la Protection des Données (DPO) : <a href="mailto:dpo@franceuniforme.fr">dpo@franceuniforme.fr</a>
+        Délégué à la Protection des Données (DPO) :{" "}
+        <a href="mailto:dpo@franceuniforme.fr">dpo@franceuniforme.fr</a>
       </p>
       <p>L'hébergement du site est assuré par <em>OVHcloud SAS — 2 Rue Kellermann, 59100 Roubaix, France</em>.</p>
 
@@ -35,14 +36,9 @@ function CguPage() {
         pour le compte des établissements scolaires partenaires.
       </p>
       <p>
-        Les modalités commerciales (commande, paiement, livraison, retours, garanties) sont régies par les{" "}
-        <Link to="/aide/cgv">Conditions Générales de Vente (CGV)</Link>, disponibles sur le site de France Uniformes
-        et applicables à toute commande passée sur la plateforme.
-      </p>
-      <p>
-        Tout accès à la plateforme implique l'acceptation sans réserve des présentes CGU. France Uniformes se
-        réserve le droit de les modifier à tout moment ; la version en vigueur est celle publiée en ligne à la date
-        de connexion de l'utilisateur.
+        Tout accès à la plateforme implique l'acceptation sans réserve des présentes CGU. France Uniformes se réserve
+        le droit de les modifier à tout moment ; la version en vigueur est celle publiée en ligne à la date de
+        connexion de l'utilisateur.
       </p>
 
       <h2>3. Accès à la plateforme</h2>
@@ -94,9 +90,9 @@ function CguPage() {
       <h3>4.3 Disponibilité du service</h3>
       <p>
         France Uniformes s'efforce d'assurer la disponibilité de la plateforme 7j/7 et 24h/24, mais ne peut garantir
-        une disponibilité ininterrompue. Des interruptions de service peuvent survenir pour raisons de maintenance,
-        de mise à jour ou en cas de force majeure. France Uniformes ne saurait être tenu responsable des
-        conséquences d'une indisponibilité temporaire du site.
+        une disponibilité ininterrompue. Des interruptions de service peuvent survenir pour raisons de maintenance, de
+        mise à jour ou en cas de force majeure. France Uniformes ne saurait être tenu responsable des conséquences
+        d'une indisponibilité temporaire du site.
       </p>
 
       <h2>5. Profils enfants et recommandations de tailles</h2>
@@ -106,17 +102,17 @@ function CguPage() {
         indicatives.
       </p>
       <p>
-        Ces recommandations sont fournies à titre indicatif uniquement et ne constituent pas une garantie
-        d'adéquation parfaite du vêtement. Elles s'appuient sur un barème de corps à nu adapté au type de vêtement
-        commandé. France Uniformes recommande de mettre à jour régulièrement les mensurations de l'enfant afin que
-        les recommandations restent pertinentes.
+        Ces recommandations sont fournies à titre indicatif uniquement et ne constituent pas une garantie d'adéquation
+        parfaite du vêtement. Elles s'appuient sur un barème de corps à nu adapté au type de vêtement commandé. France
+        Uniformes recommande de mettre à jour régulièrement les mensurations de l'enfant afin que les recommandations
+        restent pertinentes.
       </p>
 
       <h2>6. Propriété intellectuelle</h2>
       <p>
         L'ensemble des contenus présents sur la plateforme (textes, images, logos, graphismes, interface, structure)
-        est la propriété exclusive de France Uniformes ou de ses partenaires et est protégé par les lois françaises
-        et internationales relatives à la propriété intellectuelle.
+        est la propriété exclusive de France Uniformes ou de ses partenaires et est protégé par les lois françaises et
+        internationales relatives à la propriété intellectuelle.
       </p>
       <p>
         Toute reproduction, représentation, modification ou exploitation, totale ou partielle, sans autorisation
@@ -150,25 +146,36 @@ function CguPage() {
         Informatique et Libertés.
       </p>
       <p>
-        Pour toute information sur la nature des données collectées, leur durée de conservation, les droits dont
-        vous disposez (accès, rectification, suppression, portabilité, limitation, opposition) et les modalités pour
-        les exercer, veuillez consulter notre{" "}
-        <Link to="/aide/confidentialite">politique de confidentialité</Link> ou contacter notre Délégué à la
-        Protection des Données : <a href="mailto:dpo@franceuniforme.fr">dpo@franceuniforme.fr</a>.
+        Pour toute information sur la nature des données collectées, leur durée de conservation, les droits dont vous
+        disposez (accès, rectification, suppression, portabilité, limitation, opposition) et les modalités pour les
+        exercer, veuillez consulter notre{" "}
+        <Link to="/aide/confidentialite">politique de confidentialité</Link>{" "}
+        ou contacter notre Délégué à la Protection des Données :{" "}
+        <a href="mailto:dpo@franceuniforme.fr">dpo@franceuniforme.fr</a>.
       </p>
 
       <h2>10. Cookies</h2>
       <p>
-        La plateforme utilise uniquement des cookies techniques nécessaires à son bon fonctionnement (gestion de
-        session, sécurité, panier). Aucun cookie publicitaire ou de traçage tiers n'est utilisé sans le consentement
-        préalable de l'utilisateur.
+        La plateforme n'utilise aucun cookie. La gestion de session est assurée par le localStorage du navigateur, qui
+        ne transmet aucune donnée à des tiers et ne nécessite pas de consentement au sens de la réglementation sur les
+        cookies.
+      </p>
+      <p>
+        Si des cookies venaient à être utilisés à l'avenir (par exemple à des fins d'analyse ou de performance), vous
+        en seriez informé préalablement et un mécanisme de consentement adapté vous serait présenté, conformément aux
+        recommandations de la CNIL.
       </p>
 
       <h2>11. Droit applicable et juridiction compétente</h2>
       <p>
         Les présentes CGU sont soumises au droit français. En cas de litige relatif à leur interprétation ou à leur
-        exécution, et à défaut de résolution amiable, les tribunaux compétents du ressort du RCS de Chartres seront
+        exécution, et à défaut de résolution amiable, les tribunaux compétents du ressort de Chartres (28000) seront
         seuls compétents.
+      </p>
+      <p>
+        Pour tout litige portant sur un achat effectué via la boutique, le Client peut recourir à la médiation de la
+        consommation dans les conditions prévues par les Conditions Générales de Vente (CGV) disponibles sur la
+        présente boutique.
       </p>
 
       <h2>12. Contact</h2>
