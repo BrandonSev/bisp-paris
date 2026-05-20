@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CreditCard, ShieldCheck, Truck } from "lucide-react";
 import logo from "@/assets/bisp-logo.svg";
+import { FrenchFlag } from "@/components/FrenchFlag";
+import maternelleImg from "@/assets/maternelle-bisp.jpg";
+import classeImg from "@/assets/classe-bisp.jpg";
+import collegeImg from "@/assets/college-bisp.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -147,7 +151,7 @@ function Index() {
       </section>
 
       {/* CTA boutique */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="text-center">
           <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--teal)]">
             <span className="h-px w-8 bg-[var(--teal)]" /> Boutique · Shop
@@ -167,6 +171,31 @@ function Index() {
         </div>
       </section>
 
+      {/* Niveaux scolaires */}
+      <section className="border-t border-border bg-background">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+          <div className="mb-10 flex flex-col items-center text-center">
+            <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--rouge)]">
+              <span className="h-px w-8 bg-[var(--rouge)]" /> Niveaux · Levels
+            </span>
+            <h2
+              className="mt-3 text-3xl font-normal tracking-tight text-foreground sm:text-4xl"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              Une tenue pour chaque âge
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              De la maternelle au collège, des tenues pensées pour le confort, la durabilité et l'identité BISP.
+            </p>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <LevelCard image={maternelleImg} label="Maternelle" range="Kindergarten · 3-5 ans" />
+            <LevelCard image={classeImg} label="Élémentaire" range="Primary · 6-10 ans" />
+            <LevelCard image={collegeImg} label="Collège" range="Middle School · 11-15 ans" />
+          </div>
+        </div>
+      </section>
+
       {/* Trust strip */}
       <section className="border-t border-border bg-card">
         <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
@@ -181,15 +210,35 @@ function Index() {
             text="Pour la rentrée 2026, vos commandes sont remises à votre enfant à l'école ou expédiées à votre domicile à partir d'octobre 2026."
           />
           <TrustItem
-            icon={<ShieldCheck className="h-5 w-5" />}
-            title="Qualité premium"
-            text="Tissus durables sélectionnés pour résister au rythme de l'école, de la maternelle au collège."
+            icon={<FrenchFlag className="h-3.5 w-5" />}
+            title="Fabrication française"
+            text="Confection 100% française, en partie via l'économie sociale et solidaire (personnes en situation de handicap, en reconversion ou en réinsertion professionnelle)."
           />
           <TrustItem
             icon={<CreditCard className="h-5 w-5" />}
             title="Paiement en ligne sécurisé"
             text="Réglez vos commandes en toute confiance par carte bancaire via notre prestataire certifié."
           />
+        </div>
+      </section>
+
+      {/* Citation directrice */}
+      <section className="border-t border-border bg-primary text-white">
+        <div className="mx-auto max-w-4xl px-4 py-20 text-center sm:px-6 lg:px-8">
+          <span className="text-5xl leading-none text-[var(--rouge)]" style={{ fontFamily: "'Playfair Display', serif" }} aria-hidden>
+            “
+          </span>
+          <blockquote
+            className="mt-4 text-xl font-light leading-relaxed text-white/90 sm:text-2xl"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            L'uniforme BISP incarne l'esprit de notre école : excellence, simplicité et sentiment d'appartenance à une
+            communauté bilingue et internationale.
+          </blockquote>
+          <div className="mx-auto mt-8 h-px w-12 bg-[var(--rouge)]" />
+          <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/55">
+            Direction · Bilingual International School of Paris
+          </p>
         </div>
       </section>
 
@@ -215,5 +264,36 @@ function TrustItem({ icon, title, text }: { icon: React.ReactNode; title: string
         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{text}</p>
       </div>
     </div>
+  );
+}
+
+function LevelCard({ image, label, range }: { image: string; label: string; range: string }) {
+  return (
+    <Link
+      to="/boutique"
+      className="group relative block overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all hover:shadow-xl"
+    >
+      <div className="aspect-[4/5] overflow-hidden">
+        <img
+          src={image}
+          alt={label}
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          loading="lazy"
+        />
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-t from-primary-deep/85 via-primary-deep/20 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 p-6 text-white">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[var(--rouge)]">{range}</p>
+        <h3
+          className="mt-2 text-2xl font-normal"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          {label}
+        </h3>
+        <span className="mt-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/80 transition-all group-hover:gap-3 group-hover:text-white">
+          Voir les tenues <ArrowRight className="h-3.5 w-3.5" />
+        </span>
+      </div>
+    </Link>
   );
 }
