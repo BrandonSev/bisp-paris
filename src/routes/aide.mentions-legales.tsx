@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPageShell } from "@/components/LegalPageShell";
+import { UnderConstructionPage } from "@/components/UnderConstructionPage";
+import { isUnderConstruction } from "@/config/underConstruction";
 
 export const Route = createFileRoute("/aide/mentions-legales")({
   head: () => ({
@@ -12,6 +14,8 @@ export const Route = createFileRoute("/aide/mentions-legales")({
 });
 
 function MentionsPage() {
+  const wipTitle = isUnderConstruction("/aide/mentions-legales");
+  if (wipTitle) return <UnderConstructionPage title={wipTitle} />;
   return (
     <LegalPageShell title="Mentions légales" updatedAt="mai 2026">
       <h2>Éditeur du site</h2>
