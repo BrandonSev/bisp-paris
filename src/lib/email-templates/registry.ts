@@ -16,7 +16,6 @@ import { template as orderStatus } from './order-status'
 import { template as incidentFamily } from './incident-family'
 import { template as incidentAdmin } from './incident-admin'
 import { template as incidentResolution } from './incident-resolution'
-import { template as passwordReset } from './password-reset'
 import { template as rentreeReminder } from './rentree-reminder'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
@@ -27,6 +26,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'incident-family': incidentFamily,
   'incident-admin': incidentAdmin,
   'incident-resolution': incidentResolution,
-  'password-reset': passwordReset,
   'rentree-reminder': rentreeReminder,
 }
