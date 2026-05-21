@@ -381,9 +381,24 @@ function ProductCard({ product }: { product: Product }) {
 
         {/* Taille */}
         <div className="mt-3">
-          <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Taille · Size
-          </label>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Taille · Size
+            </label>
+            {recommendation && (
+              <SizeBadge
+                size={recommendation.size}
+                variant={product.productKind === "outer" ? "outer" : "default"}
+              />
+            )}
+          </div>
+          {recommendation && (
+            <p className="mt-1 text-[10px] italic leading-snug text-muted-foreground">
+              {product.productKind === "outer"
+                ? "Recommandation ajustée pour une couche supérieure (pull, hoodie, teddy)."
+                : "Recommandation pour une 1ʳᵉ couche (t-shirt, polo, chemise)."}
+            </p>
+          )}
           {(() => {
             const groups: { label: string; sizes: string[] }[] = [
               { label: "Enfant", sizes: product.sizes.filter((s) => (SIZE_GROUPS.enfant as readonly string[]).includes(s)) },
