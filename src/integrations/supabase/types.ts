@@ -318,34 +318,55 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string
+          eligible: boolean
           id: string
+          incident_type: string | null
           order_id: string
+          order_item_id: string | null
+          photos: string[]
+          quantity: number
           resolution_note: string | null
           resolved_at: string | null
           status: string
           type: string
+          updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           created_by?: string | null
           description: string
+          eligible?: boolean
           id?: string
+          incident_type?: string | null
           order_id: string
+          order_item_id?: string | null
+          photos?: string[]
+          quantity?: number
           resolution_note?: string | null
           resolved_at?: string | null
           status?: string
           type?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           created_by?: string | null
           description?: string
+          eligible?: boolean
           id?: string
+          incident_type?: string | null
           order_id?: string
+          order_item_id?: string | null
+          photos?: string[]
+          quantity?: number
           resolution_note?: string | null
           resolved_at?: string | null
           status?: string
           type?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -417,6 +438,7 @@ export type Database = {
       orders: {
         Row: {
           created_at: string
+          delivered_at: string | null
           family_civilite: string | null
           family_email: string
           family_nom: string
@@ -444,6 +466,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          delivered_at?: string | null
           family_civilite?: string | null
           family_email: string
           family_nom: string
@@ -471,6 +494,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          delivered_at?: string | null
           family_civilite?: string | null
           family_email?: string
           family_nom?: string
@@ -596,6 +620,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apel_families_overview: {
+        Args: { _season_start?: string }
+        Returns: {
+          children_count: number
+          classes: string
+          family_civilite: string
+          family_email: string
+          family_nom: string
+          family_prenom: string
+          family_telephone: string
+          has_ordered: boolean
+          items_count: number
+          last_paid_at: string
+          paid_orders_count: number
+          user_id: string
+          ville: string
+        }[]
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
