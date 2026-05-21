@@ -426,6 +426,8 @@ function ProductCard({ product }: { product: Product }) {
                             className={`min-w-[2.5rem] rounded-md border px-2 py-1 text-xs font-medium transition-colors ${
                               size === s
                                 ? "border-primary bg-primary text-primary-foreground"
+                                : recommendation?.size === s
+                                ? "border-[var(--teal-deep)] bg-[var(--teal)]/10 text-[var(--teal-deep)] ring-1 ring-inset ring-[var(--teal-deep)]/40 hover:bg-[var(--teal)]/15"
                                 : "border-border bg-card text-foreground hover:border-primary/40"
                             }`}
                           >
@@ -445,6 +447,8 @@ function ProductCard({ product }: { product: Product }) {
                         className={`min-w-[2.5rem] rounded-md border px-2 py-1 text-xs font-medium transition-colors ${
                           size === s
                             ? "border-primary bg-primary text-primary-foreground"
+                            : recommendation?.size === s
+                            ? "border-[var(--teal-deep)] bg-[var(--teal)]/10 text-[var(--teal-deep)] ring-1 ring-inset ring-[var(--teal-deep)]/40 hover:bg-[var(--teal)]/15"
                             : "border-border bg-card text-foreground hover:border-primary/40"
                         }`}
                       >
