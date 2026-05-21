@@ -25,12 +25,16 @@ export function TrousseImage({ zipColor, className }: Props) {
     svg.setAttribute("height", "100%");
     svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
 
-    const apply = (el: Element) => {
+    const paint = (el: Element) => {
       el.setAttribute("style", `fill: ${zipColor}`);
       el.removeAttribute("fill");
     };
     svg.querySelectorAll('[id^="zip"]').forEach((el) => {
-      apply(el);
+      if (el.tagName.toLowerCase() === "path") {
+        paint(el);
+      } else {
+        el.querySelectorAll("path").forEach(paint);
+      }
     });
     return new XMLSerializer().serializeToString(svg);
   }, [zipColor]);
