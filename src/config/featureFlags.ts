@@ -31,7 +31,7 @@ export const establishment: EstablishmentConfig = {
   shortName: "BISP",
   legalName: "Bilingual International School of Paris",
   city: "Paris",
-  contactEmail: "uniformes@bisp.fr",
+  contactEmail: "boutique@franceuniformes.fr",
   emailDomain: "notify.franceuniformes.fr",
   pickupAddress: "Bureau APEL — BISP, Paris",
 };
