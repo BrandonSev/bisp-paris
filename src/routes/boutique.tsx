@@ -7,6 +7,7 @@ import { useStore } from "@/lib/store";
 import { toast } from "sonner";
 import { RequireAuth } from "@/components/RequireAuth";
 import { AddChildDialog } from "@/components/AddChildDialog";
+import { TrousseImage } from "@/components/TrousseImage";
 import poloFront from "@/assets/polo-bisp-marine.svg";
 import poloBack from "@/assets/polo-bisp-blanc.svg";
 import hoodieFront from "@/assets/hoodie-bisp-back.svg";
@@ -264,14 +265,24 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-elegant)]">
       <div className="relative aspect-square overflow-hidden bg-secondary">
-        <img
-          src={product.images[view]}
-          alt={product.name}
-          className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${
-            product.images[view].endsWith(".svg") ? "object-contain p-8" : "object-cover"
-          }`}
-          loading="lazy"
-        />
+        {product.id === "trousse" ? (
+          <TrousseImage
+            zipColor={
+              product.options?.[0]?.choices.find((c) => c.value === opts["zip"])?.swatch ??
+              "var(--primary)"
+            }
+            className="h-full w-full p-8 transition-transform duration-500 group-hover:scale-105 [&>svg]:h-full [&>svg]:w-full"
+          />
+        ) : (
+          <img
+            src={product.images[view]}
+            alt={product.name}
+            className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${
+              product.images[view].endsWith(".svg") ? "object-contain p-8" : "object-cover"
+            }`}
+            loading="lazy"
+          />
+        )}
         {hasMultipleViews && (
           <div className="absolute bottom-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1 rounded-full border border-border bg-white/95 p-1 shadow-sm backdrop-blur">
             {["Avant · Front", "Arrière · Back"].map((label, i) => (
