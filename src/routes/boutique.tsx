@@ -241,6 +241,8 @@ function ProductCard({ product }: { product: Product }) {
   const selectedChild = kids.find((k) => k.id === child);
   const recommendation = useMemo(() => {
     if (!selectedChild) return null;
+    // Pas de recommandation pour les produits taille unique.
+    if (product.sizes.length <= 1 || product.sizes.includes("Unique")) return null;
     const reco = recommendSize(
       {
         hauteur: selectedChild.hauteur,
