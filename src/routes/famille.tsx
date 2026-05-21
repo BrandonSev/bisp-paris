@@ -73,8 +73,13 @@ function FamillePage() {
 
   const handleAddParent = async () => {
     try {
+      const base = parents[0];
       await addParent({
         role: parents.length === 0 ? "Mère" : parents.length === 1 ? "Père" : "Parent",
+        telephone: base?.telephone || profile?.telephone || "",
+        adresse: base?.adresse || profile?.adresse || "",
+        code_postal: base?.code_postal || profile?.code_postal || "",
+        ville: base?.ville || profile?.ville || "",
       });
       toast.success("Membre ajouté");
     } catch (err: any) {
@@ -205,6 +210,7 @@ function FamillePage() {
                         adresse: parents[0]?.adresse ?? "",
                         code_postal: parents[0]?.code_postal ?? "",
                         ville: parents[0]?.ville ?? "",
+                        telephone: parents[0]?.telephone ?? "",
                       }
                 }
               />
