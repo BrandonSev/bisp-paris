@@ -77,6 +77,18 @@ function PanierPage() {
             },
           });
         }
+        // Notification admin (fire-and-forget)
+        void sendTransactionalEmail({
+          templateName: 'admin-order',
+          recipientEmail: establishment.contactEmail,
+          idempotencyKey: `admin-order-${orderId}`,
+          templateData: {
+            orderNumber,
+            familyName: `${profile?.prenom ?? ''} ${profile?.nom ?? ''}`.trim() || (profile?.email ?? ''),
+            total,
+            itemsCount: totalArticles,
+          },
+        });
         if (input.payment_method === 'cb_payplug') {
           const { paymentUrl } = await startPayplug({ data: { orderId } });
           if (paymentUrl) {

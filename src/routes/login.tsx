@@ -24,6 +24,7 @@ import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 import { supabase } from "@/integrations/supabase/client";
 import { useStore } from "@/lib/store";
 import { verifyEstablishmentCode } from "@/lib/establishment-code.functions";
+import { sendTransactionalEmail } from "@/lib/email/send";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -168,6 +169,16 @@ function LoginPage() {
         .eq("id", u.id);
     }
     toast.success("Espace famille créé !");
+    // Email de bienvenue (fire-and-forget)
+    void sendTransactionalEmail({
+      templateName: "welcome",
+      recipientEmail: parsed.data.email,
+      idempotencyKey: `welcome-${parsed.data.email}`,
+      templateData: {
+        prenom: parsed.data.prenom,
+        familyName: parsed.data.nom,
+      },
+    });
     navigate({ to: "/boutique" });
   };
 
