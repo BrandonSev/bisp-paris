@@ -10,9 +10,23 @@ export interface TemplateEntry {
 }
 
 import { template as orderConfirmation } from './order-confirmation'
-import { template as orderPaid } from './order-paid'
+import { template as welcome } from './welcome'
+import { template as adminOrder } from './admin-order'
+import { template as orderStatus } from './order-status'
+import { template as incidentFamily } from './incident-family'
+import { template as incidentAdmin } from './incident-admin'
+import { template as incidentResolution } from './incident-resolution'
+import { template as passwordReset } from './password-reset'
+import { template as rentreeReminder } from './rentree-reminder'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
+  'welcome': welcome,
   'order-confirmation': orderConfirmation,
-  'order-paid': orderPaid,
+  'admin-order': adminOrder,
+  'order-status': orderStatus,
+  'incident-family': incidentFamily,
+  'incident-admin': incidentAdmin,
+  'incident-resolution': incidentResolution,
+  'password-reset': passwordReset,
+  'rentree-reminder': rentreeReminder,
 }
