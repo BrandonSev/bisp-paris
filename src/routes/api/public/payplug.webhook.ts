@@ -12,17 +12,18 @@ const FROM_DOMAIN = 'notify.franceuniformes.fr';
 async function sendOrderPaidEmail(orderId: string) {
   const { data: order } = await supabaseAdmin
     .from('orders')
-    .select('id, order_number, total_amount, family_email, family_prenom')
+    .select('id, order_number, total_amount, family_email, family_prenom, family_nom')
     .eq('id', orderId)
     .maybeSingle();
   if (!order?.family_email) return;
 
-  const entry = TEMPLATES['order-paid'];
+  const entry = TEMPLATES['order-status'];
   if (!entry) return;
   const data = {
-    firstName: order.family_prenom,
+    prenom: order.family_prenom,
+    familyName: order.family_nom,
     orderNumber: order.order_number,
-    total: Number(order.total_amount),
+    status: 'Paiement validé',
   };
   const element = React.createElement(entry.component, data);
   const html = await render(element);
@@ -41,7 +42,7 @@ async function sendOrderPaidEmail(orderId: string) {
 
   await supabaseAdmin.from('email_send_log').insert({
     message_id: messageId,
-    template_name: 'order-paid',
+    template_name: 'order-status',
     recipient_email: order.family_email,
     status: 'pending',
   });
@@ -57,7 +58,7 @@ async function sendOrderPaidEmail(orderId: string) {
       html,
       text,
       purpose: 'transactional',
-      label: 'order-paid',
+      label: 'order-status',
       idempotency_key: messageId,
       queued_at: new Date().toISOString(),
     },

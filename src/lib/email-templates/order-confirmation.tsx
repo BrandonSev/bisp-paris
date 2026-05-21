@@ -1,71 +1,54 @@
 import * as React from 'react'
-import {
-  Body, Container, Head, Heading, Html, Preview, Text, Section, Hr,
-} from '@react-email/components'
+import { Text } from '@react-email/components'
+import { EmailLayout, text } from './_layout'
 import type { TemplateEntry } from './registry'
 
-const SITE_NAME = 'BISP Paris'
+interface Item { name: string; size: string; qty: number; price: number; child: string }
+interface Props { prenom?: string; familyName?: string; orderNumber?: string; items?: Item[]; total?: number }
 
-interface OrderConfirmationProps {
-  firstName?: string
-  orderNumber?: string
-  total?: number
-  shippingLabel?: string
-  paymentLabel?: string
+function OrderConfirmationEmail({ prenom = '', familyName, orderNumber = '', items = [], total = 0 }: Props) {
+  return (
+    <EmailLayout preview={`Commande ${orderNumber} confirmée`} title={`Commande ${orderNumber} confirmée`} familyName={familyName} signatureRole="Commandes">
+      <Text style={text}>Bonjour {prenom},</Text>
+      <Text style={text}>
+        Nous avons bien reçu votre commande <strong>{orderNumber}</strong> sur la boutique BISP. Voici son récapitulatif :
+      </Text>
+      <table width="100%" cellPadding={0} cellSpacing={0} style={{ borderCollapse: 'collapse', margin: '16px 0', fontSize: 14 }}>
+        <thead>
+          <tr>
+            <th align="left" style={{ padding: '8px 0', borderBottom: '2px solid #0a2540' }}>Article</th>
+            <th style={{ padding: '8px 0', borderBottom: '2px solid #0a2540' }}>Qté</th>
+            <th align="right" style={{ padding: '8px 0', borderBottom: '2px solid #0a2540' }}>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((i, idx) => (
+            <tr key={idx}>
+              <td style={{ padding: '8px 0', borderBottom: '1px solid #eee' }}>
+                {i.name}
+                <br />
+                <span style={{ color: '#888', fontSize: 12 }}>Pour {i.child} · Taille {i.size}</span>
+              </td>
+              <td style={{ padding: '8px 0', borderBottom: '1px solid #eee', textAlign: 'center' }}>{i.qty}</td>
+              <td style={{ padding: '8px 0', borderBottom: '1px solid #eee', textAlign: 'right' }}>{(i.qty * i.price).toFixed(2)} €</td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan={2} style={{ padding: '12px 0', fontWeight: 700 }}>Total TTC</td>
+            <td style={{ padding: '12px 0', textAlign: 'right', fontWeight: 700 }}>{total.toFixed(2)} €</td>
+          </tr>
+        </tfoot>
+      </table>
+      <Text style={text}>Vous serez prévenu(e) dès la mise à disposition.</Text>
+    </EmailLayout>
+  )
 }
-
-const OrderConfirmationEmail = ({
-  firstName,
-  orderNumber,
-  total,
-  shippingLabel,
-  paymentLabel,
-}: OrderConfirmationProps) => (
-  <Html lang="fr" dir="ltr">
-    <Head />
-    <Preview>Votre commande {orderNumber ?? ''} est confirmée</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Heading style={h1}>Merci {firstName ?? ''} !</Heading>
-        <Text style={text}>
-          Nous avons bien reçu votre commande <strong>{orderNumber ?? '—'}</strong> sur
-          {' '}{SITE_NAME}.
-        </Text>
-        <Section style={card}>
-          <Text style={row}><strong>Total :</strong> {total !== undefined ? `${total.toFixed(2)} €` : '—'}</Text>
-          {shippingLabel && <Text style={row}><strong>Livraison :</strong> {shippingLabel}</Text>}
-          {paymentLabel && <Text style={row}><strong>Paiement :</strong> {paymentLabel}</Text>}
-        </Section>
-        <Hr style={hr} />
-        <Text style={text}>
-          Vous pouvez suivre l'état de votre commande depuis votre espace
-          <em> Mes commandes</em>.
-        </Text>
-        <Text style={footer}>L'équipe {SITE_NAME}</Text>
-      </Container>
-    </Body>
-  </Html>
-)
 
 export const template = {
   component: OrderConfirmationEmail,
-  subject: (d: Record<string, any>) =>
-    `Commande ${d?.orderNumber ?? ''} confirmée · ${SITE_NAME}`.trim(),
+  subject: (d: Record<string, any>) => `Commande ${d.orderNumber ?? ''} confirmée`,
   displayName: 'Confirmation de commande',
-  previewData: {
-    firstName: 'Marie',
-    orderNumber: 'BISP-2026-0042',
-    total: 124.5,
-    shippingLabel: "Retrait à l'établissement BISP",
-    paymentLabel: 'Carte bancaire',
-  },
+  previewData: { prenom: 'Marie', familyName: 'Dupont', orderNumber: 'BISP-2026-0042', total: 120, items: [{ name: 'Polo BISP marine', size: '12 ans', qty: 2, price: 25, child: 'Léa' }, { name: 'Hoodie BISP', size: 'M', qty: 1, price: 70, child: 'Tom' }] },
 } satisfies TemplateEntry
-
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px', maxWidth: '560px' }
-const h1 = { fontSize: '22px', fontWeight: 'bold' as const, color: '#0c2340', margin: '0 0 20px' }
-const text = { fontSize: '14px', color: '#55575d', lineHeight: '1.5', margin: '0 0 16px' }
-const card = { backgroundColor: '#f5f7fa', borderRadius: '10px', padding: '16px 20px', margin: '16px 0' }
-const row = { fontSize: '14px', color: '#0c2340', margin: '4px 0' }
-const hr = { borderColor: '#e6e8ec', margin: '24px 0' }
-const footer = { fontSize: '12px', color: '#999999', margin: '24px 0 0' }
