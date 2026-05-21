@@ -74,11 +74,7 @@ const SIZE_GROUPS = {
   adulte: ["XS", "S", "M", "L", "XL"],
 } as const;
 
-const ALL_APPAREL_SIZES = [
-  ...SIZE_GROUPS.enfant,
-  ...SIZE_GROUPS.junior,
-  ...SIZE_GROUPS.adulte,
-];
+const ALL_APPAREL_SIZES = [...SIZE_GROUPS.enfant, ...SIZE_GROUPS.junior, ...SIZE_GROUPS.adulte];
 
 /** Construit un mapping taille → prix à partir d'un prix par groupe. */
 function groupPricing(prices: { enfant: number; junior: number; adulte: number }): Record<string, number> {
@@ -100,6 +96,7 @@ const trousseColors: ProductOption = {
   id: "zip",
   label: "Couleur du zip",
   choices: [
+    { value: "bleu-marine", label: "Bleu marine", swatch: "var(--primary)" },
     { value: "teal", label: "Teal", swatch: "var(--teal)" },
     { value: "blanc", label: "Blanc", swatch: "#ffffff" },
   ],
@@ -158,7 +155,10 @@ function BoutiquePage() {
       <SiteHeader schoolName="BISP" />
 
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-border" style={{ background: "var(--gradient-soft)" }}>
+      <section
+        className="relative overflow-hidden border-b border-border"
+        style={{ background: "var(--gradient-soft)" }}
+      >
         <div className="pointer-events-none absolute inset-0 text-primary">
           <ShellMotif className="absolute -left-32 -top-20 h-[500px] w-[500px]" opacity={0.04} />
           <ShellMotif className="absolute -right-40 -bottom-40 h-[600px] w-[600px]" opacity={0.03} />
@@ -231,9 +231,7 @@ function ProductCard({ product }: { product: Product }) {
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
   const priceLabel =
-    minPrice === maxPrice
-      ? `${minPrice.toFixed(2)} €`
-      : `${minPrice.toFixed(2)} – ${maxPrice.toFixed(2)} €`;
+    minPrice === maxPrice ? `${minPrice.toFixed(2)} €` : `${minPrice.toFixed(2)} – ${maxPrice.toFixed(2)} €`;
   const currentPrice = size ? product.pricing[size] : undefined;
 
   const canAdd = !!size && !!child;
@@ -253,9 +251,7 @@ function ProductCard({ product }: { product: Product }) {
       product.productKind === "outer" ? { product: "outer" } : {},
     );
     if (!reco) return null;
-    const match = product.sizes.find(
-      (s) => s.trim().toLowerCase() === reco.row.age.trim().toLowerCase(),
-    );
+    const match = product.sizes.find((s) => s.trim().toLowerCase() === reco.row.age.trim().toLowerCase());
     return match ? { size: match, consistent: reco.consistent } : null;
   }, [selectedChild, product.sizes, product.productKind]);
 
@@ -273,9 +269,7 @@ function ProductCard({ product }: { product: Product }) {
         return choice ? `${o.label}: ${choice.label}` : null;
       })
       .filter(Boolean) as string[];
-    const nameWithOpts = optionLabels.length
-      ? `${product.name} (${optionLabels.join(", ")})`
-      : product.name;
+    const nameWithOpts = optionLabels.length ? `${product.name} (${optionLabels.join(", ")})` : product.name;
     const variantKey = optionLabels.join(", ");
     addToCart({
       productId: variantKey ? `${product.id}::${variantKey}` : product.id,
@@ -297,10 +291,7 @@ function ProductCard({ product }: { product: Product }) {
       <div className="relative aspect-square overflow-hidden bg-secondary">
         {product.id === "trousse" ? (
           <TrousseImage
-            zipColor={
-              product.options?.[0]?.choices.find((c) => c.value === opts["zip"])?.swatch ??
-              "var(--primary)"
-            }
+            zipColor={product.options?.[0]?.choices.find((c) => c.value === opts["zip"])?.swatch ?? "var(--primary)"}
             className="h-full w-full p-8 transition-transform duration-500 group-hover:scale-105 [&>svg]:h-full [&>svg]:w-full"
           />
         ) : (
@@ -351,16 +342,16 @@ function ProductCard({ product }: { product: Product }) {
 
         {/* Pour quel enfant */}
         <div className="mt-4">
-          <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Pour · For
-          </label>
+          <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Pour · For</label>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {kids.map((c) => (
               <button
                 key={c.id}
                 onClick={() => setChild(c.id)}
                 className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${
-                  child === c.id ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-primary/40"
+                  child === c.id
+                    ? "border-primary bg-primary/5 text-foreground"
+                    : "border-border text-muted-foreground hover:border-primary/40"
                 }`}
               >
                 <span className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-semibold bg-primary/15 text-primary">
@@ -388,10 +379,7 @@ function ProductCard({ product }: { product: Product }) {
               Taille · Size
             </label>
             {recommendation && (
-              <SizeBadge
-                size={recommendation.size}
-                variant={product.productKind === "outer" ? "outer" : "default"}
-              />
+              <SizeBadge size={recommendation.size} variant={product.productKind === "outer" ? "outer" : "default"} />
             )}
           </div>
           {recommendation && (
@@ -403,9 +391,18 @@ function ProductCard({ product }: { product: Product }) {
           )}
           {(() => {
             const groups: { label: string; sizes: string[] }[] = [
-              { label: "Enfant", sizes: product.sizes.filter((s) => (SIZE_GROUPS.enfant as readonly string[]).includes(s)) },
-              { label: "Junior", sizes: product.sizes.filter((s) => (SIZE_GROUPS.junior as readonly string[]).includes(s)) },
-              { label: "Adulte", sizes: product.sizes.filter((s) => (SIZE_GROUPS.adulte as readonly string[]).includes(s)) },
+              {
+                label: "Enfant",
+                sizes: product.sizes.filter((s) => (SIZE_GROUPS.enfant as readonly string[]).includes(s)),
+              },
+              {
+                label: "Junior",
+                sizes: product.sizes.filter((s) => (SIZE_GROUPS.junior as readonly string[]).includes(s)),
+              },
+              {
+                label: "Adulte",
+                sizes: product.sizes.filter((s) => (SIZE_GROUPS.adulte as readonly string[]).includes(s)),
+              },
             ].filter((g) => g.sizes.length > 0);
             const ungrouped = product.sizes.filter((s) => !sizeGroupLabel(s));
             return (
@@ -416,9 +413,7 @@ function ProductCard({ product }: { product: Product }) {
                     <div key={g.label}>
                       <div className="mb-1 flex items-center justify-between text-[10px] font-medium text-muted-foreground">
                         <span>{g.label}</span>
-                        {groupPrice !== undefined && (
-                          <span className="tabular-nums">{groupPrice.toFixed(2)} €</span>
-                        )}
+                        {groupPrice !== undefined && <span className="tabular-nums">{groupPrice.toFixed(2)} €</span>}
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {g.sizes.map((s) => (
@@ -429,8 +424,8 @@ function ProductCard({ product }: { product: Product }) {
                               size === s
                                 ? "border-primary bg-primary text-primary-foreground"
                                 : recommendation?.size === s
-                                ? "border-[var(--teal-deep)] bg-[var(--teal)]/10 text-[var(--teal-deep)] ring-1 ring-inset ring-[var(--teal-deep)]/40 hover:bg-[var(--teal)]/15"
-                                : "border-border bg-card text-foreground hover:border-primary/40"
+                                  ? "border-[var(--teal-deep)] bg-[var(--teal)]/10 text-[var(--teal-deep)] ring-1 ring-inset ring-[var(--teal-deep)]/40 hover:bg-[var(--teal)]/15"
+                                  : "border-border bg-card text-foreground hover:border-primary/40"
                             }`}
                           >
                             {s}
@@ -450,8 +445,8 @@ function ProductCard({ product }: { product: Product }) {
                           size === s
                             ? "border-primary bg-primary text-primary-foreground"
                             : recommendation?.size === s
-                            ? "border-[var(--teal-deep)] bg-[var(--teal)]/10 text-[var(--teal-deep)] ring-1 ring-inset ring-[var(--teal-deep)]/40 hover:bg-[var(--teal)]/15"
-                            : "border-border bg-card text-foreground hover:border-primary/40"
+                              ? "border-[var(--teal-deep)] bg-[var(--teal)]/10 text-[var(--teal-deep)] ring-1 ring-inset ring-[var(--teal-deep)]/40 hover:bg-[var(--teal)]/15"
+                              : "border-border bg-card text-foreground hover:border-primary/40"
                         }`}
                       >
                         {s}
