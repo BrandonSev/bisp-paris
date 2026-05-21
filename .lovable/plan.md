@@ -1,4 +1,62 @@
-# Aligner la gestion famille sur le projet Dax
+# Porter l'administration complète du projet Dax vers BISP
+
+## Objectif
+
+Reproduire à l'identique l'espace administrateur du projet « Saint-Jacques de
+Compostelle — Dax » dans BISP : tableau commandes, suivi & expédition,
+gestion des incidents (avec photos), gestion des rôles, et l'espace APEL de
+suivi des familles + relance email.
+
+## État actuel BISP vs cible Dax
+
+| Élément | BISP actuel | Cible Dax |
+|---|---|---|
+| Onglets admin | Commandes / Suivi / Incidents (light) / Rôles (light) | Commandes / Suivi & expédition / Incidents (photos) / Rôles / lien vers APEL |
+| `order_incidents` | id, order_id, type, description, status, created_by, resolution_note, resolved_at | + order_item_id, user_id, incident_type, description, quantity, eligible, photos[], updated_at |
+| Storage `incident-photos` | absent | bucket privé + RLS |
+| Page `/apel` | absente | suivi familles + relance email (admin + apel) |
+| RPC `apel_families_overview` | absente | vue agrégée par famille |
+| `useStore().isApel` | absent | présent |
+| Email `apel-reminder` | absent | template + registry |
+| Server fns | quelques unes | `apel.functions.ts`, `email.functions.ts` (status, incidents, apel) |
+
+## Plan d'exécution
+
+### 1. Migration DB (un seul script)
+
+- Étendre `order_incidents` : `order_item_id uuid`, `user_id uuid`, `incident_type text`, `quantity int default 1`, `eligible boolean default false`, `photos text[] default '{}'`, `updated_at timestamptz default now()`. Conserver les colonnes existantes (compat) ; backfill `incident_type` ← `type`, `user_id` ← `created_by`.
+- Trigger `set_updated_at` sur `order_incidents`.
+- RLS additionnelle : la famille peut INSERT ses propres incidents.
+- Ajouter `delivered_at timestamptz` sur `orders`.
+- Créer le bucket privé `incident-photos` + policies (lecture admin/apel + owner, upload owner).
+- Créer la fonction `public.apel_families_overview(_season_start date)` (SECURITY DEFINER, accessible uniquement aux rôles admin/apel via vérification dans la fonction appelante).
+
+### 2. Code applicatif (port depuis Dax, adapté aux conventions BISP)
+
+Conventions BISP : server fns dans `src/lib/*.functions.ts` (pas `src/server/`),
+middleware déjà câblé via `attachSupabaseAuth` dans `src/start.ts`.
+
+- `src/lib/apel.functions.ts` — `apelListFamilies`, `sendApelReminders`, `setUserRole`, `listRoleAssignments`.
+- Étendre `src/lib/email-helpers.functions.ts` (ou créer `src/lib/admin-email.functions.ts`) avec `sendOrderStatusUpdate`, `sendIncidentUpdate`, `sendIncidentNotifications`.
+- `src/lib/email-templates/apel-reminder.tsx` + enregistrement dans `registry.ts`.
+- `src/lib/store.tsx` — ajouter `isApel` (chargement parallèle du rôle `apel`).
+- `src/routes/admin.tsx` — réécrire pour porter les 4 onglets Dax + modal incident avec photos signées.
+- `src/routes/apel.tsx` — créer la page APEL complète (filtres, recherche, sélection multiple, relance email, export CSV).
+- Adapter les libellés école : `BISP` au lieu de `Saint-Jacques`.
+
+### 3. Vérifications
+
+- Build TanStack ne casse pas (route APEL + admin compilent).
+- Bucket `incident-photos` créé, policies en place.
+- Connexion admin existante → onglets visibles, RPC `apel_families_overview` répond.
+- Le rôle `apel` (déjà présent dans `app_role`) est lu côté store.
+
+## Risques / limites
+
+- Les incidents existants en base BISP (s'il y en a) seront conservés mais avec `incident_type` = ancien `type` et `quantity = 1` par défaut.
+- L'upload de photos d'incident côté famille n'est pas dans ce lot (UI famille inchangée) — la modal admin sait les afficher si des photos sont déposées plus tard.
+- Si vous voulez aussi le formulaire famille de déclaration d'incident avec upload photos, le préciser : c'est un lot suivant.
+
 
 ## État des lieux
 
