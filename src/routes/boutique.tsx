@@ -96,11 +96,8 @@ const trousseColors: ProductOption = {
   id: "zip",
   label: "Couleur du zip",
   choices: [
-    { value: "marine", label: "Marine", swatch: "var(--primary)" },
-    { value: "rouge", label: "Rouge", swatch: "var(--rouge)" },
     { value: "teal", label: "Teal", swatch: "var(--teal)" },
     { value: "blanc", label: "Blanc", swatch: "#ffffff" },
-    { value: "noir", label: "Noir", swatch: "#111111" },
   ],
 };
 
