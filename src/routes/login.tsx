@@ -392,3 +392,43 @@ function Field({ label, icon, children }: { label: string; icon: React.ReactNode
     </div>
   );
 }
+
+function PasswordStrengthMeter({ password }: { password: string }) {
+  const rules = [
+    { label: "8 caractères minimum", test: (p: string) => p.length >= 8 },
+    { label: "1 majuscule", test: (p: string) => /[A-Z]/.test(p) },
+    { label: "1 minuscule", test: (p: string) => /[a-z]/.test(p) },
+    { label: "1 chiffre", test: (p: string) => /[0-9]/.test(p) },
+    { label: "1 caractère spécial", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
+  ];
+
+  const passed = rules.filter((r) => r.test(password)).length;
+  const strength = password.length === 0 ? 0 : passed;
+  const total = rules.length;
+  const pct = (strength / total) * 100;
+
+  const barColor =
+    strength <= 1 ? "bg-red-500" : strength <= 2 ? "bg-orange-500" : strength === 3 ? "bg-yellow-500" : strength === 4 ? "bg-[var(--teal)]" : "bg-green-500";
+
+  return (
+    <div className="mt-2 space-y-2">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div
+          className={`h-full rounded-full transition-all duration-300 ${barColor}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+        {rules.map((rule) => {
+          const ok = rule.test(password);
+          return (
+            <div key={rule.label} className={`flex items-center gap-1.5 text-[11px] ${ok ? "text-green-600" : "text-muted-foreground"}`}>
+              {ok ? <Check className="h-3 w-3 shrink-0" /> : <X className="h-3 w-3 shrink-2" />}
+              <span>{rule.label}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
