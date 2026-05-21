@@ -257,7 +257,7 @@ function ChildGroup({
                   <p className="mt-0.5 text-xs text-muted-foreground">Réf. {item.ref}</p>
                   <p className="mt-2 flex flex-wrap items-center gap-2 text-xs text-foreground/80">
                     Taille <span className="font-semibold">{item.size}</span>
-                    {reco && reco.row.age !== item.size && (
+                    {reco && item.size !== "Unique" && reco.row.age !== item.size && (
                       <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800 ring-1 ring-inset ring-amber-200">
                         Recommandé : {reco.row.age}
                       </span>
