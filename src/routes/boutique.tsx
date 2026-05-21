@@ -206,7 +206,7 @@ function BoutiquePage() {
         </div>
 
         <p className="mt-12 text-center text-xs text-muted-foreground">
-          Besoin d'aide ? Need help ? — <span className="text-foreground font-medium">operations@bisparis.com</span>
+          Besoin d'aide ? Need help ? — <span className="text-foreground font-medium">boutique@franceuniformes.fr</span>
         </p>
       </section>
 

@@ -242,7 +242,7 @@ export function SiteFooter() {
         <div>
           <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">Aide · Help</h4>
           <ul className="mt-4 space-y-2 text-sm text-white/85">
-            <li><Link to="/aide/contact" className="hover:underline">Contact · operations@bisparis.com</Link></li>
+            <li><Link to="/aide/contact" className="hover:underline">Contact · boutique@franceuniformes.fr</Link></li>
             <li><Link to="/aide/livraison" className="hover:underline">Livraison &amp; retours · Shipping</Link></li>
             <li><Link to="/aide/cgv" className="hover:underline">Conditions générales · Terms</Link></li>
             <li><Link to="/aide/mentions-legales" className="hover:underline">Mentions légales · Legal</Link></li>
