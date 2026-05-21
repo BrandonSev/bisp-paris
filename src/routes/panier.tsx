@@ -14,6 +14,7 @@ import type { CheckoutInput } from "@/lib/store";
 import { createPayplugPayment } from "@/lib/payplug.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { sendTransactionalEmail } from "@/lib/email/send";
+import { establishment } from "@/config/featureFlags";
 
 export const Route = createFileRoute("/panier")({
   head: () => ({
