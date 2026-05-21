@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogIn, LogOut, Menu, ShieldCheck, ShoppingBag, User, X } from "lucide-react";
+import { LogIn, LogOut, Menu, ShieldCheck, ShoppingBag, User, Users, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import logo from "@/assets/bisp-logo.svg";
 import franceUniformesWhite from "@/assets/france-uniformes-logo-white.svg";
@@ -13,8 +13,9 @@ interface SiteHeaderProps {
 }
 
 export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHeaderProps) {
-  const { cartCount: storeCount, profile, user, signOut, isAdmin } = useStore();
+  const { cartCount: storeCount, profile, user, signOut, isAdmin, isApel } = useStore();
   const count = cartCount ?? storeCount;
+  const isStaff = isAdmin || isApel;
   const navigate = useNavigate();
   const famName = profile?.family_name || profile?.nom;
   const familyLabel = famName ? `Famille ${famName}` : (user?.email ?? "Mon compte");
@@ -48,11 +49,17 @@ export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHe
 
           {schoolName && user && (
             <nav className="hidden items-center gap-7 text-sm font-medium text-muted-foreground xl:flex">
-              {isAdmin ? (
+              {isAdmin && (
                 <Link to="/admin" className="inline-flex items-center gap-1 transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
                   <ShieldCheck className="h-3.5 w-3.5" /> Administration
                 </Link>
-              ) : (
+              )}
+              {isApel && (
+                <Link to="/apel" className="inline-flex items-center gap-1 transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
+                  <Users className="h-3.5 w-3.5" /> Espace APEL
+                </Link>
+              )}
+              {!isStaff && (
                 <>
                   <Link to="/boutique" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
                     Boutique · Shop
@@ -69,7 +76,7 @@ export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHe
           )}
 
           <div className="flex items-center gap-2">
-            {showAccount && user && !isAdmin && (
+            {showAccount && user && !isStaff && (
               <Link
                 to="/famille"
                 title="Voir et modifier les coordonnées de la famille"
@@ -90,7 +97,7 @@ export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHe
                 <LogOut className="h-4 w-4" />
               </button>
             )}
-            {!isAdmin && user && (
+            {!isStaff && user && (
               <Link
                 to="/panier"
                 className="relative inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground shadow-[var(--shadow-card)] transition-colors hover:bg-primary/90"
@@ -142,11 +149,17 @@ export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHe
         {schoolName && user && menuOpen && (
           <div className="border-t border-border bg-background/95 backdrop-blur-md xl:hidden">
             <nav className="mx-auto flex w-full flex-col gap-1 px-4 py-3 text-sm font-medium sm:px-6">
-              {isAdmin ? (
+              {isAdmin && (
                 <MenuLink to="/admin" onClick={() => setMenuOpen(false)} icon={<ShieldCheck className="h-4 w-4" />}>
                   Administration
                 </MenuLink>
-              ) : (
+              )}
+              {isApel && (
+                <MenuLink to="/apel" onClick={() => setMenuOpen(false)} icon={<Users className="h-4 w-4" />}>
+                  Espace APEL
+                </MenuLink>
+              )}
+              {!isStaff && (
                 <>
                   <MenuLink to="/boutique" onClick={() => setMenuOpen(false)}>Boutique · Shop</MenuLink>
                   <MenuLink to="/enfants" onClick={() => setMenuOpen(false)}>Mes enfants</MenuLink>
