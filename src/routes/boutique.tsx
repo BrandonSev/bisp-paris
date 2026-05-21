@@ -237,6 +237,31 @@ function ProductCard({ product }: { product: Product }) {
   const currentPrice = size ? product.pricing[size] : undefined;
 
   const canAdd = !!size && !!child;
+
+  const selectedChild = kids.find((k) => k.id === child);
+  const recommendation = useMemo(() => {
+    if (!selectedChild) return null;
+    const reco = recommendSize(
+      {
+        hauteur: selectedChild.hauteur,
+        tour: selectedChild.tour,
+        tour_taille: selectedChild.tour_taille,
+        tour_bassin: selectedChild.tour_bassin,
+      },
+      product.productKind === "outer" ? { product: "outer" } : {},
+    );
+    if (!reco) return null;
+    const match = product.sizes.find(
+      (s) => s.trim().toLowerCase() === reco.row.age.trim().toLowerCase(),
+    );
+    return match ? { size: match, consistent: reco.consistent } : null;
+  }, [selectedChild, product.sizes, product.productKind]);
+
+  // Pré-sélectionne la taille recommandée quand l'enfant change.
+  useEffect(() => {
+    if (recommendation) setSize(recommendation.size);
+  }, [recommendation]);
+
   const handleAdd = () => {
     if (!canAdd || currentPrice === undefined) return;
     const selected = kids.find((k) => k.id === child);
