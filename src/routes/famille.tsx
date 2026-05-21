@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Plus, Trash2, Star, Users, Home, Save, Pencil, X } from "lucide-react";
+import { Plus, Trash2, Star, Users, Home, Save, Pencil, X, KeyRound, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useStore } from "@/lib/store";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -47,7 +47,6 @@ function FamillePage() {
 
   // profil famille
   const [familyName, setFamilyName] = useState("");
-  const [codeEtab, setCodeEtab] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/login" });
@@ -55,7 +54,6 @@ function FamillePage() {
 
   useEffect(() => {
     setFamilyName(((profile as any)?.family_name as string) ?? "");
-    setCodeEtab(((profile as any)?.code_etablissement as string) ?? "");
   }, [profile]);
 
   const refresh = async () => {
@@ -141,7 +139,7 @@ function FamillePage() {
 
   const saveProfile = async () => {
     try {
-      await updateProfile({ family_name: familyName, code_etablissement: codeEtab } as any);
+      await updateProfile({ family_name: familyName } as any);
       toast.success("Informations famille enregistrées");
     } catch (e: any) {
       toast.error(e.message ?? "Erreur");
@@ -162,17 +160,34 @@ function FamillePage() {
           <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground">
             <Users className="h-5 w-5 text-primary" /> Identité de la famille
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">Nom de famille affiché et code établissement (si fourni par l'école).</p>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <p className="mt-1 text-sm text-muted-foreground">Nom de famille affiché en titre dans votre espace.</p>
+          <div className="mt-5">
             <Field label="Nom de famille">
               <input value={familyName} onChange={(e) => setFamilyName(e.target.value)} maxLength={80} className={inputCls} />
-            </Field>
-            <Field label="Code établissement (optionnel)">
-              <input value={codeEtab} onChange={(e) => setCodeEtab(e.target.value)} maxLength={40} className={inputCls} />
             </Field>
           </div>
           <div className="mt-5 flex justify-end">
             <button onClick={saveProfile} className={primaryBtn}><Save className="h-4 w-4" /> Enregistrer</button>
+          </div>
+        </section>
+
+        {/* Code établissement (lecture seule) */}
+        <section className="mb-10 rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground">
+            <KeyRound className="h-5 w-5 text-primary" /> Code établissement
+            <Lock className="ml-1 h-3.5 w-3.5 text-muted-foreground" />
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Code transmis par l'école au moment de l'inscription. Cette information est en lecture seule. Pour toute
+            modification, contactez le secrétariat de l'établissement.
+          </p>
+          <div className="mt-5">
+            <input
+              value={((profile as any)?.code_etablissement as string) || "—"}
+              readOnly
+              disabled
+              className="h-11 w-full max-w-sm rounded-lg border border-dashed border-border bg-muted/40 px-3 text-sm font-mono tracking-wider text-foreground"
+            />
           </div>
         </section>
 
