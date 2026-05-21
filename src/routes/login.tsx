@@ -2,6 +2,9 @@ import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-r
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
+  Check,
+  Eye,
+  EyeOff,
   HelpCircle,
   KeyRound,
   Lock,
@@ -10,6 +13,7 @@ import {
   Phone,
   ShieldCheck,
   User as UserIcon,
+  X,
 } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
