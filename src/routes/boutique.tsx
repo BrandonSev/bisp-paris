@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Minus, Plus, ShieldCheck, ShoppingBag, Sparkles, UserPlus } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { RequireAuth } from "@/components/RequireAuth";
 import { AddChildDialog } from "@/components/AddChildDialog";
 import { TrousseImage } from "@/components/TrousseImage";
+import { recommendSize } from "@/lib/sizeRecommendation";
+import { SizeBadge } from "@/components/SizeBadge";
 import poloFront from "@/assets/polo-bisp-marine.svg";
 import poloBack from "@/assets/polo-bisp-blanc.svg";
 import hoodieFront from "@/assets/hoodie-bisp-back.svg";
@@ -50,6 +52,8 @@ type Product = {
   /** options de personnalisation (ex: couleur du zip) */
   options?: ProductOption[];
   category: "Polos" | "Pulls" | "Sweats" | "Chemises" | "T-shirts" | "Accessoires";
+  /** Type de produit pour ajuster la recommandation de taille (ex: hoodie/teddy → +1). */
+  productKind?: "outer";
 };
 
 type ProductOption = {
@@ -119,6 +123,7 @@ const products: Product[] = [
     images: [hoodieFront, hoodieBack],
     sizes: ALL_APPAREL_SIZES,
     category: "Sweats",
+    productKind: "outer",
   },
   {
     id: "teddy-charlie",
@@ -128,6 +133,7 @@ const products: Product[] = [
     images: [teddyFront, teddyBack],
     sizes: ALL_APPAREL_SIZES,
     category: "Pulls",
+    productKind: "outer",
   },
   {
     id: "trousse",
@@ -231,6 +237,31 @@ function ProductCard({ product }: { product: Product }) {
   const currentPrice = size ? product.pricing[size] : undefined;
 
   const canAdd = !!size && !!child;
+
+  const selectedChild = kids.find((k) => k.id === child);
+  const recommendation = useMemo(() => {
+    if (!selectedChild) return null;
+    const reco = recommendSize(
+      {
+        hauteur: selectedChild.hauteur,
+        tour: selectedChild.tour,
+        tour_taille: selectedChild.tour_taille,
+        tour_bassin: selectedChild.tour_bassin,
+      },
+      product.productKind === "outer" ? { product: "outer" } : {},
+    );
+    if (!reco) return null;
+    const match = product.sizes.find(
+      (s) => s.trim().toLowerCase() === reco.row.age.trim().toLowerCase(),
+    );
+    return match ? { size: match, consistent: reco.consistent } : null;
+  }, [selectedChild, product.sizes, product.productKind]);
+
+  // Pré-sélectionne la taille recommandée quand l'enfant change.
+  useEffect(() => {
+    if (recommendation) setSize(recommendation.size);
+  }, [recommendation]);
+
   const handleAdd = () => {
     if (!canAdd || currentPrice === undefined) return;
     const selected = kids.find((k) => k.id === child);
@@ -350,9 +381,24 @@ function ProductCard({ product }: { product: Product }) {
 
         {/* Taille */}
         <div className="mt-3">
-          <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Taille · Size
-          </label>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Taille · Size
+            </label>
+            {recommendation && (
+              <SizeBadge
+                size={recommendation.size}
+                variant={product.productKind === "outer" ? "outer" : "default"}
+              />
+            )}
+          </div>
+          {recommendation && (
+            <p className="mt-1 text-[10px] italic leading-snug text-muted-foreground">
+              {product.productKind === "outer"
+                ? "Recommandation ajustée pour une couche supérieure (pull, hoodie, teddy)."
+                : "Recommandation pour une 1ʳᵉ couche (t-shirt, polo, chemise)."}
+            </p>
+          )}
           {(() => {
             const groups: { label: string; sizes: string[] }[] = [
               { label: "Enfant", sizes: product.sizes.filter((s) => (SIZE_GROUPS.enfant as readonly string[]).includes(s)) },
@@ -380,6 +426,8 @@ function ProductCard({ product }: { product: Product }) {
                             className={`min-w-[2.5rem] rounded-md border px-2 py-1 text-xs font-medium transition-colors ${
                               size === s
                                 ? "border-primary bg-primary text-primary-foreground"
+                                : recommendation?.size === s
+                                ? "border-[var(--teal-deep)] bg-[var(--teal)]/10 text-[var(--teal-deep)] ring-1 ring-inset ring-[var(--teal-deep)]/40 hover:bg-[var(--teal)]/15"
                                 : "border-border bg-card text-foreground hover:border-primary/40"
                             }`}
                           >
@@ -399,6 +447,8 @@ function ProductCard({ product }: { product: Product }) {
                         className={`min-w-[2.5rem] rounded-md border px-2 py-1 text-xs font-medium transition-colors ${
                           size === s
                             ? "border-primary bg-primary text-primary-foreground"
+                            : recommendation?.size === s
+                            ? "border-[var(--teal-deep)] bg-[var(--teal)]/10 text-[var(--teal-deep)] ring-1 ring-inset ring-[var(--teal-deep)]/40 hover:bg-[var(--teal)]/15"
                             : "border-border bg-card text-foreground hover:border-primary/40"
                         }`}
                       >
