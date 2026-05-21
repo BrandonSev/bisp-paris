@@ -67,11 +67,12 @@ function LoginPage() {
   const [mode, setMode] = useState<"signin" | "signup">(search.mode === "signup" ? "signup" : "signin");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { user, authLoading } = useStore();
+  const { user, authLoading, isAdmin, isApel } = useStore();
+  const roleHome = isAdmin ? "/admin" : isApel ? "/apel" : "/boutique";
 
   useEffect(() => {
-    if (!authLoading && user) navigate({ to: "/boutique" });
-  }, [user, authLoading, navigate]);
+    if (!authLoading && user) navigate({ to: roleHome });
+  }, [user, authLoading, navigate, roleHome]);
 
   // form state
   const [civilite, setCivilite] = useState<"M." | "Mme" | "Autre">("Mme");
@@ -95,7 +96,7 @@ function LoginPage() {
     setLoading(false);
     if (error) { toast.error(error.message === "Invalid login credentials" ? "Identifiants invalides" : error.message); return; }
     toast.success("Bienvenue !");
-    navigate({ to: "/boutique" });
+    navigate({ to: roleHome });
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
