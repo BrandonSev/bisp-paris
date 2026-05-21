@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, ShieldCheck, ShoppingBag, User } from "lucide-react";
+import { LogIn, LogOut, Menu, ShieldCheck, ShoppingBag, User, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import logo from "@/assets/bisp-logo.svg";
 import franceUniformesWhite from "@/assets/france-uniformes-logo-white.svg";
 import { useStore } from "@/lib/store";
@@ -15,7 +16,15 @@ export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHe
   const { cartCount: storeCount, profile, user, signOut, isAdmin } = useStore();
   const count = cartCount ?? storeCount;
   const navigate = useNavigate();
-  const familyLabel = profile?.nom ? `Famille ${profile.nom}` : (user?.email ?? "Mon compte");
+  const famName = profile?.family_name || profile?.nom;
+  const familyLabel = famName ? `Famille ${famName}` : (user?.email ?? "Mon compte");
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
   const handleSignOut = async () => {
     await signOut();
     toast.success("Déconnecté");
@@ -37,36 +46,38 @@ export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHe
             </div>
           </Link>
 
-          {schoolName && (
-            <nav className="hidden items-center gap-7 text-sm font-medium text-muted-foreground md:flex">
-              <Link to="/boutique" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
-                Boutique · Shop
-              </Link>
-              <Link to="/enfants" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
-                Mes enfants
-              </Link>
-              <Link to="/commandes" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
-                Mes commandes
-              </Link>
-              <Link to="/famille" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
-                Ma famille
-              </Link>
-              {isAdmin && (
+          {schoolName && user && (
+            <nav className="hidden items-center gap-7 text-sm font-medium text-muted-foreground xl:flex">
+              {isAdmin ? (
                 <Link to="/admin" className="inline-flex items-center gap-1 transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
-                  <ShieldCheck className="h-3.5 w-3.5" /> Admin
+                  <ShieldCheck className="h-3.5 w-3.5" /> Administration
                 </Link>
+              ) : (
+                <>
+                  <Link to="/boutique" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
+                    Boutique · Shop
+                  </Link>
+                  <Link to="/enfants" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
+                    Mes enfants
+                  </Link>
+                  <Link to="/commandes" className="transition-colors hover:text-primary" activeProps={{ className: "text-primary" }}>
+                    Mes commandes
+                  </Link>
+                </>
               )}
             </nav>
           )}
 
           <div className="flex items-center gap-2">
-            {showAccount && user && (
+            {showAccount && user && !isAdmin && (
               <Link
                 to="/famille"
-                className="hidden h-10 items-center gap-2 rounded-full border border-border bg-card px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted sm:inline-flex"
+                title="Voir et modifier les coordonnées de la famille"
+                className="inline-flex h-10 items-center gap-2 rounded-full border border-border px-3 text-sm font-medium transition-colors bg-cyan-500 text-slate-100 hover:bg-cyan-600 hover:text-white"
+                activeProps={{ className: "ring-2 ring-primary/40" }}
               >
                 <User className="h-4 w-4" />
-                <span className="max-w-[160px] truncate">{familyLabel}</span>
+                <span className="max-w-[120px] truncate sm:max-w-[160px]">{familyLabel}</span>
               </Link>
             )}
             {showAccount && user && (
@@ -74,27 +85,114 @@ export function SiteHeader({ schoolName, cartCount, showAccount = true }: SiteHe
                 type="button"
                 onClick={handleSignOut}
                 title="Se déconnecter"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:text-[var(--rouge)] hover:bg-muted"
+                className="hidden h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:text-[var(--rouge)] hover:bg-muted xl:inline-flex"
               >
                 <LogOut className="h-4 w-4" />
               </button>
             )}
-            <Link
-              to="/panier"
-              className="relative inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground shadow-[var(--shadow-card)] transition-colors hover:bg-primary/90"
-            >
-              <ShoppingBag className="h-4 w-4" />
-              <span className="hidden sm:inline">Panier</span>
-              {count > 0 && (
-                <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--rouge)] px-1.5 text-[11px] font-semibold text-white">
-                  {count}
-                </span>
-              )}
-            </Link>
+            {!isAdmin && user && (
+              <Link
+                to="/panier"
+                className="relative inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground shadow-[var(--shadow-card)] transition-colors hover:bg-primary/90"
+              >
+                <ShoppingBag className="h-4 w-4" />
+                <span className="hidden xl:inline">Panier</span>
+                {count > 0 && (
+                  <span className="absolute -right-1.5 -top-1.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-[var(--rouge)] px-1.5 text-[12px] font-bold text-white shadow-md ring-2 ring-white">
+                    {count}
+                  </span>
+                )}
+              </Link>
+            )}
+            {!user && (
+              <>
+                <Link
+                  to="/login"
+                  title="Se connecter"
+                  className="inline-flex h-10 items-center gap-2 rounded-full border border-primary/30 bg-card px-3 text-sm font-medium text-primary transition-colors hover:bg-primary/5 sm:px-4"
+                >
+                  <LogIn className="h-4 w-4" />
+                  <span>Connexion</span>
+                </Link>
+                <Link
+                  to="/login"
+                  search={{ mode: "signup" } as never}
+                  title="Créer un espace famille"
+                  className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-3 text-sm font-medium text-primary-foreground shadow-[var(--shadow-card)] transition-colors hover:bg-primary/90 sm:px-4"
+                >
+                  <User className="h-4 w-4" />
+                  <span>Inscription</span>
+                </Link>
+              </>
+            )}
+            {schoolName && user && (
+              <button
+                type="button"
+                onClick={() => setMenuOpen((v) => !v)}
+                aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+                aria-expanded={menuOpen}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-foreground hover:bg-muted xl:hidden"
+              >
+                {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+            )}
           </div>
         </div>
+
+        {schoolName && user && menuOpen && (
+          <div className="border-t border-border bg-background/95 backdrop-blur-md xl:hidden">
+            <nav className="mx-auto flex w-full flex-col gap-1 px-4 py-3 text-sm font-medium sm:px-6">
+              {isAdmin ? (
+                <MenuLink to="/admin" onClick={() => setMenuOpen(false)} icon={<ShieldCheck className="h-4 w-4" />}>
+                  Administration
+                </MenuLink>
+              ) : (
+                <>
+                  <MenuLink to="/boutique" onClick={() => setMenuOpen(false)}>Boutique · Shop</MenuLink>
+                  <MenuLink to="/enfants" onClick={() => setMenuOpen(false)}>Mes enfants</MenuLink>
+                  <MenuLink to="/commandes" onClick={() => setMenuOpen(false)}>Mes commandes</MenuLink>
+                  <MenuLink to="/famille" onClick={() => setMenuOpen(false)} icon={<User className="h-4 w-4" />}>
+                    {familyLabel}
+                  </MenuLink>
+                  <div className="my-2 h-px bg-border" />
+                </>
+              )}
+              <button
+                type="button"
+                onClick={() => { setMenuOpen(false); handleSignOut(); }}
+                className="mt-1 inline-flex h-11 items-center gap-2 rounded-lg px-3 text-left text-foreground hover:bg-muted hover:text-[var(--rouge)]"
+              >
+                <LogOut className="h-4 w-4" /> Se déconnecter
+              </button>
+            </nav>
+          </div>
+        )}
       </header>
     </>
+  );
+}
+
+function MenuLink({
+  to,
+  onClick,
+  icon,
+  children,
+}: {
+  to: string;
+  onClick: () => void;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      className="inline-flex h-11 items-center gap-2 rounded-lg px-3 text-foreground hover:bg-muted"
+      activeProps={{ className: "bg-primary/10 text-primary" }}
+    >
+      {icon}
+      <span className="truncate">{children}</span>
+    </Link>
   );
 }
 
