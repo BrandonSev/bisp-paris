@@ -248,12 +248,18 @@ export type Database = {
           code_postal: string | null
           created_at: string
           email: string | null
+          has_alt_shipping: boolean
           id: string
-          is_default_shipping: boolean
-          lien: string | null
+          is_primary: boolean
+          is_shipping_default: boolean
           nom: string
           position: number
           prenom: string
+          role: string | null
+          shipping_adresse: string | null
+          shipping_code_postal: string | null
+          shipping_label: string | null
+          shipping_ville: string | null
           telephone: string | null
           updated_at: string
           user_id: string
@@ -265,12 +271,18 @@ export type Database = {
           code_postal?: string | null
           created_at?: string
           email?: string | null
+          has_alt_shipping?: boolean
           id?: string
-          is_default_shipping?: boolean
-          lien?: string | null
+          is_primary?: boolean
+          is_shipping_default?: boolean
           nom: string
           position?: number
           prenom: string
+          role?: string | null
+          shipping_adresse?: string | null
+          shipping_code_postal?: string | null
+          shipping_label?: string | null
+          shipping_ville?: string | null
           telephone?: string | null
           updated_at?: string
           user_id: string
@@ -282,12 +294,18 @@ export type Database = {
           code_postal?: string | null
           created_at?: string
           email?: string | null
+          has_alt_shipping?: boolean
           id?: string
-          is_default_shipping?: boolean
-          lien?: string | null
+          is_primary?: boolean
+          is_shipping_default?: boolean
           nom?: string
           position?: number
           prenom?: string
+          role?: string | null
+          shipping_adresse?: string | null
+          shipping_code_postal?: string | null
+          shipping_label?: string | null
+          shipping_ville?: string | null
           telephone?: string | null
           updated_at?: string
           user_id?: string
