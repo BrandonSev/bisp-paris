@@ -14,6 +14,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PanierRouteImport } from './routes/panier'
 import { Route as MotDePasseOublieRouteImport } from './routes/mot-de-passe-oublie'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as FamilleRouteImport } from './routes/famille'
 import { Route as EnfantsRouteImport } from './routes/enfants'
 import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as BoutiqueRouteImport } from './routes/boutique'
@@ -61,6 +62,11 @@ const MotDePasseOublieRoute = MotDePasseOublieRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FamilleRoute = FamilleRouteImport.update({
+  id: '/famille',
+  path: '/famille',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EnfantsRoute = EnfantsRouteImport.update({
@@ -189,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/boutique': typeof BoutiqueRoute
   '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRouteWithChildren
+  '/famille': typeof FamilleRoute
   '/login': typeof LoginRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
@@ -219,6 +226,7 @@ export interface FileRoutesByTo {
   '/boutique': typeof BoutiqueRoute
   '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRouteWithChildren
+  '/famille': typeof FamilleRoute
   '/login': typeof LoginRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
@@ -250,6 +258,7 @@ export interface FileRoutesById {
   '/boutique': typeof BoutiqueRoute
   '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRouteWithChildren
+  '/famille': typeof FamilleRoute
   '/login': typeof LoginRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/panier': typeof PanierRoute
@@ -282,6 +291,7 @@ export interface FileRouteTypes {
     | '/boutique'
     | '/commandes'
     | '/enfants'
+    | '/famille'
     | '/login'
     | '/mot-de-passe-oublie'
     | '/panier'
@@ -312,6 +322,7 @@ export interface FileRouteTypes {
     | '/boutique'
     | '/commandes'
     | '/enfants'
+    | '/famille'
     | '/login'
     | '/mot-de-passe-oublie'
     | '/panier'
@@ -342,6 +353,7 @@ export interface FileRouteTypes {
     | '/boutique'
     | '/commandes'
     | '/enfants'
+    | '/famille'
     | '/login'
     | '/mot-de-passe-oublie'
     | '/panier'
@@ -373,6 +385,7 @@ export interface RootRouteChildren {
   BoutiqueRoute: typeof BoutiqueRoute
   CommandesRoute: typeof CommandesRoute
   EnfantsRoute: typeof EnfantsRouteWithChildren
+  FamilleRoute: typeof FamilleRoute
   LoginRoute: typeof LoginRoute
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   PanierRoute: typeof PanierRoute
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/famille': {
+      id: '/famille'
+      path: '/famille'
+      fullPath: '/famille'
+      preLoaderRoute: typeof FamilleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/enfants': {
@@ -615,6 +635,7 @@ const rootRouteChildren: RootRouteChildren = {
   BoutiqueRoute: BoutiqueRoute,
   CommandesRoute: CommandesRoute,
   EnfantsRoute: EnfantsRouteWithChildren,
+  FamilleRoute: FamilleRoute,
   LoginRoute: LoginRoute,
   MotDePasseOublieRoute: MotDePasseOublieRoute,
   PanierRoute: PanierRoute,
