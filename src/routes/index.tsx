@@ -203,7 +203,7 @@ function Index() {
         </div>
       </section>
 
-      {/* Citation directrice */}
+      {/* Slogan école · placeholder */}
       <section className="border-t border-border bg-primary text-white">
         <div className="mx-auto max-w-4xl px-4 py-20 text-center sm:px-6 lg:px-8">
           <span
@@ -217,12 +217,11 @@ function Index() {
             className="mt-4 text-xl font-light leading-relaxed text-white/90 sm:text-2xl"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            L'uniforme BISP incarne l'esprit de notre école : excellence, simplicité et sentiment d'appartenance à une
-            communauté bilingue et internationale.
+            Votre slogan à venir
           </blockquote>
           <div className="mx-auto mt-8 h-px w-12 bg-[var(--rouge)]" />
           <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/55">
-            Direction · Bilingual International School of Paris
+            Direction · Nom de votre école
           </p>
         </div>
       </section>
