@@ -2,6 +2,9 @@ import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-r
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
+  Check,
+  Eye,
+  EyeOff,
   HelpCircle,
   KeyRound,
   Lock,
@@ -10,6 +13,7 @@ import {
   Phone,
   ShieldCheck,
   User as UserIcon,
+  X,
 } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -78,6 +82,7 @@ function LoginPage() {
   const [codePostal, setCodePostal] = useState("");
   const [ville, setVille] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [codeEtablissement, setCodeEtablissement] = useState("");
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -282,9 +287,33 @@ function LoginPage() {
                     <input type="text" required value={ville} onChange={(e) => setVille(e.target.value)} maxLength={100} placeholder="Paris" className={inputCls} />
                   </Field>
                 </div>
-                <Field label="Mot de passe (8 car. min.)" icon={<Lock className="h-4 w-4" />}>
-                  <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} className={inputCls} />
-                </Field>
+                <div>
+                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Mot de passe (8 car. min.)
+                  </label>
+                  <div className="relative mt-1.5">
+                    <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      <Lock className="h-4 w-4" />
+                    </span>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      minLength={8}
+                      className={`${inputCls} pr-10`}
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShowPassword((s) => !s)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <PasswordStrengthMeter password={password} />
+                </div>
                 <div>
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -359,6 +388,46 @@ function Field({ label, icon, children }: { label: string; icon: React.ReactNode
       <div className="relative mt-1.5">
         <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">{icon}</span>
         {children}
+      </div>
+    </div>
+  );
+}
+
+function PasswordStrengthMeter({ password }: { password: string }) {
+  const rules = [
+    { label: "8 caractères minimum", test: (p: string) => p.length >= 8 },
+    { label: "1 majuscule", test: (p: string) => /[A-Z]/.test(p) },
+    { label: "1 minuscule", test: (p: string) => /[a-z]/.test(p) },
+    { label: "1 chiffre", test: (p: string) => /[0-9]/.test(p) },
+    { label: "1 caractère spécial", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
+  ];
+
+  const passed = rules.filter((r) => r.test(password)).length;
+  const strength = password.length === 0 ? 0 : passed;
+  const total = rules.length;
+  const pct = (strength / total) * 100;
+
+  const barColor =
+    strength <= 1 ? "bg-red-500" : strength <= 2 ? "bg-orange-500" : strength === 3 ? "bg-yellow-500" : strength === 4 ? "bg-[var(--teal)]" : "bg-green-500";
+
+  return (
+    <div className="mt-2 space-y-2">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div
+          className={`h-full rounded-full transition-all duration-300 ${barColor}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+        {rules.map((rule) => {
+          const ok = rule.test(password);
+          return (
+            <div key={rule.label} className={`flex items-center gap-1.5 text-[11px] ${ok ? "text-green-600" : "text-muted-foreground"}`}>
+              {ok ? <Check className="h-3 w-3 shrink-0" /> : <X className="h-3 w-3 shrink-2" />}
+              <span>{rule.label}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
