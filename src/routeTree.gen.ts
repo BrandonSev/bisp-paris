@@ -18,6 +18,7 @@ import { Route as FamilleRouteImport } from './routes/famille'
 import { Route as EnfantsRouteImport } from './routes/enfants'
 import { Route as CommandesRouteImport } from './routes/commandes'
 import { Route as BoutiqueRouteImport } from './routes/boutique'
+import { Route as ApelRouteImport } from './routes/apel'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PaiementSuccesRouteImport } from './routes/paiement.succes'
@@ -82,6 +83,11 @@ const CommandesRoute = CommandesRouteImport.update({
 const BoutiqueRoute = BoutiqueRouteImport.update({
   id: '/boutique',
   path: '/boutique',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApelRoute = ApelRouteImport.update({
+  id: '/apel',
+  path: '/apel',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -192,6 +198,7 @@ const ApiPublicPayplugWebhookRoute = ApiPublicPayplugWebhookRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/apel': typeof ApelRoute
   '/boutique': typeof BoutiqueRoute
   '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRouteWithChildren
@@ -223,6 +230,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/apel': typeof ApelRoute
   '/boutique': typeof BoutiqueRoute
   '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRouteWithChildren
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/apel': typeof ApelRoute
   '/boutique': typeof BoutiqueRoute
   '/commandes': typeof CommandesRoute
   '/enfants': typeof EnfantsRouteWithChildren
@@ -288,6 +297,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/apel'
     | '/boutique'
     | '/commandes'
     | '/enfants'
@@ -319,6 +329,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/apel'
     | '/boutique'
     | '/commandes'
     | '/enfants'
@@ -350,6 +361,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/apel'
     | '/boutique'
     | '/commandes'
     | '/enfants'
@@ -382,6 +394,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  ApelRoute: typeof ApelRoute
   BoutiqueRoute: typeof BoutiqueRoute
   CommandesRoute: typeof CommandesRoute
   EnfantsRoute: typeof EnfantsRouteWithChildren
@@ -473,6 +486,13 @@ declare module '@tanstack/react-router' {
       path: '/boutique'
       fullPath: '/boutique'
       preLoaderRoute: typeof BoutiqueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/apel': {
+      id: '/apel'
+      path: '/apel'
+      fullPath: '/apel'
+      preLoaderRoute: typeof ApelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -632,6 +652,7 @@ const EnfantsRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  ApelRoute: ApelRoute,
   BoutiqueRoute: BoutiqueRoute,
   CommandesRoute: CommandesRoute,
   EnfantsRoute: EnfantsRouteWithChildren,
