@@ -12,6 +12,7 @@ export const underConstructionRoutes: Record<string, string | false> = {
   "/aide/contact": "Contact",
   "/aide/livraison": "Livraison & retours",
   "/aide/guide-tailles": "Guide des tailles",
+  "/boutique": "Boutique",
   // Exemples — décommentez pour activer :
   // "/aide/cgv": "Conditions Générales de Vente",
   // "/aide/cgu": "Conditions générales d'utilisation",
