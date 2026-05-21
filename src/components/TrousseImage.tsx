@@ -31,7 +31,6 @@ export function TrousseImage({ zipColor, className }: Props) {
     };
     svg.querySelectorAll('[id^="zip"]').forEach((el) => {
       apply(el);
-      el.querySelectorAll("path, rect, circle, polygon").forEach(apply);
     });
     return new XMLSerializer().serializeToString(svg);
   }, [zipColor]);
