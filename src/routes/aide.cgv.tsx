@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPageShell } from "@/components/LegalPageShell";
+import { UnderConstructionPage } from "@/components/UnderConstructionPage";
+import { isUnderConstruction } from "@/config/underConstruction";
 
 export const Route = createFileRoute("/aide/cgv")({
   head: () => ({
@@ -16,6 +18,8 @@ export const Route = createFileRoute("/aide/cgv")({
 });
 
 function CgvPage() {
+  const wipTitle = isUnderConstruction("/aide/cgv");
+  if (wipTitle) return <UnderConstructionPage title={wipTitle} />;
   return (
     <LegalPageShell title="Conditions Générales de Vente — Familles" updatedAt="mai 2026">
       <h2>1. Vendeur</h2>
