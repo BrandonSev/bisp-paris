@@ -1,22 +1,20 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, useCallback } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
-import { Download, ShieldCheck, AlertCircle, Users, Package, Trash2, CheckCircle2, Plus } from "lucide-react";
+import { Download, ShieldCheck, AlertTriangle, X, ImageIcon, Truck, Save, Users, Trash2 } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { RequireAuth } from "@/components/RequireAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { sendTransactionalEmail } from "@/lib/email/send";
+import { listRoleAssignments, setUserRole } from "@/lib/apel.functions";
+
+const SCHOOL_LABEL = "BISP Paris";
+const SCHOOL_SHORT = "BISP";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Espace administrateur — BISP" }] }),
+  head: () => ({ meta: [{ title: `Espace administrateur — ${SCHOOL_SHORT}` }] }),
   component: () => (
     <RequireAuth>
       <AdminPage />
@@ -46,23 +44,49 @@ type Row = {
   line_total: number;
 };
 
-const ORDER_STATUSES = [
+type Incident = {
+  id: string;
+  order_id: string;
+  order_item_id: string | null;
+  user_id: string | null;
+  incident_type: string;
+  description: string;
+  quantity: number;
+  eligible: boolean;
+  status: string;
+  photos: string[];
+  created_at: string;
+  updated_at: string;
+  order_number?: string;
+  family_nom?: string;
+  family_prenom?: string;
+  family_email?: string;
+  product_name?: string;
+  product_ref?: string;
+  size?: string;
+  child_prenom?: string;
+  child_nom?: string;
+};
+
+const INCIDENT_TYPE_LABELS: Record<string, string> = {
+  malfacon: "Malfaçon / défaut de fabrication",
+  erreur_envoi: "Erreur d'envoi",
+  article_manquant: "Article manquant",
+  taille_inadaptee: "Taille inadaptée",
+  usure_normale: "Usure normale",
+  autre: "Autre",
+};
+
+const INCIDENT_STATUSES = [
+  "À traiter",
   "En attente",
-  "Payée",
-  "En préparation",
-  "Prête",
-  "Expédiée",
-  "Livrée",
-  "Annulée",
+  "En cours de traitement",
+  "Résolu",
+  "Non éligible",
+  "Refusé",
 ] as const;
 
-const INCIDENT_TYPES = [
-  { value: "taille", label: "Problème de taille" },
-  { value: "qualite", label: "Défaut qualité" },
-  { value: "manquant", label: "Article manquant" },
-  { value: "livraison", label: "Problème livraison" },
-  { value: "autre", label: "Autre" },
-];
+const ORDER_STATUSES = ["En attente", "Paiement validé", "En préparation", "Expédiée", "Livrée", "Annulée"] as const;
 
 type OrderRow = {
   id: string;
@@ -70,51 +94,64 @@ type OrderRow = {
   created_at: string;
   status: string;
   total_amount: number;
-  family_nom: string;
   family_prenom: string;
+  family_nom: string;
   family_email: string;
+  shipping_mode: string;
   tracking_number: string | null;
   tracking_carrier: string | null;
-};
-
-type Incident = {
-  id: string;
-  order_id: string;
-  type: string;
-  description: string;
-  status: string;
-  created_at: string;
-  resolved_at: string | null;
-  resolution_note: string | null;
-  order_number?: string;
-  family_nom?: string;
-};
-
-type RoleUser = {
-  user_id: string;
-  email: string;
-  nom: string;
-  prenom: string;
-  roles: string[];
 };
 
 function AdminPage() {
   const { isAdmin, authLoading } = useStore();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [incidentsLoading, setIncidentsLoading] = useState(true);
+  const [tab, setTab] = useState<"orders" | "tracking" | "incidents" | "roles">("orders");
+  const [orderRows, setOrderRows] = useState<OrderRow[]>([]);
+  const [orderRowsLoading, setOrderRowsLoading] = useState(true);
+  const [openIncident, setOpenIncident] = useState<Incident | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isAdmin) { setLoading(false); return; }
+    if (!isAdmin) {
+      setLoading(false);
+      setIncidentsLoading(false);
+      setOrderRowsLoading(false);
+      return;
+    }
+    (async () => {
+      const { data, error } = await supabase
+        .from("orders")
+        .select(
+          "id, order_number, created_at, status, total_amount, family_prenom, family_nom, family_email, shipping_mode, tracking_number, tracking_carrier",
+        )
+        .order("created_at", { ascending: false });
+      if (error) {
+        toast.error(error.message);
+        setOrderRowsLoading(false);
+        return;
+      }
+      setOrderRows((data ?? []) as OrderRow[]);
+      setOrderRowsLoading(false);
+    })();
     (async () => {
       const { data, error } = await supabase
         .from("order_items")
-        .select(`
+        .select(
+          `
           child_prenom, child_nom, child_classe, child_section,
-          product_name, product_ref, variant, size, quantity, unit_price, line_total,
+          product_name, product_ref, size, quantity, unit_price, line_total,
           orders!inner ( order_number, created_at, status, family_civilite, family_nom, family_prenom, family_email, family_telephone )
-        `)
+        `,
+        )
         .order("created_at", { foreignTable: "orders", ascending: false });
-      if (error) { toast.error(error.message); setLoading(false); return; }
+      if (error) {
+        toast.error(error.message);
+        setLoading(false);
+        return;
+      }
       const flat: Row[] = (data ?? []).map((r: any) => ({
         order_number: r.orders.order_number,
         created_at: r.orders.created_at,
@@ -130,7 +167,7 @@ function AdminPage() {
         child_section: r.child_section,
         product_name: r.product_name,
         product_ref: r.product_ref,
-        variant: r.variant,
+        variant: null,
         size: r.size,
         quantity: r.quantity,
         unit_price: Number(r.unit_price),
@@ -139,47 +176,173 @@ function AdminPage() {
       setRows(flat);
       setLoading(false);
     })();
+    (async () => {
+      const { data, error } = await supabase
+        .from("order_incidents")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) {
+        toast.error(error.message);
+        setIncidentsLoading(false);
+        return;
+      }
+      const rawIncidents = (data ?? []) as any[];
+      const orderIds = Array.from(new Set(rawIncidents.map((r) => r.order_id).filter(Boolean)));
+      const itemIds = Array.from(new Set(rawIncidents.map((r) => r.order_item_id).filter(Boolean)));
+      const [{ data: ordersData }, { data: itemsData }] = await Promise.all([
+        orderIds.length
+          ? supabase
+              .from("orders")
+              .select("id, order_number, family_nom, family_prenom, family_email")
+              .in("id", orderIds)
+          : Promise.resolve({ data: [] as any[] }),
+        itemIds.length
+          ? supabase
+              .from("order_items")
+              .select("id, product_name, product_ref, size, child_prenom, child_nom")
+              .in("id", itemIds)
+          : Promise.resolve({ data: [] as any[] }),
+      ]);
+      const ordersMap = new Map<string, any>((ordersData ?? []).map((o: any) => [o.id, o]));
+      const itemsMap = new Map<string, any>((itemsData ?? []).map((it: any) => [it.id, it]));
+      const flat: Incident[] = rawIncidents.map((r: any) => ({
+        id: r.id,
+        order_id: r.order_id,
+        order_item_id: r.order_item_id,
+        user_id: r.user_id,
+        incident_type: r.incident_type ?? r.type ?? "autre",
+        description: r.description,
+        quantity: r.quantity ?? 1,
+        eligible: r.eligible ?? false,
+        status: r.status,
+        photos: r.photos ?? [],
+        created_at: r.created_at,
+        updated_at: r.updated_at ?? r.created_at,
+        order_number: ordersMap.get(r.order_id)?.order_number,
+        family_nom: ordersMap.get(r.order_id)?.family_nom,
+        family_prenom: ordersMap.get(r.order_id)?.family_prenom,
+        family_email: ordersMap.get(r.order_id)?.family_email,
+        product_name: itemsMap.get(r.order_item_id)?.product_name,
+        product_ref: itemsMap.get(r.order_item_id)?.product_ref,
+        size: itemsMap.get(r.order_item_id)?.size,
+        child_prenom: itemsMap.get(r.order_item_id)?.child_prenom,
+        child_nom: itemsMap.get(r.order_item_id)?.child_nom,
+      }));
+      setIncidents(flat);
+      setIncidentsLoading(false);
+    })();
   }, [isAdmin]);
+
+  const updateIncidentStatus = async (incident: Incident, status: string) => {
+    const { error } = await supabase.from("order_incidents").update({ status }).eq("id", incident.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setIncidents((prev) => prev.map((i) => (i.id === incident.id ? { ...i, status } : i)));
+    if (openIncident?.id === incident.id) setOpenIncident({ ...openIncident, status });
+    if (incident.family_email) {
+      void sendTransactionalEmail({
+        templateName: "incident-resolution",
+        recipientEmail: incident.family_email,
+        idempotencyKey: `incident-${incident.id}-${status}`,
+        templateData: {
+          prenom: incident.family_prenom ?? "",
+          familyName: incident.family_nom,
+          orderNumber: incident.order_number ?? "",
+          status,
+          productName: incident.product_name ?? "—",
+        },
+      });
+    }
+    toast.success("Statut mis à jour");
+  };
+
+  const updateOrder = async (
+    orderId: string,
+    patch: Partial<Pick<OrderRow, "status" | "tracking_number" | "tracking_carrier">>,
+    notify: boolean,
+  ) => {
+    const update: any = { ...patch };
+    if (patch.status === "Livrée") update.delivered_at = new Date().toISOString();
+    const { error } = await supabase.from("orders").update(update).eq("id", orderId);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setOrderRows((prev) => prev.map((o) => (o.id === orderId ? { ...o, ...patch } : o)));
+    if (notify) {
+      const order = orderRows.find((o) => o.id === orderId);
+      if (order?.family_email) {
+        const merged = { ...order, ...patch };
+        void sendTransactionalEmail({
+          templateName: "order-status",
+          recipientEmail: order.family_email,
+          idempotencyKey: `order-status-${orderId}-${merged.status}-${merged.tracking_number ?? ""}`,
+          templateData: {
+            prenom: order.family_prenom,
+            familyName: order.family_nom,
+            orderNumber: order.order_number,
+            status: merged.status,
+            trackingNumber: merged.tracking_number,
+            trackingCarrier: merged.tracking_carrier,
+          },
+        });
+      }
+    }
+    toast.success("Commande mise à jour");
+  };
+
+  const getSignedPhotoUrl = async (path: string): Promise<string | null> => {
+    const { data, error } = await supabase.storage.from("incident-photos").createSignedUrl(path, 60 * 60);
+    if (error) return null;
+    return data.signedUrl;
+  };
 
   const exportExcel = () => {
     const data = rows.map((r) => ({
       "N° Commande": r.order_number,
-      "Date": new Date(r.created_at).toLocaleDateString("fr-FR"),
-      "Statut": r.status,
-      "Famille": `${r.family_civilite ?? ""} ${r.family_prenom} ${r.family_nom}`.trim(),
-      "Email": r.family_email,
-      "Téléphone": r.family_telephone ?? "",
-      "Enfant": `${r.child_prenom} ${r.child_nom}`,
-      "Classe": r.child_classe ?? "",
-      "Section": r.child_section ?? "",
-      "Produit": r.product_name,
-      "Référence": r.product_ref,
-      "Variante": r.variant ?? "",
-      "Taille": r.size,
-      "Quantité": r.quantity,
+      Date: new Date(r.created_at).toLocaleDateString("fr-FR"),
+      Statut: r.status,
+      Famille: `${r.family_civilite ?? ""} ${r.family_prenom} ${r.family_nom}`.trim(),
+      Email: r.family_email,
+      Téléphone: r.family_telephone ?? "",
+      Enfant: `${r.child_prenom} ${r.child_nom}`,
+      Classe: r.child_classe ?? "",
+      Section: r.child_section ?? "",
+      Produit: r.product_name,
+      Référence: r.product_ref,
+      Taille: r.size,
+      Quantité: r.quantity,
       "Prix unitaire (€)": r.unit_price,
       "Total ligne (€)": r.line_total,
     }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Commandes BISP");
+    XLSX.utils.book_append_sheet(wb, ws, "Commandes");
     const fname = `commandes-bisp-${new Date().toISOString().slice(0, 10)}.xlsx`;
     XLSX.writeFile(wb, fname);
     toast.success(`Export généré : ${fname}`);
   };
 
   if (authLoading) {
-    return <div className="min-h-screen bg-background"><SiteHeader schoolName="BISP" /></div>;
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <SiteHeader schoolName={SCHOOL_LABEL} />
+      </div>
+    );
   }
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-background">
-        <SiteHeader schoolName="BISP" />
+      <div className="flex min-h-screen flex-col bg-background">
+        <SiteHeader schoolName={SCHOOL_LABEL} />
         <section className="mx-auto max-w-3xl px-4 py-20 text-center">
           <ShieldCheck className="mx-auto h-10 w-10 text-muted-foreground" />
           <h1 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">Accès réservé</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Cette page est réservée aux administrateurs BISP.</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Cette page est réservée aux administrateurs de l'établissement.
+          </p>
         </section>
         <SiteFooter />
       </div>
@@ -189,17 +352,20 @@ function AdminPage() {
   const totalCommandes = new Set(rows.map((r) => r.order_number)).size;
   const totalArticles = rows.reduce((s, r) => s + r.quantity, 0);
   const totalCA = rows.reduce((s, r) => s + r.line_total, 0);
+  const incidentsEnAttente = incidents.filter((i) => ["À traiter", "En attente"].includes(i.status)).length;
 
   return (
-    <div className="min-h-screen bg-background">
-      <SiteHeader schoolName="BISP" />
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen flex-col bg-background">
+      <SiteHeader schoolName={SCHOOL_LABEL} />
+      <section className="mx-auto max-w-6xl w-full px-4 pt-6 pb-12 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--teal-deep)]">
-              <span className="h-px w-6 bg-[var(--rouge)]" /> Espace administrateur
+            <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+              <span className="h-px w-6 bg-primary/40" /> Espace administrateur
             </span>
-            <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Commandes fournisseur</h1>
+            <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              Commandes fournisseur
+            </h1>
             <p className="mt-1 text-sm text-muted-foreground">Vue consolidée de toutes les commandes familles.</p>
           </div>
           <button
@@ -217,73 +383,365 @@ function AdminPage() {
           <Stat label="Total" value={`${totalCA.toFixed(2)} €`} />
         </div>
 
-        <Tabs defaultValue="commandes" className="mt-8">
-          <TabsList>
-            <TabsTrigger value="commandes"><Package className="mr-2 h-4 w-4" />Commandes</TabsTrigger>
-            <TabsTrigger value="statuts"><CheckCircle2 className="mr-2 h-4 w-4" />Statuts</TabsTrigger>
-            <TabsTrigger value="incidents"><AlertCircle className="mr-2 h-4 w-4" />Incidents</TabsTrigger>
-            <TabsTrigger value="roles"><Users className="mr-2 h-4 w-4" />Rôles APEL</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="commandes" className="mt-4">
-        <div className="overflow-hidden rounded-2xl border border-border bg-card">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-secondary text-left text-xs uppercase tracking-wider text-muted-foreground">
-                <tr>
-                  <th className="px-4 py-3">Commande</th>
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3">Famille</th>
-                  <th className="px-4 py-3">Enfant</th>
-                  <th className="px-4 py-3">Classe</th>
-                  <th className="px-4 py-3">Produit</th>
-                  <th className="px-4 py-3">Variante</th>
-                  <th className="px-4 py-3">Taille</th>
-                  <th className="px-4 py-3 text-right">Qté</th>
-                  <th className="px-4 py-3 text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {loading && (
-                  <tr><td colSpan={10} className="px-4 py-6 text-center text-muted-foreground">Chargement…</td></tr>
-                )}
-                {!loading && rows.length === 0 && (
-                  <tr><td colSpan={10} className="px-4 py-6 text-center text-muted-foreground">Aucune commande pour le moment.</td></tr>
-                )}
-                {rows.map((r, i) => (
-                  <tr key={i} className="hover:bg-muted/30">
-                    <td className="px-4 py-3 font-medium text-foreground">{r.order_number}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{new Date(r.created_at).toLocaleDateString("fr-FR")}</td>
-                    <td className="px-4 py-3">{r.family_prenom} {r.family_nom}</td>
-                    <td className="px-4 py-3">{r.child_prenom} {r.child_nom}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{r.child_classe ?? "—"}</td>
-                    <td className="px-4 py-3">{r.product_name} <span className="text-xs text-muted-foreground">({r.product_ref})</span></td>
-                    <td className="px-4 py-3 text-muted-foreground">{r.variant ?? "—"}</td>
-                    <td className="px-4 py-3">{r.size}</td>
-                    <td className="px-4 py-3 text-right">{r.quantity}</td>
-                    <td className="px-4 py-3 text-right font-semibold">{r.line_total.toFixed(2)} €</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="mt-8 inline-flex flex-wrap rounded-xl border border-border bg-card p-1">
+          <button
+            onClick={() => setTab("orders")}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === "orders" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            Commandes
+          </button>
+          <button
+            onClick={() => setTab("tracking")}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === "tracking" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            Suivi & expédition
+          </button>
+          <button
+            onClick={() => setTab("incidents")}
+            className={`relative rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === "incidents" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            Incidents
+            {incidentsEnAttente > 0 && (
+              <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-semibold text-destructive-foreground">
+                {incidentsEnAttente}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setTab("roles")}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === "roles" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            <Users className="mr-1 inline h-3.5 w-3.5" /> Rôles
+          </button>
+          <Link
+            to="/apel"
+            className="inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Users className="mr-1 inline h-3.5 w-3.5" /> Espace APEL
+          </Link>
         </div>
-          </TabsContent>
 
-          <TabsContent value="statuts" className="mt-4">
-            <StatusManager />
-          </TabsContent>
+        {tab === "orders" && (
+          <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-card">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-secondary text-left text-xs uppercase tracking-wider text-muted-foreground">
+                  <tr>
+                    <th className="px-4 py-3">Commande</th>
+                    <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3">Famille</th>
+                    <th className="px-4 py-3">Enfant</th>
+                    <th className="px-4 py-3">Classe</th>
+                    <th className="px-4 py-3">Produit</th>
+                    <th className="px-4 py-3">Taille</th>
+                    <th className="px-4 py-3 text-right">Qté</th>
+                    <th className="px-4 py-3 text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {loading && (
+                    <tr>
+                      <td colSpan={9} className="px-4 py-6 text-center text-muted-foreground">
+                        Chargement…
+                      </td>
+                    </tr>
+                  )}
+                  {!loading && rows.length === 0 && (
+                    <tr>
+                      <td colSpan={9} className="px-4 py-6 text-center text-muted-foreground">
+                        Aucune commande pour le moment.
+                      </td>
+                    </tr>
+                  )}
+                  {rows.map((r, i) => (
+                    <tr key={i} className="hover:bg-muted/30">
+                      <td className="px-4 py-3 font-medium text-foreground">{r.order_number}</td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {new Date(r.created_at).toLocaleDateString("fr-FR")}
+                      </td>
+                      <td className="px-4 py-3">
+                        {r.family_prenom} {r.family_nom}
+                      </td>
+                      <td className="px-4 py-3">
+                        {r.child_prenom} {r.child_nom}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">{r.child_classe ?? "—"}</td>
+                      <td className="px-4 py-3">
+                        {r.product_name} <span className="text-xs text-muted-foreground">({r.product_ref})</span>
+                      </td>
+                      <td className="px-4 py-3">{r.size}</td>
+                      <td className="px-4 py-3 text-right">{r.quantity}</td>
+                      <td className="px-4 py-3 text-right font-semibold">{r.line_total.toFixed(2)} €</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
-          <TabsContent value="incidents" className="mt-4">
-            <IncidentsManager />
-          </TabsContent>
+        {tab === "tracking" && <TrackingPanel orders={orderRows} loading={orderRowsLoading} onUpdate={updateOrder} />}
 
-          <TabsContent value="roles" className="mt-4">
-            <RolesManager />
-          </TabsContent>
-        </Tabs>
+        {tab === "incidents" && (
+          <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-card">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-secondary text-left text-xs uppercase tracking-wider text-muted-foreground">
+                  <tr>
+                    <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3">Commande</th>
+                    <th className="px-4 py-3">Famille</th>
+                    <th className="px-4 py-3">Produit</th>
+                    <th className="px-4 py-3">Type</th>
+                    <th className="px-4 py-3 text-center">Qté</th>
+                    <th className="px-4 py-3">Éligibilité</th>
+                    <th className="px-4 py-3">Statut</th>
+                    <th className="px-4 py-3"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {incidentsLoading && (
+                    <tr>
+                      <td colSpan={9} className="px-4 py-6 text-center text-muted-foreground">
+                        Chargement…
+                      </td>
+                    </tr>
+                  )}
+                  {!incidentsLoading && incidents.length === 0 && (
+                    <tr>
+                      <td colSpan={9} className="px-4 py-6 text-center text-muted-foreground">
+                        Aucun incident déclaré.
+                      </td>
+                    </tr>
+                  )}
+                  {incidents.map((inc) => (
+                    <tr key={inc.id} className="hover:bg-muted/30">
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {new Date(inc.created_at).toLocaleDateString("fr-FR")}
+                      </td>
+                      <td className="px-4 py-3 font-medium text-foreground">{inc.order_number ?? "—"}</td>
+                      <td className="px-4 py-3">
+                        {inc.family_prenom} {inc.family_nom}
+                      </td>
+                      <td className="px-4 py-3">
+                        {inc.product_name ?? "—"}{" "}
+                        {inc.size ? <span className="text-xs text-muted-foreground">({inc.size})</span> : null}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {INCIDENT_TYPE_LABELS[inc.incident_type] ?? inc.incident_type}
+                      </td>
+                      <td className="px-4 py-3 text-center">{inc.quantity}</td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${inc.eligible ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}
+                        >
+                          {inc.eligible ? "Éligible" : "Non éligible"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <select
+                          value={inc.status}
+                          onChange={(e) => updateIncidentStatus(inc, e.target.value)}
+                          className="h-8 rounded-md border border-border bg-background px-2 text-xs"
+                        >
+                          {INCIDENT_STATUSES.map((s) => (
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          onClick={() => setOpenIncident(inc)}
+                          className="text-xs font-semibold text-primary hover:underline"
+                        >
+                          Détails
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {tab === "roles" && <RolesPanel />}
       </section>
+
+      {openIncident && (
+        <IncidentDetailsModal
+          incident={openIncident}
+          onClose={() => setOpenIncident(null)}
+          onStatusChange={(s) => updateIncidentStatus(openIncident, s)}
+          onPreviewPhoto={async (p) => {
+            const url = await getSignedPhotoUrl(p);
+            if (url) setPhotoPreview(url);
+            else toast.error("Photo introuvable");
+          }}
+        />
+      )}
+      {photoPreview && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setPhotoPreview(null)}
+        >
+          <img src={photoPreview} alt="Preuve incident" className="max-h-[90vh] max-w-[90vw] rounded-lg" />
+        </div>
+      )}
+
       <SiteFooter />
+    </div>
+  );
+}
+
+function RolesPanel() {
+  const [assignments, setAssignments] = useState<
+    Array<{ user_id: string; role: string; email: string; prenom: string; nom: string; created_at: string }>
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState<"apel" | "admin">("apel");
+  const [busy, setBusy] = useState(false);
+
+  const refresh = async () => {
+    setLoading(true);
+    const r = await listRoleAssignments({ data: {} });
+    if (r.ok) setAssignments(r.assignments as any);
+    else toast.error(r.error || "Erreur de chargement");
+    setLoading(false);
+  };
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  const grant = async () => {
+    if (!email.trim()) return;
+    setBusy(true);
+    const r = await setUserRole({ data: { email: email.trim(), role, action: "grant" } });
+    setBusy(false);
+    if (!r.ok)
+      toast.error(
+        r.error === "user_not_found"
+          ? "Utilisateur introuvable (l'email doit déjà avoir un compte)"
+          : r.error || "Erreur",
+      );
+    else {
+      toast.success(`Rôle ${role} attribué à ${email}`);
+      setEmail("");
+      refresh();
+    }
+  };
+
+  const revoke = async (userEmail: string, userRole: string) => {
+    if (!confirm(`Retirer le rôle ${userRole} à ${userEmail} ?`)) return;
+    const r = await setUserRole({ data: { email: userEmail, role: userRole as "apel" | "admin", action: "revoke" } });
+    if (!r.ok) toast.error(r.error || "Erreur");
+    else {
+      toast.success("Rôle retiré");
+      refresh();
+    }
+  };
+
+  return (
+    <div className="mt-4 space-y-6">
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <h2 className="text-base font-semibold text-foreground">Attribuer un rôle</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Le rôle <strong>APEL</strong> permet à l'Association des Parents d'Élèves de consulter la liste des familles
+          et leur statut de commande, et d'envoyer des relances par email. L'utilisateur doit déjà avoir créé son
+          compte.
+        </p>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
+          <div className="flex-1 min-w-[220px]">
+            <label className="text-xs font-medium text-muted-foreground">Email du compte</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="parent@example.com"
+              className="mt-1 h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:border-primary focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">Rôle</label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value as "apel" | "admin")}
+              className="mt-1 h-10 rounded-lg border border-border bg-background px-3 text-sm"
+            >
+              <option value="apel">APEL</option>
+              <option value="admin">Administrateur</option>
+            </select>
+          </div>
+          <button
+            onClick={grant}
+            disabled={busy || !email.trim()}
+            className="h-10 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          >
+            Attribuer
+          </button>
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-secondary text-left text-xs uppercase tracking-wider text-muted-foreground">
+              <tr>
+                <th className="px-4 py-3">Utilisateur</th>
+                <th className="px-4 py-3">Email</th>
+                <th className="px-4 py-3">Rôle</th>
+                <th className="px-4 py-3">Attribué le</th>
+                <th className="px-4 py-3"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {loading && (
+                <tr>
+                  <td colSpan={5} className="px-4 py-6 text-center text-muted-foreground">
+                    Chargement…
+                  </td>
+                </tr>
+              )}
+              {!loading && assignments.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-4 py-6 text-center text-muted-foreground">
+                    Aucun rôle attribué.
+                  </td>
+                </tr>
+              )}
+              {assignments.map((a) => (
+                <tr key={`${a.user_id}-${a.role}`} className="hover:bg-muted/30">
+                  <td className="px-4 py-3 font-medium">
+                    {a.prenom} {a.nom}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">{a.email}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${a.role === "admin" ? "bg-primary/15 text-primary" : "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"}`}
+                    >
+                      {a.role}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {new Date(a.created_at).toLocaleDateString("fr-FR")}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => revoke(a.email, a.role)}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-destructive hover:underline"
+                    >
+                      <Trash2 className="h-3 w-3" /> Retirer
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
@@ -297,368 +755,266 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-// ============================================================
-// Onglet : Gestion des statuts de commande
-// ============================================================
-function StatusManager() {
-  const [orders, setOrders] = useState<OrderRow[]>([]);
-  const [loading, setLoading] = useState(true);
+function IncidentDetailsModal({
+  incident,
+  onClose,
+  onStatusChange,
+  onPreviewPhoto,
+}: {
+  incident: Incident;
+  onClose: () => void;
+  onStatusChange: (status: string) => void;
+  onPreviewPhoto: (path: string) => void;
+}) {
+  const [thumbs, setThumbs] = useState<Record<string, string>>({});
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("orders")
-      .select("id, order_number, created_at, status, total_amount, family_nom, family_prenom, family_email, tracking_number, tracking_carrier")
-      .order("created_at", { ascending: false });
-    if (error) { toast.error(error.message); setLoading(false); return; }
-    setOrders((data as any[]).map((o) => ({ ...o, total_amount: Number(o.total_amount) })));
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const updateStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("orders").update({ status }).eq("id", id);
-    if (error) return toast.error(error.message);
-    setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status } : o));
-    toast.success("Statut mis à jour");
-  };
-
-  const updateTracking = async (id: string, tracking_number: string, tracking_carrier: string) => {
-    const { error } = await supabase.from("orders").update({ tracking_number, tracking_carrier }).eq("id", id);
-    if (error) return toast.error(error.message);
-    setOrders((prev) => prev.map((o) => o.id === id ? { ...o, tracking_number, tracking_carrier } : o));
-    toast.success("Suivi enregistré");
-  };
-
-  if (loading) return <p className="text-sm text-muted-foreground">Chargement…</p>;
-  if (orders.length === 0) return <p className="text-sm text-muted-foreground">Aucune commande.</p>;
+  useEffect(() => {
+    (async () => {
+      const map: Record<string, string> = {};
+      await Promise.all(
+        (incident.photos ?? []).map(async (p) => {
+          const { data } = await supabase.storage.from("incident-photos").createSignedUrl(p, 60 * 60);
+          if (data?.signedUrl) map[p] = data.signedUrl;
+        }),
+      );
+      setThumbs(map);
+    })();
+  }, [incident.id, incident.photos]);
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
+      <div
+        className="w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
+              <AlertTriangle className="h-4 w-4" /> Incident
+            </div>
+            <h2 className="mt-1 text-lg font-semibold text-foreground">
+              {INCIDENT_TYPE_LABELS[incident.incident_type] ?? incident.incident_type}
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Commande {incident.order_number} — déclaré le {new Date(incident.created_at).toLocaleDateString("fr-FR")}
+            </p>
+          </div>
+          <button onClick={onClose} className="rounded-md p-1 text-muted-foreground hover:bg-muted">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="space-y-4 px-6 py-5 text-sm">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field
+              label="Famille"
+              value={`${incident.family_prenom ?? ""} ${incident.family_nom ?? ""}`.trim() || "—"}
+            />
+            <Field label="Email" value={incident.family_email ?? "—"} />
+            <Field label="Enfant" value={`${incident.child_prenom ?? ""} ${incident.child_nom ?? ""}`.trim() || "—"} />
+            <Field
+              label="Produit"
+              value={`${incident.product_name ?? "—"} · Taille ${incident.size ?? "—"} · Qté ${incident.quantity}`}
+            />
+            <Field
+              label="Éligibilité"
+              value={incident.eligible ? "Éligible à un remboursement / échange" : "Non éligible"}
+            />
+            <div>
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Statut</div>
+              <select
+                value={incident.status}
+                onChange={(e) => onStatusChange(e.target.value)}
+                className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+              >
+                {INCIDENT_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div>
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Description</div>
+            <p className="mt-1 whitespace-pre-wrap rounded-lg border border-border bg-muted/30 p-3 text-sm">
+              {incident.description}
+            </p>
+          </div>
+          <div>
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Photos ({incident.photos?.length ?? 0})
+            </div>
+            {incident.photos && incident.photos.length > 0 ? (
+              <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
+                {incident.photos.map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => onPreviewPhoto(p)}
+                    className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-muted"
+                  >
+                    {thumbs[p] ? (
+                      <img
+                        src={thumbs[p]}
+                        alt="Preuve"
+                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                        <ImageIcon className="h-5 w-5" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-1 text-xs text-muted-foreground">Aucune photo jointe.</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="mt-1 text-sm text-foreground">{value}</div>
+    </div>
+  );
+}
+
+function TrackingPanel({
+  orders,
+  loading,
+  onUpdate,
+}: {
+  orders: OrderRow[];
+  loading: boolean;
+  onUpdate: (
+    orderId: string,
+    patch: Partial<Pick<OrderRow, "status" | "tracking_number" | "tracking_carrier">>,
+    notify: boolean,
+  ) => Promise<void>;
+}) {
+  const [drafts, setDrafts] = useState<Record<string, { tracking_number: string; tracking_carrier: string }>>({});
+
+  const draftFor = (o: OrderRow) =>
+    drafts[o.id] ?? {
+      tracking_number: o.tracking_number ?? "",
+      tracking_carrier: o.tracking_carrier ?? "",
+    };
+
+  const setDraft = (id: string, patch: Partial<{ tracking_number: string; tracking_carrier: string }>) =>
+    setDrafts((prev) => ({ ...prev, [id]: { ...draftFor(orders.find((o) => o.id === id)!), ...patch } }));
+
+  return (
+    <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-card">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-secondary text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="px-4 py-3">Commande</th>
               <th className="px-4 py-3">Famille</th>
-              <th className="px-4 py-3">Date</th>
-              <th className="px-4 py-3 text-right">Total</th>
+              <th className="px-4 py-3">Mode</th>
               <th className="px-4 py-3">Statut</th>
-              <th className="px-4 py-3">Suivi</th>
+              <th className="px-4 py-3">Transporteur</th>
+              <th className="px-4 py-3">N° de suivi</th>
+              <th className="px-4 py-3 text-right">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {orders.map((o) => (
-              <tr key={o.id} className="hover:bg-muted/30">
-                <td className="px-4 py-3 font-medium">{o.order_number}</td>
-                <td className="px-4 py-3">{o.family_prenom} {o.family_nom}<div className="text-xs text-muted-foreground">{o.family_email}</div></td>
-                <td className="px-4 py-3 text-muted-foreground">{new Date(o.created_at).toLocaleDateString("fr-FR")}</td>
-                <td className="px-4 py-3 text-right font-semibold">{o.total_amount.toFixed(2)} €</td>
-                <td className="px-4 py-3">
-                  <Select value={o.status} onValueChange={(v) => updateStatus(o.id, v)}>
-                    <SelectTrigger className="h-9 w-44"><SelectValue /></SelectTrigger>
-                    <SelectContent>{ORDER_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                  </Select>
-                </td>
-                <td className="px-4 py-3">
-                  <TrackingForm
-                    initialNumber={o.tracking_number ?? ""}
-                    initialCarrier={o.tracking_carrier ?? ""}
-                    onSave={(n, c) => updateTracking(o.id, n, c)}
-                  />
+            {loading && (
+              <tr>
+                <td colSpan={7} className="px-4 py-6 text-center text-muted-foreground">
+                  Chargement…
                 </td>
               </tr>
-            ))}
+            )}
+            {!loading && orders.length === 0 && (
+              <tr>
+                <td colSpan={7} className="px-4 py-6 text-center text-muted-foreground">
+                  Aucune commande.
+                </td>
+              </tr>
+            )}
+            {orders.map((o) => {
+              const d = draftFor(o);
+              return (
+                <tr key={o.id} className="hover:bg-muted/30">
+                  <td className="px-4 py-3 font-medium text-foreground">
+                    {o.order_number}
+                    <div className="text-[11px] text-muted-foreground">
+                      {new Date(o.created_at).toLocaleDateString("fr-FR")} · {Number(o.total_amount).toFixed(2)} €
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    {o.family_prenom} {o.family_nom}
+                    <div className="text-[11px] text-muted-foreground">{o.family_email}</div>
+                  </td>
+                  <td className="px-4 py-3 text-xs">
+                    {o.shipping_mode === "pickup" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5">
+                        Retrait
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5">
+                        <Truck className="h-3 w-3" /> Domicile
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <select
+                      value={o.status}
+                      onChange={(e) => onUpdate(o.id, { status: e.target.value }, true)}
+                      className="h-8 rounded-md border border-border bg-background px-2 text-xs"
+                    >
+                      {ORDER_STATUSES.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      value={d.tracking_carrier}
+                      onChange={(e) => setDraft(o.id, { tracking_carrier: e.target.value })}
+                      placeholder="Colissimo, Chronopost…"
+                      className="h-8 w-32 rounded-md border border-border bg-background px-2 text-xs"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      value={d.tracking_number}
+                      onChange={(e) => setDraft(o.id, { tracking_number: e.target.value })}
+                      placeholder="N° de suivi"
+                      className="h-8 w-40 rounded-md border border-border bg-background px-2 text-xs font-mono"
+                    />
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() =>
+                        onUpdate(
+                          o.id,
+                          {
+                            tracking_number: d.tracking_number || null,
+                            tracking_carrier: d.tracking_carrier || null,
+                          },
+                          true,
+                        )
+                      }
+                      className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-[11px] font-semibold text-primary-foreground hover:bg-primary/90"
+                    >
+                      <Save className="h-3 w-3" /> Enregistrer
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
-      </div>
-    </div>
-  );
-}
-
-function TrackingForm({ initialNumber, initialCarrier, onSave }: { initialNumber: string; initialCarrier: string; onSave: (n: string, c: string) => void }) {
-  const [n, setN] = useState(initialNumber);
-  const [c, setC] = useState(initialCarrier);
-  return (
-    <div className="flex items-center gap-2">
-      <Input value={c} onChange={(e) => setC(e.target.value)} placeholder="Transporteur" className="h-9 w-28" />
-      <Input value={n} onChange={(e) => setN(e.target.value)} placeholder="N° suivi" className="h-9 w-36" />
-      <Button size="sm" variant="outline" onClick={() => onSave(n.trim(), c.trim())}>OK</Button>
-    </div>
-  );
-}
-
-// ============================================================
-// Onglet : Gestion des incidents
-// ============================================================
-function IncidentsManager() {
-  const [incidents, setIncidents] = useState<Incident[]>([]);
-  const [orders, setOrders] = useState<{ id: string; order_number: string; family_nom: string }[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "open" | "resolved">("open");
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    const [{ data: incData, error: incErr }, { data: ordData }] = await Promise.all([
-      supabase
-        .from("order_incidents")
-        .select("*, orders!inner(order_number, family_nom)")
-        .order("created_at", { ascending: false }),
-      supabase.from("orders").select("id, order_number, family_nom").order("created_at", { ascending: false }),
-    ]);
-    if (incErr) { toast.error(incErr.message); setLoading(false); return; }
-    setIncidents((incData as any[]).map((i) => ({
-      ...i,
-      order_number: i.orders?.order_number,
-      family_nom: i.orders?.family_nom,
-    })));
-    setOrders((ordData ?? []) as any);
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const resolve = async (id: string, note: string) => {
-    const { error } = await supabase
-      .from("order_incidents")
-      .update({ status: "resolved", resolved_at: new Date().toISOString(), resolution_note: note || null })
-      .eq("id", id);
-    if (error) return toast.error(error.message);
-    toast.success("Incident résolu");
-    load();
-  };
-
-  const remove = async (id: string) => {
-    const { error } = await supabase.from("order_incidents").delete().eq("id", id);
-    if (error) return toast.error(error.message);
-    toast.success("Incident supprimé");
-    load();
-  };
-
-  const filtered = incidents.filter((i) => filter === "all" ? true : i.status === filter);
-
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-2">
-          {(["open", "resolved", "all"] as const).map((f) => (
-            <Button key={f} variant={filter === f ? "default" : "outline"} size="sm" onClick={() => setFilter(f)}>
-              {f === "open" ? "Ouverts" : f === "resolved" ? "Résolus" : "Tous"}
-            </Button>
-          ))}
-        </div>
-        <NewIncidentDialog orders={orders} onCreated={load} />
-      </div>
-
-      {loading && <p className="text-sm text-muted-foreground">Chargement…</p>}
-      {!loading && filtered.length === 0 && <p className="text-sm text-muted-foreground">Aucun incident.</p>}
-
-      <div className="space-y-3">
-        {filtered.map((inc) => (
-          <div key={inc.id} className="rounded-2xl border border-border bg-card p-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant={inc.status === "open" ? "destructive" : "secondary"}>
-                    {inc.status === "open" ? "Ouvert" : "Résolu"}
-                  </Badge>
-                  <Badge variant="outline">{INCIDENT_TYPES.find((t) => t.value === inc.type)?.label ?? inc.type}</Badge>
-                  <span className="text-sm font-medium">{inc.order_number}</span>
-                  <span className="text-xs text-muted-foreground">{inc.family_nom}</span>
-                  <span className="text-xs text-muted-foreground">· {new Date(inc.created_at).toLocaleDateString("fr-FR")}</span>
-                </div>
-                <p className="mt-2 text-sm">{inc.description}</p>
-                {inc.resolution_note && (
-                  <p className="mt-2 text-xs text-muted-foreground"><strong>Résolution :</strong> {inc.resolution_note}</p>
-                )}
-              </div>
-              <div className="flex gap-2">
-                {inc.status === "open" && <ResolveDialog onResolve={(note) => resolve(inc.id, note)} />}
-                <Button size="icon" variant="ghost" onClick={() => remove(inc.id)}><Trash2 className="h-4 w-4" /></Button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function NewIncidentDialog({ orders, onCreated }: { orders: { id: string; order_number: string; family_nom: string }[]; onCreated: () => void }) {
-  const [open, setOpen] = useState(false);
-  const [orderId, setOrderId] = useState("");
-  const [type, setType] = useState("autre");
-  const [description, setDescription] = useState("");
-
-  const submit = async () => {
-    if (!orderId || !description.trim()) return toast.error("Commande et description requises");
-    const { data: { user } } = await supabase.auth.getUser();
-    const { error } = await supabase.from("order_incidents").insert({
-      order_id: orderId, type, description: description.trim(), created_by: user?.id,
-    });
-    if (error) return toast.error(error.message);
-    toast.success("Incident créé");
-    setOpen(false); setOrderId(""); setType("autre"); setDescription("");
-    onCreated();
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button size="sm"><Plus className="mr-1 h-4 w-4" />Nouvel incident</Button></DialogTrigger>
-      <DialogContent>
-        <DialogHeader><DialogTitle>Signaler un incident</DialogTitle></DialogHeader>
-        <div className="space-y-3">
-          <div>
-            <label className="text-xs font-medium text-muted-foreground">Commande</label>
-            <Select value={orderId} onValueChange={setOrderId}>
-              <SelectTrigger><SelectValue placeholder="Sélectionner…" /></SelectTrigger>
-              <SelectContent>
-                {orders.map((o) => <SelectItem key={o.id} value={o.id}>{o.order_number} — {o.family_nom}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="text-xs font-medium text-muted-foreground">Type</label>
-            <Select value={type} onValueChange={setType}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>{INCIDENT_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="text-xs font-medium text-muted-foreground">Description</label>
-            <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
-          <Button onClick={submit}>Créer</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function ResolveDialog({ onResolve }: { onResolve: (note: string) => void }) {
-  const [open, setOpen] = useState(false);
-  const [note, setNote] = useState("");
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild><Button size="sm" variant="outline"><CheckCircle2 className="mr-1 h-4 w-4" />Résoudre</Button></DialogTrigger>
-      <DialogContent>
-        <DialogHeader><DialogTitle>Résoudre l'incident</DialogTitle></DialogHeader>
-        <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Note de résolution (optionnel)" rows={4} />
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
-          <Button onClick={() => { onResolve(note); setOpen(false); setNote(""); }}>Confirmer</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// ============================================================
-// Onglet : Gestion des rôles APEL
-// ============================================================
-function RolesManager() {
-  const [users, setUsers] = useState<RoleUser[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    const [{ data: profiles, error: pErr }, { data: roles, error: rErr }] = await Promise.all([
-      supabase.from("profiles").select("id, email, nom, prenom"),
-      supabase.from("user_roles").select("user_id, role"),
-    ]);
-    if (pErr || rErr) { toast.error((pErr || rErr)!.message); setLoading(false); return; }
-    const byUser = new Map<string, string[]>();
-    (roles ?? []).forEach((r: any) => {
-      const list = byUser.get(r.user_id) ?? [];
-      list.push(r.role);
-      byUser.set(r.user_id, list);
-    });
-    setUsers((profiles ?? []).map((p: any) => ({
-      user_id: p.id, email: p.email, nom: p.nom, prenom: p.prenom,
-      roles: byUser.get(p.id) ?? [],
-    })));
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const toggleRole = async (userId: string, role: "apel" | "admin", currentlyHas: boolean) => {
-    if (currentlyHas) {
-      const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", role);
-      if (error) return toast.error(error.message);
-      toast.success(`Rôle ${role} retiré`);
-    } else {
-      const { error } = await supabase.from("user_roles").insert({ user_id: userId, role });
-      if (error) return toast.error(error.message);
-      toast.success(`Rôle ${role} attribué`);
-    }
-    load();
-  };
-
-  const filtered = users.filter((u) => {
-    if (!search.trim()) return true;
-    const q = search.toLowerCase();
-    return u.email?.toLowerCase().includes(q) || u.nom?.toLowerCase().includes(q) || u.prenom?.toLowerCase().includes(q);
-  });
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <Input
-          placeholder="Rechercher par nom ou email…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
-        />
-        <p className="text-xs text-muted-foreground">
-          {users.length} utilisateurs · {users.filter((u) => u.roles.includes("apel")).length} APEL · {users.filter((u) => u.roles.includes("admin")).length} admins
-        </p>
-      </div>
-
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-secondary text-left text-xs uppercase tracking-wider text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3">Famille</th>
-                <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">Rôles actuels</th>
-                <th className="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {loading && <tr><td colSpan={4} className="px-4 py-6 text-center text-muted-foreground">Chargement…</td></tr>}
-              {!loading && filtered.length === 0 && <tr><td colSpan={4} className="px-4 py-6 text-center text-muted-foreground">Aucun utilisateur.</td></tr>}
-              {filtered.map((u) => {
-                const hasApel = u.roles.includes("apel");
-                const hasAdmin = u.roles.includes("admin");
-                return (
-                  <tr key={u.user_id} className="hover:bg-muted/30">
-                    <td className="px-4 py-3 font-medium">{u.prenom} {u.nom}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{u.email}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap gap-1">
-                        {hasAdmin && <Badge>Admin</Badge>}
-                        {hasApel && <Badge variant="secondary">APEL</Badge>}
-                        {!hasAdmin && !hasApel && <span className="text-xs text-muted-foreground">—</span>}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <Button size="sm" variant={hasApel ? "outline" : "default"} onClick={() => toggleRole(u.user_id, "apel", hasApel)}>
-                        {hasApel ? "Retirer APEL" : "Donner APEL"}
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   );
