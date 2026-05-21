@@ -82,6 +82,7 @@ function LoginPage() {
   const [codePostal, setCodePostal] = useState("");
   const [ville, setVille] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [codeEtablissement, setCodeEtablissement] = useState("");
 
   const handleSignIn = async (e: React.FormEvent) => {
