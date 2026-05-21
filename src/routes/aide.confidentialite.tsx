@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LegalPageShell } from "@/components/LegalPageShell";
+import { UnderConstructionPage } from "@/components/UnderConstructionPage";
+import { isUnderConstruction } from "@/config/underConstruction";
 
 export const Route = createFileRoute("/aide/confidentialite")({
   head: () => ({
@@ -12,6 +14,8 @@ export const Route = createFileRoute("/aide/confidentialite")({
 });
 
 function ConfidentialitePage() {
+  const wipTitle = isUnderConstruction("/aide/confidentialite");
+  if (wipTitle) return <UnderConstructionPage title={wipTitle} />;
   return (
     <LegalPageShell title="Politique de confidentialité" updatedAt="mai 2026">
       <h2>Données collectées</h2>
