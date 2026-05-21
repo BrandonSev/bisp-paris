@@ -286,9 +286,33 @@ function LoginPage() {
                     <input type="text" required value={ville} onChange={(e) => setVille(e.target.value)} maxLength={100} placeholder="Paris" className={inputCls} />
                   </Field>
                 </div>
-                <Field label="Mot de passe (8 car. min.)" icon={<Lock className="h-4 w-4" />}>
-                  <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} className={inputCls} />
-                </Field>
+                <div>
+                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Mot de passe (8 car. min.)
+                  </label>
+                  <div className="relative mt-1.5">
+                    <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      <Lock className="h-4 w-4" />
+                    </span>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      minLength={8}
+                      className={`${inputCls} pr-10`}
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShowPassword((s) => !s)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <PasswordStrengthMeter password={password} />
+                </div>
                 <div>
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
