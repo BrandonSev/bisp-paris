@@ -12,8 +12,8 @@ import { recommendSize } from "@/lib/sizeRecommendation";
 import { SizeBadge } from "@/components/SizeBadge";
 import poloFront from "@/assets/polo-bisp-marine.svg";
 import poloBack from "@/assets/polo-bisp-blanc.svg";
-import hoodieFront from "@/assets/hoodie-bisp-back.svg";
-import hoodieBack from "@/assets/hoodie-bisp-front.svg";
+import hoodieFront from "@/assets/hoodie-bisp-front.svg";
+import hoodieBack from "@/assets/hoodie-bisp-back.svg";
 import teddyFront from "@/assets/teddy-bisp-front.svg";
 import teddyBack from "@/assets/teddy-bisp-back.svg";
 import trousse from "@/assets/trousse-bisp.svg";
@@ -51,7 +51,7 @@ type Product = {
   sizes: string[];
   /** options de personnalisation (ex: couleur du zip) */
   options?: ProductOption[];
-  category: "Polos" | "Pulls" | "Sweats" | "Chemises" | "T-shirts" | "Accessoires";
+  category: "Polos" | "Pulls" | "Sweats" | "Vestes" | "Chemises" | "T-shirts" | "Accessoires";
   /** Type de produit pour ajuster la recommandation de taille (ex: hoodie/teddy → +1). */
   productKind?: "outer";
 };
@@ -130,9 +130,9 @@ const products: Product[] = [
     name: "Teddy boutonné Charlie",
     nameEn: "Charlie button teddy jacket",
     pricing: groupPricing({ enfant: 78, junior: 90, adulte: 102 }),
-    images: [teddyFront, teddyBack],
+    images: [teddyBack, teddyFront],
     sizes: ALL_APPAREL_SIZES,
-    category: "Pulls",
+    category: "Vestes",
     productKind: "outer",
   },
   {
@@ -147,7 +147,7 @@ const products: Product[] = [
   },
 ];
 
-const categories = ["Tous", "Polos", "Sweats", "Pulls", "Accessoires"] as const;
+const categories = ["Tous", "Polos", "Sweats", "Vestes", "Pulls", "Accessoires"] as const;
 
 function BoutiquePage() {
   const [active, setActive] = useState<(typeof categories)[number]>("Tous");
