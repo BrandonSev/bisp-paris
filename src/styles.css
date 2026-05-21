@@ -39,6 +39,11 @@
   --color-teal-deep: var(--teal-deep);
   --color-rouge: var(--rouge);
   --color-cream: var(--cream);
+  --color-charbon: var(--charbon);
+  --color-gris-text: var(--gris-text);
+  --color-gris-fonce: var(--gris-fonce);
+  --color-gris-clair: var(--gris-clair);
+  --color-gris-fond: var(--gris-fond);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -60,12 +65,14 @@
   --radius: 0.75rem;
   /* BISP — Bilingual International School of Paris
      Charte officielle : bleu marine #1F2E59, teal #348397, rouge #ED3122 */
-  --background: oklch(0.985 0.005 240);
-  --foreground: oklch(0.22 0.04 250);
+  /* #FAF9F5 blanc cassé — fonds */
+  --background: oklch(0.978 0.005 85);
+  /* #30302E charbon — texte principal */
+  --foreground: oklch(0.295 0.003 80);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.04 250);
+  --card-foreground: oklch(0.295 0.003 80);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.04 250);
+  --popover-foreground: oklch(0.295 0.003 80);
   /* #1F2E59 bleu marine */
   --primary: oklch(0.27 0.085 265);
   --primary-foreground: oklch(0.99 0.003 240);
@@ -73,41 +80,49 @@
   --primary-soft: oklch(0.34 0.10 265);
   --primary-deep: oklch(0.21 0.08 268);
   /* #348397 teal */
-  --teal: oklch(0.58 0.075 215);
-  --teal-deep: oklch(0.50 0.06 218);
+  --teal: oklch(0.555 0.072 213);
+  /* #2A6A7A teal foncé */
+  --teal-deep: oklch(0.475 0.058 218);
   /* #ED3122 rouge accent */
-  --rouge: oklch(0.62 0.22 28);
-  --cream: oklch(0.975 0.012 80);
-  --secondary: oklch(0.96 0.012 230);
+  --rouge: oklch(0.625 0.225 29);
+  /* #FAF9F5 blanc cassé */
+  --cream: oklch(0.978 0.005 85);
+  /* Charte gris */
+  --charbon: oklch(0.295 0.003 80);   /* #30302E */
+  --gris-text: oklch(0.49 0 0);        /* #595959 */
+  --gris-fonce: oklch(0.36 0.005 260); /* #3F444B */
+  --gris-clair: oklch(0.62 0 0);       /* #888888 */
+  --gris-fond: oklch(0.945 0 0);       /* #EFEFEF */
+  --secondary: oklch(0.945 0 0);
   --secondary-foreground: oklch(0.27 0.085 265);
-  --muted: oklch(0.965 0.008 230);
-  --muted-foreground: oklch(0.46 0.03 245);
-  --accent: oklch(0.93 0.025 215);
+  --muted: oklch(0.945 0 0);
+  --muted-foreground: oklch(0.49 0 0);
+  --accent: oklch(0.93 0.03 213);
   --accent-foreground: oklch(0.27 0.085 265);
-  --destructive: oklch(0.62 0.22 28);
+  --destructive: oklch(0.625 0.225 29);
   --destructive-foreground: oklch(0.99 0.005 240);
-  --border: oklch(0.91 0.012 230);
-  --input: oklch(0.91 0.012 230);
-  --ring: oklch(0.58 0.075 215);
+  --border: oklch(0.9 0.004 80);
+  --input: oklch(0.9 0.004 80);
+  --ring: oklch(0.555 0.072 213);
   --gradient-hero: linear-gradient(135deg, oklch(0.21 0.08 268) 0%, oklch(0.27 0.085 265) 50%, oklch(0.50 0.06 218) 100%);
   --gradient-shield: radial-gradient(120% 80% at 30% 0%, oklch(0.50 0.06 218) 0%, oklch(0.27 0.085 265) 55%, oklch(0.21 0.08 268) 100%);
-  --gradient-soft: linear-gradient(180deg, oklch(0.99 0.005 230) 0%, oklch(0.94 0.018 220) 100%);
-  --gradient-teal: linear-gradient(135deg, oklch(0.58 0.075 215) 0%, oklch(0.45 0.06 220) 100%);
+  --gradient-soft: linear-gradient(180deg, oklch(0.985 0.004 85) 0%, oklch(0.945 0 0) 100%);
+  --gradient-teal: linear-gradient(135deg, oklch(0.555 0.072 213) 0%, oklch(0.475 0.058 218) 100%);
   --shadow-card: 0 4px 24px -8px oklch(0.27 0.085 265 / 0.18);
   --shadow-elegant: 0 24px 60px -20px oklch(0.21 0.08 268 / 0.35);
   --chart-1: oklch(0.27 0.085 265);
-  --chart-2: oklch(0.58 0.075 215);
-  --chart-3: oklch(0.62 0.22 28);
+  --chart-2: oklch(0.555 0.072 213);
+  --chart-3: oklch(0.625 0.225 29);
   --chart-4: oklch(0.50 0.06 218);
   --chart-5: oklch(0.34 0.10 265);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.22 0.04 250);
+  --sidebar: oklch(0.978 0.005 85);
+  --sidebar-foreground: oklch(0.295 0.003 80);
   --sidebar-primary: oklch(0.27 0.085 265);
   --sidebar-primary-foreground: oklch(0.99 0.003 240);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
+  --sidebar-accent: oklch(0.945 0 0);
   --sidebar-accent-foreground: oklch(0.27 0.085 265);
-  --sidebar-border: oklch(0.91 0.012 230);
-  --sidebar-ring: oklch(0.58 0.075 215);
+  --sidebar-border: oklch(0.9 0.004 80);
+  --sidebar-ring: oklch(0.555 0.072 213);
 }
 
 .dark {
