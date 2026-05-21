@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Minus, Plus, ShieldCheck, ShoppingBag, Sparkles, UserPlus } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/SiteHeader";
 import { ShellMotif } from "@/components/SchoolMotif";
@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { RequireAuth } from "@/components/RequireAuth";
 import { AddChildDialog } from "@/components/AddChildDialog";
 import { TrousseImage } from "@/components/TrousseImage";
+import { recommendSize } from "@/lib/sizeRecommendation";
+import { SizeBadge } from "@/components/SizeBadge";
 import poloFront from "@/assets/polo-bisp-marine.svg";
 import poloBack from "@/assets/polo-bisp-blanc.svg";
 import hoodieFront from "@/assets/hoodie-bisp-back.svg";
@@ -50,6 +52,8 @@ type Product = {
   /** options de personnalisation (ex: couleur du zip) */
   options?: ProductOption[];
   category: "Polos" | "Pulls" | "Sweats" | "Chemises" | "T-shirts" | "Accessoires";
+  /** Type de produit pour ajuster la recommandation de taille (ex: hoodie/teddy → +1). */
+  productKind?: "outer";
 };
 
 type ProductOption = {
@@ -119,6 +123,7 @@ const products: Product[] = [
     images: [hoodieFront, hoodieBack],
     sizes: ALL_APPAREL_SIZES,
     category: "Sweats",
+    productKind: "outer",
   },
   {
     id: "teddy-charlie",
@@ -128,6 +133,7 @@ const products: Product[] = [
     images: [teddyFront, teddyBack],
     sizes: ALL_APPAREL_SIZES,
     category: "Pulls",
+    productKind: "outer",
   },
   {
     id: "trousse",
