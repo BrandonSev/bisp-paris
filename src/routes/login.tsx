@@ -320,8 +320,15 @@ function LoginPage() {
             )}
 
             <p className="mt-6 text-center text-xs text-muted-foreground">
-              En continuant, vous acceptez les <span className="text-[var(--teal-deep)]">CGU</span> et notre{" "}
-              <span className="text-[var(--teal-deep)]">politique de confidentialité</span>.
+              En continuant, vous acceptez les{" "}
+              <Link to="/aide/cgu" className="text-[var(--teal-deep)] hover:underline">
+                CGU
+              </Link>{" "}
+              et notre{" "}
+              <Link to="/aide/confidentialite" className="text-[var(--teal-deep)] hover:underline">
+                politique de confidentialité
+              </Link>
+              .
             </p>
           </div>
         </div>
