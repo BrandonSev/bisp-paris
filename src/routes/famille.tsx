@@ -73,8 +73,13 @@ function FamillePage() {
 
   const handleAddParent = async () => {
     try {
+      const base = parents[0];
       await addParent({
         role: parents.length === 0 ? "Mère" : parents.length === 1 ? "Père" : "Parent",
+        telephone: base?.telephone || profile?.telephone || "",
+        adresse: base?.adresse || profile?.adresse || "",
+        code_postal: base?.code_postal || profile?.code_postal || "",
+        ville: base?.ville || profile?.ville || "",
       });
       toast.success("Membre ajouté");
     } catch (err: any) {
@@ -205,6 +210,7 @@ function FamillePage() {
                         adresse: parents[0]?.adresse ?? "",
                         code_postal: parents[0]?.code_postal ?? "",
                         ville: parents[0]?.ville ?? "",
+                        telephone: parents[0]?.telephone ?? "",
                       }
                 }
               />
@@ -279,7 +285,7 @@ function ParentCard({
   isDraft: boolean;
   onSave: (patch: Partial<Omit<FamilyParent, "id">>) => Promise<void>;
   onRemove: null | (() => Promise<void>);
-  primaryAddress: { adresse: string; code_postal: string; ville: string } | null;
+  primaryAddress: { adresse: string; code_postal: string; ville: string; telephone: string } | null;
 }) {
   const initialAdresse = parent.adresse || primaryAddress?.adresse || "";
   const initialCp = parent.code_postal || primaryAddress?.code_postal || "";
@@ -293,7 +299,7 @@ function ParentCard({
     prenom: parent.prenom || "",
     nom: parent.nom || "",
     email: parent.email || "",
-    telephone: parent.telephone || "",
+    telephone: parent.telephone || primaryAddress?.telephone || "",
     adresse: initialAdresse,
     code_postal: initialCp,
     ville: initialVille,
@@ -316,7 +322,7 @@ function ParentCard({
       prenom: parent.prenom || "",
       nom: parent.nom || "",
       email: parent.email || "",
-      telephone: parent.telephone || "",
+      telephone: parent.telephone || primaryAddress?.telephone || "",
       adresse: parent.adresse || primaryAddress?.adresse || "",
       code_postal: parent.code_postal || primaryAddress?.code_postal || "",
       ville: parent.ville || primaryAddress?.ville || "",
@@ -327,7 +333,7 @@ function ParentCard({
       shipping_code_postal: parent.shipping_code_postal || "",
       shipping_ville: parent.shipping_ville || "",
     });
-  }, [parent, primaryAddress?.adresse, primaryAddress?.code_postal, primaryAddress?.ville]);
+  }, [parent, primaryAddress?.adresse, primaryAddress?.code_postal, primaryAddress?.ville, primaryAddress?.telephone]);
 
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }));
 
