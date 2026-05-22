@@ -16,6 +16,8 @@ export const Route = createFileRoute("/")({
         content:
           "Espace familles BISP. Commandez les uniformes officiels du Bilingual International School of Paris (15ᵉ) — polos, pulls, chemises, trousses brodés à l'écusson de l'école.",
       },
+      // duplicate guard removed
+      },
       { property: "og:title", content: "BISP — Boutique officielle des uniformes" },
       {
         property: "og:description",
