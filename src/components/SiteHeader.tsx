@@ -222,7 +222,7 @@ export function SiteFooter() {
             </div>
           </div>
           <p className="mt-5 max-w-md text-sm leading-relaxed text-white/80">
-            Boutique officielle de l'école BISP Paris 15e . Tenues brodées de l'écusson de l'école,
+            Boutique officielle de l'école BISP Paris 15e . Tenues avec écusson tissé de l'école,
             confectionnées avec soin pour le quotidien des élèves de la maternelle au collège.
           </p>
           <p className="mt-3 max-w-md text-xs leading-relaxed text-white/65 italic">
