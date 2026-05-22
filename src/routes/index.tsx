@@ -32,7 +32,7 @@ function Index() {
       {/* Top utility bar */}
       {/* <div className="border-b border-border bg-card">
         <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4 text-xs text-muted-foreground sm:px-6 lg:px-8">
-          <span className="hidden sm:inline">Simply exceptional · Brodé sur mesure pour BISP</span>
+          <span className="hidden sm:inline">Simply exceptional · Écusson tissé sur mesure pour BISP</span>
           <div className="flex items-center gap-4">
             <span>FR</span>
             <span className="text-border">·</span>
@@ -118,7 +118,7 @@ function Index() {
                   BISP pour toute la communauté de l'école.
                 </p>
                 <p className="mt-4 text-sm font-light italic leading-relaxed text-white/55">
-                  Order your official BISP school uniforms — featuring the embroidered crest and premium quality fabrics
+                  Order your official BISP school uniforms — featuring the woven crest and premium quality fabrics
                   for the new academic year.
                 </p>
 
@@ -217,7 +217,7 @@ function Index() {
             className="mt-4 text-xl font-light leading-relaxed text-white/90 sm:text-2xl"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Votre slogan à venir
+            Votre slogan...
           </blockquote>
           <div className="mx-auto mt-8 h-px w-12 bg-[var(--rouge)]" />
           <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/55">

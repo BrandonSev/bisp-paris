@@ -226,7 +226,7 @@ export function SiteFooter() {
             confectionnées avec soin pour le quotidien des élèves de la maternelle au collège.
           </p>
           <p className="mt-3 max-w-md text-xs leading-relaxed text-white/65 italic">
-            Official BISP uniform shop. Quality embroidered uniforms for our students,
+            Official BISP uniform shop. Quality uniforms with woven crest for our students,
             from kindergarten to middle school.
           </p>
           <div className="mt-6 flex flex-col items-start gap-2">
