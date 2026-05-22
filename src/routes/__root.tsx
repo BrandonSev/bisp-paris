@@ -3,6 +3,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import appCss from "../styles.css?url";
 import { StoreProvider } from "@/lib/store";
 import { Toaster } from "@/components/ui/sonner";
+import { ConstructionBanner } from "@/components/ConstructionBanner";
 
 function NotFoundComponent() {
   return (
@@ -63,6 +64,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   return (
     <StoreProvider>
+      <ConstructionBanner />
       <Outlet />
       <Toaster />
     </StoreProvider>
