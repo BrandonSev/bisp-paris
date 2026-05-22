@@ -144,7 +144,7 @@ const products: Product[] = [
   },
 ];
 
-const categories = ["Tous", "Polos", "Sweats", "Vestes", "Pulls", "Accessoires"] as const;
+const categories = ["Tous", "Polos", "Sweats", "Vestes", "Accessoires"] as const;
 
 function BoutiquePage() {
   const [active, setActive] = useState<(typeof categories)[number]>("Tous");
