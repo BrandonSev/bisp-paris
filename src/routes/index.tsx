@@ -4,7 +4,7 @@ import logo from "@/assets/bisp-logo.svg";
 import { FrenchFlag } from "@/components/FrenchFlag";
 import poloImg from "@/assets/polo-bisp-marine.svg";
 import hoodieImg from "@/assets/hoodie-bisp-front.svg";
-import teddyImg from "@/assets/teddy-bisp-front.svg";
+import teddyImg from "@/assets/teddy-bisp-back.svg";
 import trousseImg from "@/assets/trousse-bisp.svg";
 
 export const Route = createFileRoute("/")({
