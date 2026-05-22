@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CreditCard, ShieldCheck, Truck } from "lucide-react";
+import { ArrowRight, CreditCard, ShieldCheck, Truck, Hammer } from "lucide-react";
 import logo from "@/assets/bisp-logo.svg";
 import { FrenchFlag } from "@/components/FrenchFlag";
-import poloImg from "@/assets/polo-bisp.jpg";
-import pullImg from "@/assets/pull-bisp.jpg";
-import chemiseImg from "@/assets/chemise-bisp.jpg";
-import trousseImg from "@/assets/trousses-bisp.png";
+import poloImg from "@/assets/polo-bisp-mockup.jpeg";
+import pullImg from "@/assets/hoodie-bisp-front.svg";
+import chemiseImg from "@/assets/chemise-bisp-fille.png";
+import trousseImg from "@/assets/trousse-bisp.svg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "BISP — Boutique officielle des uniformes" },
       {
         property: "og:description",
-        content: "Family portal · Commandez les uniformes officiels brodés de l'écusson BISP.",
+        content: "Family portal · Commandez les uniformes officiels avec écusson tissé BISP.",
       },
     ],
   }),
