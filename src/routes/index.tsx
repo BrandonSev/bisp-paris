@@ -217,7 +217,7 @@ function Index() {
             className="mt-4 text-xl font-light leading-relaxed text-white/90 sm:text-2xl"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Votre slogan à venir
+            Votre slogan...
           </blockquote>
           <div className="mx-auto mt-8 h-px w-12 bg-[var(--rouge)]" />
           <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/55">
