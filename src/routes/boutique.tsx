@@ -227,11 +227,8 @@ function ProductCard({ product }: { product: Product }) {
   const [qty, setQty] = useState(1);
   const hasMultipleViews = product.images.length > 1;
 
-  const prices = Object.values(product.pricing);
-  const minPrice = Math.min(...prices);
-  const maxPrice = Math.max(...prices);
-  const priceLabel =
-    minPrice === maxPrice ? `${minPrice.toFixed(2)} €` : `${minPrice.toFixed(2)} – ${maxPrice.toFixed(2)} €`;
+  // Tarifs en attente de validation par l'école : affichage provisoire "X – Y €".
+  const priceLabel = "X – Y €";
   const currentPrice = size ? product.pricing[size] : undefined;
 
   const canAdd = !!size && !!child;
@@ -282,7 +279,7 @@ function ProductCard({ product }: { product: Product }) {
       childId: child,
     });
     toast.success(`Ajouté · ${product.name}`, {
-      description: `${qty} × Taille ${size} · ${(currentPrice * qty).toFixed(2)} €${selected ? ` · pour ${selected.prenom}` : ""}`,
+      description: `${qty} × Taille ${size}${selected ? ` · pour ${selected.prenom}` : ""}`,
     });
   };
 
@@ -328,12 +325,10 @@ function ProductCard({ product }: { product: Product }) {
         <p className="text-xs italic text-muted-foreground">{product.nameEn}</p>
         <div className="mt-3 flex items-center justify-between">
           <span className="text-lg font-semibold text-foreground">
-            {currentPrice !== undefined ? `${currentPrice.toFixed(2)} €` : priceLabel}
-            {currentPrice === undefined && minPrice !== maxPrice && (
-              <span className="ml-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                selon taille
-              </span>
-            )}
+            {priceLabel}
+            <span className="ml-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              tarif provisoire
+            </span>
           </span>
           <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
             <ShieldCheck className="h-3 w-3 text-[var(--teal-deep)]" /> Écusson tissé
@@ -413,7 +408,7 @@ function ProductCard({ product }: { product: Product }) {
                     <div key={g.label}>
                       <div className="mb-1 flex items-center justify-between text-[10px] font-medium text-muted-foreground">
                         <span>{g.label}</span>
-                        {groupPrice !== undefined && <span className="tabular-nums">{groupPrice.toFixed(2)} €</span>}
+                        {groupPrice !== undefined && <span className="tabular-nums">X – Y €</span>}
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {g.sizes.map((s) => (
@@ -526,9 +521,7 @@ function ProductCard({ product }: { product: Product }) {
             }`}
           >
             <ShoppingBag className="h-4 w-4" />
-            {canAdd && currentPrice !== undefined
-              ? `Ajouter · ${(currentPrice * qty).toFixed(2)} €`
-              : "Choisir une taille · Pick a size"}
+            {canAdd ? "Ajouter au panier · Add to cart" : "Choisir une taille · Pick a size"}
           </button>
         </div>
       </div>
