@@ -14,7 +14,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Espace familles BISP. Commandez les uniformes officiels du Bilingual International School of Paris (15ᵉ) — polos, pulls, chemises, trousses brodés à l'écusson de l'école.",
+          "Espace familles BISP. Commandez les uniformes officiels du Bilingual International School of Paris (15ᵉ) — polos, pulls, chemises, trousses avec écusson tissé de l'école.",
       },
       { property: "og:title", content: "BISP — Boutique officielle des uniformes" },
       {
@@ -29,6 +29,13 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <div className="min-h-screen bg-background">
+      {/* Bandeau alerte construction */}
+      <div className="border-b border-[var(--rouge)]/30 bg-[var(--rouge)]/10 text-[var(--rouge)]">
+        <div className="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4 py-2 text-center text-xs font-semibold uppercase tracking-[0.15em] sm:px-6 lg:px-8">
+          <Hammer className="h-3.5 w-3.5 shrink-0" aria-hidden />
+          <span>Site en cours de construction — en attente de validation école</span>
+        </div>
+      </div>
       {/* Top utility bar */}
       {/* <div className="border-b border-border bg-card">
         <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4 text-xs text-muted-foreground sm:px-6 lg:px-8">
@@ -114,7 +121,7 @@ function Index() {
                 </h1>
 
                 <p className="text-base font-light leading-relaxed text-white/85 sm:text-lg">
-                  Bilingual International School of Paris · 15ᵉ. Commandez les tenues officielles brodées de l'écusson
+                  Bilingual International School of Paris · 15ᵉ. Commandez les tenues officielles avec écusson tissé
                   BISP pour toute la communauté de l'école.
                 </p>
                 <p className="mt-4 text-sm font-light italic leading-relaxed text-white/55">
@@ -165,7 +172,7 @@ function Index() {
               La collection officielle
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Polos, pulls, chemises et accessoires brodés de l'écusson BISP.
+              Polos, pulls, chemises et accessoires avec écusson tissé BISP.
             </p>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -183,7 +190,7 @@ function Index() {
           <TrustItem
             icon={<ShieldCheck className="h-5 w-5" />}
             title="Tenues validées par l'établissement"
-            text="Chaque produit est référencé en accord avec la direction de BISP et brodé de l'écusson officiel."
+            text="Chaque produit est référencé en accord avec la direction de BISP et porte l'écusson tissé officiel."
           />
           <TrustItem
             icon={<Truck className="h-5 w-5" />}
@@ -221,7 +228,7 @@ function Index() {
           </blockquote>
           <div className="mx-auto mt-8 h-px w-12 bg-[var(--rouge)]" />
           <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/55">
-            Direction · Nom de votre école
+            Direction · Nom prénom
           </p>
         </div>
       </section>
