@@ -135,7 +135,7 @@ const products: Product[] = [
   {
     id: "trousse",
     name: "Trousse écusson tissé",
-    nameEn: "Embroidered pencil case",
+    nameEn: "Woven crest pencil case",
     pricing: { Unique: 18 },
     images: [trousse],
     sizes: ["Unique"],
