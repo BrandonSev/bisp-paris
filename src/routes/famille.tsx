@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useStore, type FamilyParent } from "@/lib/store";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 
 export const Route = createFileRoute("/famille")({
   head: () => ({
@@ -467,15 +468,15 @@ function ParentCard({
           </div>
         </Field>
         <Field label="Adresse" full>
-          <div className="flex h-11 items-center gap-2 rounded-lg border border-border bg-background px-3">
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-            <input
-              value={form.adresse}
-              onChange={(e) => set("adresse", e.target.value)}
-              className="h-full w-full bg-transparent text-sm outline-none"
-              placeholder="Numéro et rue"
-            />
-          </div>
+          <AddressAutocomplete
+            value={form.adresse}
+            onChange={(v) => set("adresse", v)}
+            onSelect={({ adresse, code_postal, ville }) =>
+              setForm((f) => ({ ...f, adresse, code_postal, ville }))
+            }
+            placeholder="Numéro et rue"
+            className="h-11 w-full rounded-lg border border-border bg-background pl-10 pr-3 text-sm outline-none"
+          />
         </Field>
         <Field label="Code postal">
           <input
@@ -551,10 +552,18 @@ function ParentCard({
               />
             </Field>
             <Field label="Adresse (numéro et rue)" full>
-              <input
+              <AddressAutocomplete
                 value={form.shipping_adresse}
-                onChange={(e) => set("shipping_adresse", e.target.value)}
-                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm"
+                onChange={(v) => set("shipping_adresse", v)}
+                onSelect={({ adresse, code_postal, ville }) =>
+                  setForm((f) => ({
+                    ...f,
+                    shipping_adresse: adresse,
+                    shipping_code_postal: code_postal,
+                    shipping_ville: ville,
+                  }))
+                }
+                className="h-11 w-full rounded-lg border border-border bg-background pl-10 pr-3 text-sm outline-none"
               />
             </Field>
             <Field label="Code postal">

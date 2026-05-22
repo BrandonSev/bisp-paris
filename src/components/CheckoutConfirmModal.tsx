@@ -3,6 +3,7 @@ import { X, Truck, Store, Loader2, CreditCard, FileText, Banknote, Wallet } from
 import { fetchDeliveryOptions, type DeliveryOption } from "@/lib/deliveryOptions";
 import type { CheckoutInput } from "@/lib/store";
 import { useStore } from "@/lib/store";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 
 const PAYMENT_METHODS = [
   { code: 'cb_payplug' as const, label: 'Carte bancaire · Card', description: 'Paiement sécurisé via PayPlug', icon: CreditCard },
@@ -119,7 +120,21 @@ export function CheckoutConfirmModal({ open, total, onClose, onConfirm, submitti
                 Adresse de livraison
               </p>
               <Field label="Destinataire" value={recipient} onChange={setRecipient} />
-              <Field label="Adresse" value={address} onChange={setAddress} />
+              <label className="block">
+                <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Adresse</span>
+                <div className="mt-1">
+                  <AddressAutocomplete
+                    value={address}
+                    onChange={setAddress}
+                    onSelect={({ adresse, code_postal, ville }) => {
+                      setAddress(adresse);
+                      setPostal(code_postal);
+                      setCity(ville);
+                    }}
+                    className="block w-full rounded-lg border border-border bg-background py-2 pl-10 pr-3 text-sm text-foreground focus:border-primary focus:outline-none"
+                  />
+                </div>
+              </label>
               <div className="grid grid-cols-[110px_1fr] gap-3">
                 <Field label="Code postal" value={postal} onChange={setPostal} />
                 <Field label="Ville" value={city} onChange={setCity} />
