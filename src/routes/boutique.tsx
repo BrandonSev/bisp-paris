@@ -25,12 +25,12 @@ export const Route = createFileRoute("/boutique")({
       {
         name: "description",
         content:
-          "Découvrez tous les uniformes officiels du Bilingual International School of Paris : polos, pulls, chemises, t-shirts et trousses brodés à l'écusson BISP.",
+          "Découvrez tous les uniformes officiels du Bilingual International School of Paris : polos, pulls, chemises, t-shirts et trousses avec écusson tissé BISP.",
       },
       { property: "og:title", content: "Boutique officielle BISP" },
       {
         property: "og:description",
-        content: "Tous les uniformes officiels brodés de l'écusson BISP.",
+        content: "Tous les uniformes officiels avec écusson tissé BISP.",
       },
     ],
   }),
@@ -134,7 +134,7 @@ const products: Product[] = [
   },
   {
     id: "trousse",
-    name: "Trousse brodée",
+    name: "Trousse écusson tissé",
     nameEn: "Embroidered pencil case",
     pricing: { Unique: 18 },
     images: [trousse],
@@ -173,7 +173,7 @@ function BoutiquePage() {
           <p className="mt-2 text-sm italic text-muted-foreground">Official BISP uniform shop</p>
           <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-[var(--rouge)]" />
           <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            Tous les uniformes brodés de l'écusson officiel, confectionnés pour le quotidien des élèves.
+            Tous les uniformes avec écusson tissé officiel, confectionnés pour le quotidien des élèves.
           </p>
         </div>
       </section>
@@ -336,7 +336,7 @@ function ProductCard({ product }: { product: Product }) {
             )}
           </span>
           <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-            <ShieldCheck className="h-3 w-3 text-[var(--teal-deep)]" /> Brodé
+            <ShieldCheck className="h-3 w-3 text-[var(--teal-deep)]" /> Écusson tissé
           </span>
         </div>
 
