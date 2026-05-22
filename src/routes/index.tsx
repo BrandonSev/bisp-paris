@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CreditCard, ShieldCheck, Truck, Hammer } from "lucide-react";
+import { ArrowRight, CreditCard, ShieldCheck, Truck } from "lucide-react";
 import logo from "@/assets/bisp-logo.svg";
 import { FrenchFlag } from "@/components/FrenchFlag";
-import poloImg from "@/assets/polo-bisp-mockup.jpeg";
-import pullImg from "@/assets/hoodie-bisp-front.svg";
-import chemiseImg from "@/assets/chemise-bisp-fille.png";
+import poloImg from "@/assets/polo-bisp-marine.svg";
+import hoodieImg from "@/assets/hoodie-bisp-front.svg";
+import teddyImg from "@/assets/teddy-bisp-front.svg";
 import trousseImg from "@/assets/trousse-bisp.svg";
 
 export const Route = createFileRoute("/")({
@@ -29,13 +29,6 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Bandeau alerte construction */}
-      <div className="border-b border-[var(--rouge)]/30 bg-[var(--rouge)]/10 text-[var(--rouge)]">
-        <div className="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4 py-2 text-center text-xs font-semibold uppercase tracking-[0.15em] sm:px-6 lg:px-8">
-          <Hammer className="h-3.5 w-3.5 shrink-0" aria-hidden />
-          <span>Site en cours de construction — en attente de validation école</span>
-        </div>
-      </div>
       {/* Top utility bar */}
       {/* <div className="border-b border-border bg-card">
         <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4 text-xs text-muted-foreground sm:px-6 lg:px-8">
@@ -177,8 +170,8 @@ function Index() {
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <CategoryCard image={poloImg} label="Polos" />
-            <CategoryCard image={pullImg} label="Pulls" />
-            <CategoryCard image={chemiseImg} label="Chemises" />
+            <CategoryCard image={hoodieImg} label="Sweats" />
+            <CategoryCard image={teddyImg} label="Vestes" />
             <CategoryCard image={trousseImg} label="Accessoires" />
           </div>
         </div>
