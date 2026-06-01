@@ -240,8 +240,12 @@ function ProductCard({ product }: { product: Product }) {
   const [qty, setQty] = useState(1);
   const hasMultipleViews = product.images.length > 1;
 
-  // Tarifs en attente de validation par l'école : affichage provisoire "X – Y €".
-  const priceLabel = "X – Y €";
+  // Plage de prix calculée à partir des tarifs TTC par groupe de taille.
+  const prices = Object.values(product.pricing);
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+  const fmt = (n: number) => `${n.toFixed(2).replace(".", ",")} €`;
+  const priceLabel = minPrice === maxPrice ? fmt(minPrice) : `${fmt(minPrice)} – ${fmt(maxPrice)}`;
   const currentPrice = size ? product.pricing[size] : undefined;
 
   const canAdd = !!size && !!child;
@@ -340,7 +344,7 @@ function ProductCard({ product }: { product: Product }) {
           <span className="text-lg font-semibold text-foreground">
             {priceLabel}
             <span className="ml-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-              tarif provisoire
+              TTC
             </span>
           </span>
           <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
@@ -421,7 +425,9 @@ function ProductCard({ product }: { product: Product }) {
                     <div key={g.label}>
                       <div className="mb-1 flex items-center justify-between text-[10px] font-medium text-muted-foreground">
                         <span>{g.label}</span>
-                        {groupPrice !== undefined && <span className="tabular-nums">X – Y €</span>}
+                        {groupPrice !== undefined && (
+                          <span className="tabular-nums">{fmt(groupPrice)} TTC</span>
+                        )}
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {g.sizes.map((s) => (
