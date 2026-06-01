@@ -415,6 +415,10 @@ function ProductCard({ product }: { product: Product }) {
                 label: "Adulte",
                 sizes: product.sizes.filter((s) => (SIZE_GROUPS.adulte as readonly string[]).includes(s)),
               },
+              {
+                label: "Adulte XL",
+                sizes: product.sizes.filter((s) => (SIZE_GROUPS.adulteXL as readonly string[]).includes(s)),
+              },
             ].filter((g) => g.sizes.length > 0);
             const ungrouped = product.sizes.filter((s) => !sizeGroupLabel(s));
             return (
