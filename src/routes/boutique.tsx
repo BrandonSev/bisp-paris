@@ -72,23 +72,36 @@ const SIZE_GROUPS = {
   enfant: ["3 ans", "4 ans", "6 ans", "8 ans", "10 ans"],
   junior: ["12 ans", "14 ans", "16 ans", "18 ans"],
   adulte: ["XS", "S", "M", "L", "XL"],
+  adulteXL: ["XXL", "3XL", "4XL"],
 } as const;
 
-const ALL_APPAREL_SIZES = [...SIZE_GROUPS.enfant, ...SIZE_GROUPS.junior, ...SIZE_GROUPS.adulte];
+const ALL_APPAREL_SIZES = [
+  ...SIZE_GROUPS.enfant,
+  ...SIZE_GROUPS.junior,
+  ...SIZE_GROUPS.adulte,
+  ...SIZE_GROUPS.adulteXL,
+];
 
 /** Construit un mapping taille → prix à partir d'un prix par groupe. */
-function groupPricing(prices: { enfant: number; junior: number; adulte: number }): Record<string, number> {
+function groupPricing(prices: {
+  enfant: number;
+  junior: number;
+  adulte: number;
+  adulteXL: number;
+}): Record<string, number> {
   const out: Record<string, number> = {};
   SIZE_GROUPS.enfant.forEach((s) => (out[s] = prices.enfant));
   SIZE_GROUPS.junior.forEach((s) => (out[s] = prices.junior));
   SIZE_GROUPS.adulte.forEach((s) => (out[s] = prices.adulte));
+  SIZE_GROUPS.adulteXL.forEach((s) => (out[s] = prices.adulteXL));
   return out;
 }
 
-function sizeGroupLabel(size: string): "Enfant" | "Junior" | "Adulte" | null {
+function sizeGroupLabel(size: string): "Enfant" | "Junior" | "Adulte" | "Adulte XL" | null {
   if ((SIZE_GROUPS.enfant as readonly string[]).includes(size)) return "Enfant";
   if ((SIZE_GROUPS.junior as readonly string[]).includes(size)) return "Junior";
   if ((SIZE_GROUPS.adulte as readonly string[]).includes(size)) return "Adulte";
+  if ((SIZE_GROUPS.adulteXL as readonly string[]).includes(size)) return "Adulte XL";
   return null;
 }
 
@@ -107,7 +120,7 @@ const products: Product[] = [
     id: "polo-officiel",
     name: "Polo officiel BISP",
     nameEn: "Official BISP polo",
-    pricing: groupPricing({ enfant: 28, junior: 32, adulte: 36 }),
+    pricing: groupPricing({ enfant: 34, junior: 37, adulte: 39, adulteXL: 41 }),
     images: [poloFront, poloBack],
     sizes: ALL_APPAREL_SIZES,
     category: "Polos",
@@ -116,7 +129,7 @@ const products: Product[] = [
     id: "hoodie-jean-eudes",
     name: "Hoodie zippé Jean-Eudes",
     nameEn: "Jean-Eudes zip hoodie",
-    pricing: groupPricing({ enfant: 62, junior: 72, adulte: 82 }),
+    pricing: groupPricing({ enfant: 54, junior: 59, adulte: 61, adulteXL: 66 }),
     images: [hoodieFront, hoodieBack],
     sizes: ALL_APPAREL_SIZES,
     category: "Sweats",
@@ -126,7 +139,7 @@ const products: Product[] = [
     id: "teddy-charlie",
     name: "Teddy boutonné Charlie",
     nameEn: "Charlie button teddy jacket",
-    pricing: groupPricing({ enfant: 78, junior: 90, adulte: 102 }),
+    pricing: groupPricing({ enfant: 60, junior: 66, adulte: 68, adulteXL: 72 }),
     images: [teddyBack, teddyFront],
     sizes: ALL_APPAREL_SIZES,
     category: "Vestes",
@@ -136,7 +149,7 @@ const products: Product[] = [
     id: "trousse",
     name: "Trousse écusson tissé",
     nameEn: "Woven crest pencil case",
-    pricing: { Unique: 18 },
+    pricing: { Unique: 26 },
     images: [trousse],
     sizes: ["Unique"],
     options: [trousseColors],
@@ -227,8 +240,12 @@ function ProductCard({ product }: { product: Product }) {
   const [qty, setQty] = useState(1);
   const hasMultipleViews = product.images.length > 1;
 
-  // Tarifs en attente de validation par l'école : affichage provisoire "X – Y €".
-  const priceLabel = "X – Y €";
+  // Plage de prix calculée à partir des tarifs TTC par groupe de taille.
+  const prices = Object.values(product.pricing);
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+  const fmt = (n: number) => `${n.toFixed(2).replace(".", ",")} €`;
+  const priceLabel = minPrice === maxPrice ? fmt(minPrice) : `${fmt(minPrice)} – ${fmt(maxPrice)}`;
   const currentPrice = size ? product.pricing[size] : undefined;
 
   const canAdd = !!size && !!child;
@@ -327,7 +344,7 @@ function ProductCard({ product }: { product: Product }) {
           <span className="text-lg font-semibold text-foreground">
             {priceLabel}
             <span className="ml-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-              tarif provisoire
+              TTC
             </span>
           </span>
           <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
@@ -398,6 +415,10 @@ function ProductCard({ product }: { product: Product }) {
                 label: "Adulte",
                 sizes: product.sizes.filter((s) => (SIZE_GROUPS.adulte as readonly string[]).includes(s)),
               },
+              {
+                label: "Adulte XL",
+                sizes: product.sizes.filter((s) => (SIZE_GROUPS.adulteXL as readonly string[]).includes(s)),
+              },
             ].filter((g) => g.sizes.length > 0);
             const ungrouped = product.sizes.filter((s) => !sizeGroupLabel(s));
             return (
@@ -408,7 +429,9 @@ function ProductCard({ product }: { product: Product }) {
                     <div key={g.label}>
                       <div className="mb-1 flex items-center justify-between text-[10px] font-medium text-muted-foreground">
                         <span>{g.label}</span>
-                        {groupPrice !== undefined && <span className="tabular-nums">X – Y €</span>}
+                        {groupPrice !== undefined && (
+                          <span className="tabular-nums">{fmt(groupPrice)} TTC</span>
+                        )}
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {g.sizes.map((s) => (
