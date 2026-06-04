@@ -111,7 +111,7 @@ const trousseColors: ProductOption = {
   choices: [
     { value: "bleu-marine", label: "Bleu marine", swatch: "var(--primary)" },
     { value: "teal", label: "Teal", swatch: "var(--teal)" },
-    { value: "blanc", label: "Blanc", swatch: "#ffffff" },
+    { value: "blanc", label: "Blanc cassé", swatch: "#ffffff" },
   ],
 };
 
